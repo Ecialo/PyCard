@@ -13,7 +13,6 @@ from twisted.internet import reactor
 from twisted.internet import protocol
 from kivy.app import App
 from kivy.uix.label import Label
-from core.utility import check_is_false
 
 class MultiEcho(protocol.Protocol):
     # TODO: исправить хаки
@@ -28,21 +27,12 @@ class MultiEcho(protocol.Protocol):
 
     def dataReceived(self, data):
         response = self.factory.app.handle_message(data)
-        self.send_response(response, self)
+        self.determine_current_player()
+        self.send_stuff(response)
 
     def connectionLost(self, reason):
         self.factory.echoers.remove(self)
         # self.players_settled = False
-
-    def send_response(self, data, echoer):
-        if echoer == self.factory.echoers[1]:
-            rev_data = data[::-1]
-            for echoer in xrange(len(self.factory.echoers)):
-                self.factory.echoers[echoer].transport.write(rev_data[echoer])
-
-        else:
-            for echoer in xrange(len(self.factory.echoers)):
-                self.factory.echoers[echoer].transport.write(data[echoer])
 
     def send_stuff(self, data):
         self.factory.echoers[self.current_player_index].transport.write(data[0])
@@ -50,8 +40,11 @@ class MultiEcho(protocol.Protocol):
 
 
     def determine_current_player(self):
+        # Сюда можно добавить логику выбора первого (current_player) клиента
+
         self.current_player_index = self.factory.echoers.index(self)
         # TODO: это хак на 2 человек - нужно что-то поумнее придумать и допилить
+
         if self.current_player_index == 0:
             self.another_player_index = 1
         else:
@@ -91,8 +84,8 @@ class TwistedServerApp(App):
             player_one_msg = "ping"
             player_two_msg = "pong"
         else:
-            player_one_msg = "I am player one"
-            player_two_msg = "I am player two"
+            player_one_msg = "I am sending this message"
+            player_two_msg = "I am receiving this message"
 
         self.label.text += "responded: %s\n" % msg
         return [player_one_msg, player_two_msg]
