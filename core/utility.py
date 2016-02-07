@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+
+
 from . import predef
+import random
+
 __author__ = 'Ecialo'
 
 
@@ -65,3 +69,17 @@ def make_pipe_message(*args):
 
 def make_sequence(*args):
     return "(" + "&".join(args) + ")"
+
+
+def check_is_false(boolean):
+    """
+    Декоратор который скипает выполнение функции если её логический аргумент не False а длина списка(клиентов)
+    меньше 2 - т.е. недостаточно игроков
+    :param boolean:
+    :return:
+    """
+    def is_false(boolean, players_list):
+        if boolean is True:
+            pass
+
+    return is_false
