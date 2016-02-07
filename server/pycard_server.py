@@ -32,7 +32,6 @@ class MultiEcho(protocol.Protocol):
 
     def connectionLost(self, reason):
         self.factory.echoers.remove(self)
-        # self.players_settled = False
 
     def send_stuff(self, data):
         self.factory.echoers[self.current_player_index].transport.write(data[0])
