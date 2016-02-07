@@ -17,16 +17,22 @@ import sys
 class TestReactor(object):
 
     def __init__(self, game):
-        pass
-        # self.game = game
+        self.game = game
 
-    def make_predef(self, log):
+    @staticmethod
+    def _lock_log(log):
+        return iter(log)
+
+    def _make_predef(self, log):
         """
         Делает предустановки из лога.
         :param log:
         :return:
         """
-        pass
+        for line in log:
+            if line == "---":
+                self.complete_configure()
+                return log
 
     def complete_configure(self):
         """
@@ -40,14 +46,18 @@ class TestReactor(object):
         Читает лог.
         * Если видит Сообщение, то принимает и исполняет его.
         * Если видит Проверку выполняет её. В случае неуспеха завершается с ошибкой,
-          а в случае успеха продолжает выполнение.
-        * Если видит точку остановки - переходит в интерактивный режим.
+          а в случае успеха продолжает выполнение.  Не реализовано.
+        * Если видит точку остановки - переходит в интерактивный режим. Не реализовано.
         :return:
         """
-        pass
+        locked_log = self._lock_log(log)
+        self._make_predef(locked_log)
+        self._autotest(locked_log)
 
     def _autotest(self, log):
-        pass
+        for line in log:
+            author, message = line.rstrip().split()
+            self.game.recieve_message(message)
 
     def interactive(self, log=None):
         """
