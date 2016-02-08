@@ -54,7 +54,7 @@ class Action(object):
                 self._args[arg] = value
         return self
 
-    def substitute_enviroment(self, enviroment):
+    def substitute_enviroment(self, enviroment):    # TODO научиться отличать то что нужно подставлять от того, что нет
         substituted_args = {}
         for argname, argval in self._args:
             category, name = argval.split("_", 1)

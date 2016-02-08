@@ -17,4 +17,6 @@ class DrawCards(Action):
         super(DrawCards, self).__init__(**kwargs)
 
     def apply(self):
-        pass
+        for _ in xrange(self.number):
+            card = self.source.draw_card()
+            self.target.get_card(card)
