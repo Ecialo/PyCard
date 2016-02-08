@@ -36,9 +36,16 @@ class Action(object):
     """
 
     name = None
+    default_args = {}
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        self.game = None
         self._args = {}
+
+        args = self.default_args.copy()
+        args.update(kwargs)
+
+        self.setup(**args)
 
     def setup(self, **kwargs):
         for arg, value in kwargs.iteritems():
@@ -46,6 +53,14 @@ class Action(object):
                 self.__setattr__(arg, value)
                 self._args[arg] = value
         return self
+
+    def substitute_enviroment(self, enviroment):
+        substituted_args = {}
+        for argname, argval in self._args:
+            category, name = argval.split("_", 1)
+            category = int(category)
+            substituted_args[argname] = enviroment[(category, name)]
+        self.setup(**substituted_args)
 
     def apply(self):
         return {}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 from . import predef
 __author__ = 'Ecialo'
 
@@ -6,7 +7,7 @@ __author__ = 'Ecialo'
 class Component(object):
 
     name = None
-    categories = None
+    categories = []
     associated_components = []
 
     def __init__(self):
@@ -18,6 +19,10 @@ class Component(object):
     @property
     def fullname(self):
         return self._name
+
+    @property
+    def path(self):
+        return self.categories[0] + "_" + self.fullname
 
     # def make_get_action(self):
     #     componet_action = action.Get()
@@ -52,16 +57,33 @@ class Table(Singleton, Component):
         cls._name = prefix + "_" + cls.name
 
 
-def make_message(action_name, **kwargs):
+def make_message(action_name, **kwargs):        # TODO нужно немного обобщить
     """
-    Формат сообщения (имя_сообщения именованный_аргумент=сообщение_или_значение;другой_именованный_аргумент=...
+    Формат сообщения {имя_сообщения: {параметр: значение}}
     """
-    return "(" + action_name + " " + ";".join(map(lambda key, value: key + "=" + value, kwargs.iteritems())) + ")"
+    message = {
+        predef.MESSAGE_TYPE_KEY: predef.ACTION_JUST,
+        predef.MESSAGE_ACTION_KEY: {action_name: kwargs},
+    }
+    # return "(" + action_name + " " + json.dumps(kwargs) + ")"
+    return json.dumps(message)
 
 
 def make_pipe_message(*args):
-    return "(" + "|".join(args) + ")"
+    message = {
+        predef.MESSAGE_TYPE_KEY: predef.ACTION_PIPE,
+        predef.MESSAGE_ACTION_KEY: args
+
+    }
+    # return "(" + "|".join(args) + ")"
+    return json.dumps(message)
 
 
-def make_sequence(*args):
-    return "(" + "&".join(args) + ")"
+def make_sequence_message(*args):
+    message = {
+        predef.MESSAGE_TYPE_KEY: predef.ACTION_SEQUENCE,
+        predef.MESSAGE_ACTION_KEY: args
+
+    }
+    return json.dumps(message)
+    # return "(" + "&".join(args) + ")"

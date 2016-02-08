@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 from ..utility import Table
 from .. import predef
 __author__ = 'Ecialo'
@@ -24,15 +25,12 @@ class ActionTable(Table):
 
     # @staticmethod
     def _parse_message(self, message):
-        action, args = message.lstrip("(").rstrip(")").split()
-        parsed_args = dict(
-            map(
-                lambda arg: arg.split("="),
-                args.split(";")
-            )
-        )
-        action = self._actions[action]
-        return action.setup(**parsed_args)
+        raw_action = json.loads(message)
+        action_type = raw_action[predef.MESSAGE_TYPE_KEY]
+        if action_type is predef.ACTION_JUST:
+            action_name, action_args = raw_action[predef.MESSAGE_ACTION_KEY].items[0]
+            action = self._actions[action_name]
+            return action.setup(**action_args)
 
     # def _distinct_sequence(self, message):
     #     return message.split("&")

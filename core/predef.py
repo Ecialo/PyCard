@@ -11,3 +11,7 @@ PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION = (
     'table',
     'action',
 )
+ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE = xrange(3)
+
+MESSAGE_TYPE_KEY = "type"
+MESSAGE_ACTION_KEY = "action"

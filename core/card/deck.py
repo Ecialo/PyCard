@@ -17,7 +17,6 @@ class Deck(utility.Component):
         self._deck = []
         for card_name, amount in self.content:
             self._deck += [card_name] * amount
-        rnd.shuffle(self._deck)
 
     def draw_card(self):
         return self._deck.pop()

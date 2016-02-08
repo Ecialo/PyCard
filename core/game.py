@@ -41,8 +41,8 @@ class Game(object):
             self.register_component(component)
         self._flow = flow(self._components[PLAYER].values())
 
-    def __getitem__(self, item):
-        return self._components[item[0]][item[1]]
+    def __getitem__(self, (category, name)):
+        return self._components[category][name]
 
     def run(self):
         try:
