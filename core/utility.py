@@ -49,9 +49,6 @@ class Table(Singleton, Component):
 
     categories = [predef.TABLE]
 
-    def __init__(self):
-        pass
-
     @classmethod
     def setup_prefix(cls, prefix):
         cls._name = prefix + "_" + cls.name

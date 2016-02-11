@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-__author__ = 'ecialo'
-
 from ..action import Action
+__author__ = 'ecialo'
 
 
 class DrawCards(Action):
@@ -17,6 +16,9 @@ class DrawCards(Action):
         super(DrawCards, self).__init__(**kwargs)
 
     def apply(self):
+        cards = []
         for _ in xrange(self.number):
             card = self.source.draw_card()
+            cards.append(card)
             self.target.get_card(card)
+        return {'cards': cards}

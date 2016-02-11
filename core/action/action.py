@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import collections
+from .. import utility as util
+from .. import predef
 __author__ = 'Ecialo'
 
 
@@ -57,9 +59,10 @@ class Action(object):
     def substitute_enviroment(self, enviroment):    # TODO научиться отличать то что нужно подставлять от того, что нет
         substituted_args = {}
         for argname, argval in self._args:
-            category, name = argval.split("_", 1)
-            category = int(category)
-            substituted_args[argname] = enviroment[(category, name)]
+            if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
+                category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)
+                category = int(category)
+                substituted_args[argname] = enviroment[(category, name)]
         self.setup(**substituted_args)
 
     def apply(self):
@@ -72,7 +75,11 @@ class Action(object):
         return ActionSequence([other, self])
 
     def make_message(self):
-        pass
+        messageable_args = {
+            argname: ((predef.SUBSTITUTION_SYMBOL + argval.path) if isinstance(argval, util.Component) else argval)
+            for argname, argval in self._args.iteritems()
+        }
+        return util.make_message(self.name, **messageable_args)
 
 
 class ActionCollection(Action):
