@@ -46,7 +46,9 @@ class Game(object):
 
     def run(self):
         try:
-            return self._flow.run()
+            action = self._flow.run()
+            action.apply()
+            return action
         except EndOfCurrentFlow:
             raise GameOver()
 
@@ -59,6 +61,7 @@ class Game(object):
 
     def receive_message(self, message):
         """
-        Принимает сообщение, передаёт его в парсер, а затем применяет вернувшееся действие
+        Принимает сообщение, передаёт его в парсер, а затем передаёт полученное действие в игровой поток
         """
-        self._components[TABLE][ACTION].receive_message(message, self).apply()
+        action = self._components[TABLE][ACTION].receive_message(message, self)
+        self._flow.receive_action(action)

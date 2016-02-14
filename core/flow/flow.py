@@ -75,6 +75,9 @@ class Flow(object):
             reduce(op.add, self.flow.get_all_associated_components()) if self.flow else []
         )
 
+    def receive_action(self, action):
+        pass
+
 
 class Cycle(Flow):
     """
@@ -129,3 +132,6 @@ class TurnCycle(Cycle):
     ):
         self._flow = [self.turn(player) for player in players]
         super(TurnCycle, self).__init__(players)
+
+    def receive_action(self, action):
+        self._flow[self._i].receive_action(action)
