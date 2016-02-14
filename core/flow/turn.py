@@ -27,9 +27,12 @@ class Turn(object):
         self.is_runned = False
         self._action = None
 
+    def receive_action(self, action):
+        self._action = action
+
     def run(self):
         if not self.is_runned:
-            print "HOO-HOO"
+            # print "HOO-HOO"
             self.is_runned = True
             return self._action
         if self.is_runned:
