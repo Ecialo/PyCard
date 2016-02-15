@@ -16,8 +16,8 @@ class CyclesExceedCondition(Condition):
     ):
         self._max_value = max_value
 
-    def __call__(self, target):
-        if target.cycles >= self._max_value:
+    def __call__(self, (flow, game)):
+        if flow.cycles >= self._max_value:
             return True
         else:
             return False

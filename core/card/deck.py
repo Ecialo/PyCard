@@ -9,7 +9,7 @@ class Deck(utility.Component):
     """
     Колода содержит индексы карт из таблицы карт данной игры
     """
-    content = []
+    content = []        # TODO добавить возможность передавать как имена так и классы
     categories = [predef.DECK]
 
     def __init__(self):
@@ -23,3 +23,6 @@ class Deck(utility.Component):
 
     def shuffle(self):
         rnd.shuffle(self._deck)
+
+    def is_empty(self):
+        return bool(self._deck)

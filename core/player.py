@@ -16,7 +16,7 @@ class Player(utility.Component):
             self,
             name
     ):
-        # super(Player, self).__init__()
+        super(Player, self).__init__()
         self._components = collections.defaultdict(dict)
         self._name = name
         for resource in self.available_resources:
@@ -30,7 +30,11 @@ class Player(utility.Component):
     def resources(self):
         return self._components[predef.RESOURCE]
 
+    @property
+    def associated_components(self):
+        return self.resources.values()
+
     def register_resource(self, resource):
         player_resource = resource()
-        self._components[predef.RESOURCE][resource.name] = player_resource
         player_resource.setup_prefix(self._name)
+        self._components[predef.RESOURCE][resource.name] = player_resource

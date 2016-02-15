@@ -20,7 +20,7 @@ class Hand(utility.Component):
         pass
 
     def get_cards(self, *cards):
-        pass
+        self._cards += cards
 
     def make_action(self, action):
         pass

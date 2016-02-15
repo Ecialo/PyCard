@@ -30,27 +30,34 @@ class Game(object):
             HAND: {},
             TABLE: {},
         }
-        components = chain(
-            components,
-            *(map(
-                lambda component: component.associated_components,
-                components
-            ) + flow.associated_components)
-        )
+        # components = chain(
+        #     components,
+        #     *(map(
+        #         lambda component: component.associated_components,
+        #         components
+        #     ) + flow.associated_components)
+        # )
         for component in components:
             self.register_component(component)
-        self._flow = flow(self._components[PLAYER].values())
+        self._flow = flow(self)
 
     def __getitem__(self, (category, name)):
         return self._components[category][name]
 
+    def get_category(self, category):
+        return self._components[category]
+
     def run(self):
         try:
             action = self._flow.run()
-            action.apply()
-            return action
         except EndOfCurrentFlow:
             raise GameOver()
+        else:
+            if action:
+                action.apply()
+                return action
+            else:
+                return None
 
     def apply_action(self, action):
         action.apply(self)
@@ -58,6 +65,8 @@ class Game(object):
     def register_component(self, component):
         for category in component.categories:
             self._components[category][component.fullname] = component
+        for associated_component in component.associated_components:
+            self.register_component(associated_component)
 
     def receive_message(self, message):
         """

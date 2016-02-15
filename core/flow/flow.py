@@ -2,6 +2,7 @@
 import random as rnd
 import operator as op
 from ..predef import FIRST_PLAYER_TOKEN
+from ..predef import PLAYER
 from condition import CyclesExceedCondition
 from .. import utility
 __author__ = 'Ecialo'
@@ -24,12 +25,12 @@ class Flow(object):
 
     def __init__(
             self,
-            players
+            game
     ):
         if self.flow:
-            self._flow = [flow(players) for flow in self.flow]
+            self._flow = [flow(game) for flow in self.flow]
         self._event = None
-        self._players = players
+        self._game = game
         self._i = 0
         try:
             self._l = len(self._flow)
@@ -87,16 +88,16 @@ class Cycle(Flow):
 
     def __init__(
             self,
-            players
+            game
     ):
-        super(Cycle, self).__init__(players)
+        super(Cycle, self).__init__(game)
         self._cycles = 0
 
     def run(self):
         if self._i >= self._l:
             self._i %= self._l
             self._cycles += 1
-        if self.condition(self):
+        if self.condition((self, self._game)):
             raise EndOfCurrentFlow()
         return super(Cycle, self).run()
 
@@ -114,7 +115,7 @@ class SelectFirstPlayerAtRandom(Cycle):
 
     def run(self):
         super(SelectFirstPlayerAtRandom, self).run()
-        first_player = rnd.choice(self._players)
+        first_player = rnd.choice(self._game)
         first_player_token = first_player.resources[FIRST_PLAYER_TOKEN].fullname
         return utility.make_message('select_first_player', token_path=first_player_token)
 
@@ -128,10 +129,10 @@ class TurnCycle(Cycle):
 
     def __init__(
             self,
-            players
+            game
     ):
-        self._flow = [self.turn(player) for player in players]
-        super(TurnCycle, self).__init__(players)
+        self._flow = [self.turn(player) for player in game.get_category(PLAYER)]
+        super(TurnCycle, self).__init__(game)
 
     def receive_action(self, action):
-        self._flow[self._i].receive_action(action)
+        self._flow[self.stage].receive_action(action)
