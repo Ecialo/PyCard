@@ -1,5 +1,5 @@
 ---
-Player1: draw_card
-Player2: draw_card
-Player1: draw_card
-Player2: draw_card
+Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!player_Eustace"}}, "type": 0}
+Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!player_Spooky"}}, "type": 0}
+Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!player_Eustace"}}, "type": 0}
+Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!player_Spooky"}}, "type": 0}
