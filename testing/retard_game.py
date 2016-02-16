@@ -81,14 +81,26 @@ class RetardFlow(flow.TurnCycle):
 
 player1 = RetardPlayer('Eustace')
 player2 = RetardPlayer('Spooky')
+retard_deck = RetardDeck()
+retard_card_table = RetardCardTable()
+retard_action_table = RetardActionTable()
 
 retard_components = [
-    RetardActionTable(),
-    RetardCardTable(),
-    RetardDeck(),
+    retard_action_table,
+    retard_card_table,
+    retard_deck,
     player1,
     player2,
 ]
+
+player1_draw_card = draw_cards.DrawCards(
+    source=retard_deck,
+    target=player1
+)
+player2_draw_card = draw_cards.DrawCards(
+    source=retard_deck,
+    target=player2
+)
 
 
 class RetardGame(game.Game):

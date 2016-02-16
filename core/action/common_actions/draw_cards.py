@@ -5,6 +5,7 @@ __author__ = 'ecialo'
 
 class DrawCards(Action):
 
+    name = "draw_cards"
     default_args = {
         'number': 1
     }
@@ -20,5 +21,5 @@ class DrawCards(Action):
         for _ in xrange(self.number):
             card = self.source.draw_card()
             cards.append(card)
-        self.target.get_card(*card)
+        self.target.get_card(*cards)
         return {'cards': cards}

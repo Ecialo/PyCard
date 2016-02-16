@@ -16,11 +16,11 @@ class Player(utility.Component):
             self,
             name
     ):
-        super(Player, self).__init__()
         self._components = collections.defaultdict(dict)
         self._name = name
         for resource in self.available_resources:
             self.register_resource(resource)
+        super(Player, self).__init__()
 
     @property
     def name(self):
