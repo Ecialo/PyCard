@@ -58,10 +58,10 @@ class Action(object):
 
     def substitute_enviroment(self, enviroment):    # TODO научиться отличать то что нужно подставлять от того, что нет
         substituted_args = {}
-        for argname, argval in self._args:
+        for argname, argval in self._args.iteritems():
             if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
                 category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)
-                category = int(category)
+                category = category
                 substituted_args[argname] = enviroment[(category, name)]
         self.setup(**substituted_args)
 

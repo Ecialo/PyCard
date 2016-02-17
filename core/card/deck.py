@@ -25,4 +25,4 @@ class Deck(utility.Component):
         rnd.shuffle(self._deck)
 
     def is_empty(self):
-        return bool(self._deck)
+        return not bool(self._deck)

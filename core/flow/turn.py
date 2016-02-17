@@ -28,14 +28,17 @@ class Turn(object):
         self._action = None
 
     def receive_action(self, action):
+        print "rec"
         self._action = action
 
     def run(self):
-        if not self.is_runned:
+        print "runned"
+        if not self.is_runned and self._action:
             # print "HOO-HOO"
             self.is_runned = True
             return self._action
-        if self.is_runned:
+        elif self.is_runned:
+            self._action = None
             self.is_runned = False
             raise EndOfCurrentFlow()
 

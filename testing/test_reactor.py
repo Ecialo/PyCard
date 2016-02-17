@@ -30,7 +30,7 @@ class TestReactor(object):
         :return:
         """
         for line in log:
-            if line == "---":
+            if line.startswith("---"):
                 self.complete_configure()
                 return log
 
@@ -56,8 +56,11 @@ class TestReactor(object):
 
     def _autotest(self, log):
         for line in log:
-            author, message = line.rstrip().split()
-            self.game.recieve_message(message)
+            author, message = line.rstrip().split(" ", 1)
+            print author
+            self.game.receive_message(message)
+            self.game.run()
+            self.game.run()
 
     def interactive(self, log=None):
         """
@@ -76,7 +79,9 @@ def test(game):         # TODO переписать на argparse
     test_reactor = TestReactor(game)
     try:
         filename = sys.argv[1]
+        # print filename
+        # print "\n"
         with open(filename) as f:
             test_reactor.autotest(f)
     except IndexError:
-        sys.exit(0)
+        sys.exit(1)

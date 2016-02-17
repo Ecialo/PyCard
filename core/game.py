@@ -50,6 +50,7 @@ class Game(object):
     def run(self):
         try:
             action = self._flow.run()
+            print action
         except EndOfCurrentFlow:
             raise GameOver()
         else:
