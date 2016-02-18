@@ -4,50 +4,68 @@
 с помощью текстовых сообщений
 """
 
-
-__author__ = 'Ecialo'
-
+import io
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 from twisted.internet import reactor
 from twisted.internet import protocol
 from kivy.app import App
 from kivy.uix.label import Label
+from twisted.logger import Logger, jsonFileLogObserver
+
+__author__ = 'Anton Korobkov'
+
+log = Logger(observer=jsonFileLogObserver(io.open("server.json", "a")),
+                 namespace="server")
 
 class MultiEcho(protocol.Protocol):
-    # TODO: исправить хаки
+    # TODO: исправить оставшиеся хаки
 
-    def __init__(self, factory):
+    def __init__(self, factory, players):
         self.factory = factory
+        self.required_players_number = players
         self.current_player_index = None
-        self.another_player_index = None
+        self.players = {}
+        self.players_settled = False
 
     def connectionMade(self):
         self.factory.echoers.append(self)
 
     def dataReceived(self, data):
-        response = self.factory.app.handle_message(data)
-        self.determine_current_player()
-        self.send_stuff(response)
+        # TODO: пока это будет работать так, но лучше избавиться от этой фигни
+
+        if len(self.factory.echoers) < self.required_players_number:
+            for client in self.factory.echoers:
+                client.transport.write('Not enough players. Wait for others to join the room')
+        else:
+            if self.players_settled is False:
+                self.set_players(self.factory.echoers)
+
+            response = self.factory.app.handle_message(data)
+            self.send_stuff(response)
+
+
 
     def connectionLost(self, reason):
         self.factory.echoers.remove(self)
+        self.players_settled = False
 
     def send_stuff(self, data):
-        self.factory.echoers[self.current_player_index].transport.write(data[0])
-        self.factory.echoers[self.another_player_index].transport.write(data[1])
-
-
-    def determine_current_player(self):
-        # Сюда можно добавить логику выбора первого (current_player) клиента
-
         self.current_player_index = self.factory.echoers.index(self)
-        # TODO: это хак на 2 человек - нужно что-то поумнее придумать и допилить
+        self.factory.echoers[self.current_player_index].transport.write(data[0])
 
-        if self.current_player_index == 0:
-            self.another_player_index = 1
-        else:
-            self.another_player_index = 0
+        # Переделать когда настанет пора отсылать совсем разным клиентам совсем разные данные
+        for player_num in xrange(len(self.factory.echoers)):
+            if player_num != self.current_player_index:
+                self.factory.echoers[player_num].transport.write(data[1])
+
+    def set_players(self, players):
+        # Пока не используется. Юзать когда разным клиентам нужно будет совсем разные сообщения посылать
+
+        for player_num, player in enumerate(players):
+            self.players[player_num] = player
+
+        self.players_settled = True
 
 
 
@@ -56,15 +74,16 @@ class MultiEchoFactory(protocol.Factory):
     def __init__(self, app):
         self.echoers = []
         self.app = app
+        self.players = 2
 
     def buildProtocol(self, addr):
-        return MultiEcho(self)
+        return MultiEcho(self, self.players)
 
 
 class TwistedServerApp(App):
     def build(self):
         self.label = Label(text="server started\n")
-        reactor.listenTCP(8000, MultiEchoFactory(self))
+        reactor.listenTCP(self.port, MultiEchoFactory(self))
         return self.label
 
     def handle_message(self, msg):
@@ -90,4 +109,4 @@ class TwistedServerApp(App):
         return [player_one_msg, player_two_msg]
 
 if __name__ == '__main__':
-    TwistedServerApp().run()
+    TwistedServerApp(8000).run()

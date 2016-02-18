@@ -4,6 +4,7 @@
 from uuid import getnode as get_mac
 
 # install_twisted_rector must be called before importing the reactor
+import io
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 
@@ -14,14 +15,20 @@ from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
+from twisted.logger import Logger, jsonFileLogObserver
 
-__author__ = 'Ecialo'
+log = Logger(observer=jsonFileLogObserver(io.open("client.json", "a")),
+                 namespace="client")
+
+__author__ = 'Anton Korobkov'
 
 class EchoClient(protocol.Protocol):
+
     def connectionMade(self):
         self.factory.app.on_connection(self.transport)
 
     def dataReceived(self, data):
+        log.info('Message recieved {message}', message=data)
         self.factory.app.print_message(data)
 
 
@@ -35,6 +42,8 @@ class EchoFactory(protocol.ClientFactory):
         self.app.print_message("connection lost")
 
     def clientConnectionFailed(self, conn, reason):
+        log.debug('Failed to connect to {connection} because of {fail_reason}',
+                  connection=conn, fail_reason=reason)
         self.app.print_message("connection failed")
 
 
@@ -46,7 +55,7 @@ class TwistedClientApp(App):
 
     def build(self):
         root = self.setup_gui()
-        self.connect_to_server()
+        self.connect_to_server('localhost', 8000)
         return root
 
     def setup_gui(self):
@@ -58,8 +67,11 @@ class TwistedClientApp(App):
         self.layout.add_widget(self.textbox)
         return self.layout
 
-    def connect_to_server(self):
-        reactor.connectTCP('localhost', 8000, EchoFactory(self))
+    def connect_to_server(self, host, port):
+        reactor.connectTCP(host, port, EchoFactory(self))
+        log.info('Successfully connected to server {server} on port {port}',
+                 server=host, port=port)
+
 
     def on_connection(self, connection):
         self.print_message("connected succesfully!")
