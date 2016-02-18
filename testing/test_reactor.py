@@ -56,11 +56,11 @@ class TestReactor(object):
 
     def _autotest(self, log):
         for line in log:
-            author, message = line.rstrip().split(" ", 1)
-            print author
-            self.game.receive_message(message)
-            self.game.run()
-            self.game.run()
+            if line.startswith(">>>"):   # TODO remove hardcode
+                self.game.run()
+            else:
+                author, message = line.rstrip().split(" ", 1)
+                self.game.receive_message(message)
 
     def interactive(self, log=None):
         """
