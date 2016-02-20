@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+
+
 from . import predef
+import random
+
 __author__ = 'Ecialo'
 
 
@@ -65,3 +69,4 @@ def make_pipe_message(*args):
 
 def make_sequence(*args):
     return "(" + "&".join(args) + ")"
+
