@@ -39,6 +39,8 @@ class EchoFactory(protocol.ClientFactory):
         self.app = app
 
     def clientConnectionLost(self, conn, reason):
+        log.debug('Connection {connection} lost because of {fail_reason}',
+                  connection=conn, fail_reason=reason)
         self.app.print_message("connection lost")
 
     def clientConnectionFailed(self, conn, reason):

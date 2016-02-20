@@ -5,6 +5,9 @@
 """
 
 import io
+from twisted.internet.task import LoopingCall
+from twisted.application import service
+from twisted.application.internet import TimerService
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 from twisted.internet import reactor
@@ -12,6 +15,7 @@ from twisted.internet import protocol
 from kivy.app import App
 from kivy.uix.label import Label
 from twisted.logger import Logger, jsonFileLogObserver
+from testing.retard_game import RetardGame
 
 __author__ = 'Anton Korobkov'
 
@@ -86,6 +90,9 @@ class TwistedServerApp(App):
     def build(self):
         self.label = Label(text="server started\n")
         reactor.listenTCP(8000, MultiEchoFactory(self))
+        self.retard = RetardGame()
+        test_call = LoopingCall(self.retard.run)
+        test_call.start(0.5)
         return self.label
 
     def handle_message(self, msg):
@@ -94,7 +101,12 @@ class TwistedServerApp(App):
         :param msg: str
         :return:
         """
-        # TODO: Add some real message processing
+        # TODO: Add some real message processing and fix retard.recieve_message
+
+        # Если запускать это с сообщениями неподходящего формата то все валится НАХУЙ
+        self.retard.receive_message(msg)
+
+        action = self.retard.run()
 
         self.label.text = "received:  %s\n" % msg
 
@@ -106,6 +118,9 @@ class TwistedServerApp(App):
         else:
             player_one_msg = "I am sending this message"
             player_two_msg = "I am receiving this message"
+
+        player_one_msg = action.make_message()
+        player_two_msg = action.make_message()
 
         self.label.text += "responded: %s\n" % msg
         log.info('Message for player one is {message_one}, for player two is {message_two}'
