@@ -51,6 +51,11 @@ class MultiEcho(protocol.Protocol):
             self.send_stuff(response)
 
     def connectionLost(self, reason):
+        """
+        
+        :param reason:
+        :return:
+        """
         log.debug('Connection {conn} is lost because of {lost_reason}',
                   connection=self, fail_reason=reason)
         self.factory.echoers.remove(self)
