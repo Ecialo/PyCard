@@ -37,28 +37,50 @@ class Flow(object):
         except:         # TODO Уточнить ошибку
             self._l = 0
 
-    def run(self):
-        """
-        Запускаем текущий flow. Если есть сообытие - запускаем его.
-        Если он закончился делаем текущим следующий и запускаем его.
-        Если текущего нет - мы закончились.
-        """
+    # def run(self):
+    #     """
+    #     Запускаем текущий flow. Если есть сообытие - запускаем его.
+    #     Если он закончился делаем текущим следующий и запускаем его.
+    #     Если текущего нет - мы закончились.
+    #     """
+    #     if self._event:
+    #         try:
+    #             action = self._event.run()
+    #         except EndOfCurrentFlow:
+    #             self._event = None
+    #             action = self.run()
+    #     elif self._i >= self._l:
+    #         raise EndOfCurrentFlow()
+    #     else:
+    #         current_flow = self._flow[self._i]
+    #         try:
+    #             action = current_flow.run()
+    #         except EndOfCurrentFlow:
+    #             self._i += 1
+    #             action = self.run()
+    #     return action
+
+    def current_flow(self):
         if self._event:
-            try:
-                action = self._event.run()
-            except EndOfCurrentFlow:
-                self._event = None
-                action = self.run()
-        elif self._i >= self._l:
-            raise EndOfCurrentFlow()
+            return self._event
         else:
-            current_flow = self._flow[self._i]
-            try:
-                action = current_flow.run()
-            except EndOfCurrentFlow:
-                self._i += 1
-                action = self.run()
-        return action
+            if self._i >= self._l:
+                raise EndOfCurrentFlow()
+            else:
+                return self._flow[self._i].current_flow()
+
+    def next_stage(self):
+        if self._event:
+            self._event = None
+        else:
+            self._i += 1
+
+    def run(self):
+        try:
+            return self.current_flow().run()
+        except EndOfCurrentFlow:
+            self.next_stage()
+            return self.current_flow().run()
 
     def raise_event(self, flow):
         if self._event:

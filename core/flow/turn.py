@@ -31,6 +31,9 @@ class Turn(object):
         print "rec"
         self._action = action
 
+    def current_flow(self):
+        return self
+
     def run(self):
         print "runned"
         if not self.is_runned and self._action:
