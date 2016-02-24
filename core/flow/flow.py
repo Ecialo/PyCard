@@ -115,13 +115,21 @@ class Cycle(Flow):
         super(Cycle, self).__init__(game)
         self._cycles = 0
 
-    def run(self):
+    def next_stage(self):
+        super(Cycle, self).next_stage()
         if self._i >= self._l:
             self._i %= self._l
             self._cycles += 1
         if self.condition((self, self._game)):
             raise EndOfCurrentFlow()
-        return super(Cycle, self).run()
+
+    # def run(self):
+    #     if self._i >= self._l:
+    #         self._i %= self._l
+    #         self._cycles += 1
+    #     if self.condition((self, self._game)):
+    #         raise EndOfCurrentFlow()
+    #     return super(Cycle, self).run()
 
     @property
     def cycles(self):
