@@ -8,7 +8,7 @@
     <inspection_tool class="PyAssignmentToLoopOrWithParameterInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyAttributeOutsideInitInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyAugmentAssignmentInspection" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="PyBroadExceptionInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="PyBroadExceptionInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PyByteLiteralInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyCallByClassInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyCallingNonCallableInspection" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -28,7 +28,7 @@
     <inspection_tool class="PyDeprecationInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyDictCreationInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyDictDuplicateKeysInspection" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="PyDocstringInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="PyDocstringInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="PyDocstringTypesInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyExceptClausesOrderInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyExceptionInheritInspection" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -55,8 +55,8 @@
         </value>
       </option>
     </inspection_tool>
-    <inspection_tool class="PyPep8Inspection" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PyPropertyAccessInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyPropertyDefinitionInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyProtectedMemberInspection" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -71,7 +71,7 @@
     <inspection_tool class="PyShadowingBuiltinsInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyShadowingNamesInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PySimplifyBooleanCheckInspection" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="PySingleQuotedDocstringInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="PySingleQuotedDocstringInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="PyStatementEffectInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyStringExceptionInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyStringFormatInspection" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -79,7 +79,7 @@
     <inspection_tool class="PyTrailingSemicolonInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyTupleAssignmentBalanceInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyTupleItemAssignmentInspection" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="PyTypeCheckerInspection" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="PyTypeCheckerInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="PyUnboundLocalVariableInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyUnnecessaryBackslashInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyUnreachableCodeInspection" enabled="true" level="ERROR" enabled_by_default="true" />
