@@ -84,3 +84,20 @@ def make_sequence_message(*args):
     }
     return json.dumps(message)
     # return "(" + "&".join(args) + ")"
+
+
+def check_playnum(server_log):
+
+    def decorator_playnum(method):
+
+        def compare_number(self, data):
+            if len(self.factory.echoers) < self.required_players_number:
+                for client in self.factory.echoers:
+                    client.transport.write('Not enough players. Wait for others to join the room')
+                server_log.info('Not enough players on {server}', server=self)
+            else:
+                return method(self, data)
+
+        return compare_number
+
+    return decorator_playnum

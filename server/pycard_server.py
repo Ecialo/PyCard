@@ -10,12 +10,13 @@ from twisted.application import service
 from twisted.application.internet import TimerService
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from twisted.internet import protocol
 from kivy.app import App
 from kivy.uix.label import Label
 from twisted.logger import Logger, jsonFileLogObserver
 from testing.retard_game import RetardGame
+from core.utility import check_playnum
 
 __author__ = 'Anton Korobkov'
 
@@ -36,28 +37,20 @@ class MultiEcho(protocol.Protocol):
         log.info('Incoming connection on {host}', host=self)
         self.factory.echoers.append(self)
 
+    @check_playnum(log)
     def dataReceived(self, data):
-        # TODO: пока это будет работать так, но лучше избавиться от этой фигни
         log.info('Data obtained {data}', data=data)
 
-        if len(self.factory.echoers) < self.required_players_number:
-            for client in self.factory.echoers:
-                client.transport.write('Not enough players. Wait for others to join the room')
-        else:
-            if self.players_settled is False:
-                self.set_players(self.factory.echoers)
+        if self.players_settled is False:
+            self.set_players(self.factory.echoers)
 
-            response = self.factory.app.handle_message(data)
-            self.send_stuff(response)
+        response = self.factory.app.handle_message(data)
+        self.send_stuff(response)
+
 
     def connectionLost(self, reason):
-        """
-        
-        :param reason:
-        :return:
-        """
         log.debug('Connection {conn} is lost because of {lost_reason}',
-                  connection=self, fail_reason=reason)
+                  conn=self, lost_reason=reason)
         self.factory.echoers.remove(self)
         self.players_settled = False
 
@@ -106,7 +99,7 @@ class TwistedServerApp(App):
         :param msg: str
         :return:
         """
-        # TODO: Add some real message processing and fix retard.recieve_message
+        # TODO: fix retard.recieve_message
 
         # Если запускать это с сообщениями неподходящего формата то все валится НАХУЙ
         self.retard.receive_message(msg)
