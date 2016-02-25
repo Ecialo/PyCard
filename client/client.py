@@ -12,9 +12,7 @@ install_twisted_reactor()
 from twisted.internet import reactor, protocol
 
 from kivy.app import App
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.boxlayout import BoxLayout
+from kivy.lang import Builder
 from twisted.logger import Logger, jsonFileLogObserver
 
 log = Logger(observer=jsonFileLogObserver(io.open("client.json", "a")),
@@ -56,18 +54,8 @@ class TwistedClientApp(App):
     connection = None
 
     def build(self):
-        root = self.setup_gui()
         self.connect_to_server('localhost', 8000)
-        return root
-
-    def setup_gui(self):
-        self.textbox = TextInput(size_hint_y=.1, multiline=False)
-        self.textbox.bind(on_text_validate=self.send_message)
-        self.label = Label(text='connecting...\n')
-        self.layout = BoxLayout(orientation='vertical')
-        self.layout.add_widget(self.label)
-        self.layout.add_widget(self.textbox)
-        return self.layout
+        return Builder.load_file('./client.kv')
 
     def connect_to_server(self, host, port):
         reactor.connectTCP(host, port, EchoFactory(self))
@@ -76,17 +64,16 @@ class TwistedClientApp(App):
 
 
     def on_connection(self, connection):
-        self.print_message("connected succesfully!")
+        self.print_message("Connected succesfully!")
         self.connection = connection
 
-    def send_message(self, *args):
-        msg = self.textbox.text
+    def send_message(self, msg):
         if msg and self.connection:
-            self.connection.write(str(self.textbox.text))
-            self.textbox.text = ""
+            self.connection.write(str(msg))
+            self.root.ids.input_field.text = ""
 
     def print_message(self, msg):
-        self.label.text += msg + "\n"
+        self.root.ids.chatlog.text += msg + "\n"
 
 if __name__ == '__main__':
     TwistedClientApp().run()

@@ -1,0 +1,14 @@
+#: import Label kivy.uix.label
+#: import TextInput kivy.uix.textinput
+#: import BoxLayout kivy.uix.boxlayout
+
+BoxLayout:
+    orientation: 'vertical'
+    Label:
+        id: chatlog
+        text: "Connecting...\n"
+    TextInput:
+        id: input_field
+        size_hint_y: 0.1
+        multiline: False
+        on_text_validate: app.send_message(self.text)
