@@ -29,6 +29,7 @@ class EchoClient(protocol.Protocol):
 
     def dataReceived(self, data):
         log.info('Message recieved {message}', message=data)
+        #for i in xrange(15):
         self.factory.app.print_message(data)
 
 
@@ -58,6 +59,7 @@ class TwistedClientApp(App):
     # spawns a modal widget with connection settings
     def build(self):
         root = Builder.load_file('./client.kv')
+        self.sw = root.ids.scroll_view
         return root
 
     def on_start(self):
@@ -79,6 +81,15 @@ class TwistedClientApp(App):
 
     def print_message(self, msg):
         self.root.ids.chatlog.text += msg + "\n"
+
+        # scroll down if there're less than 2 lines of text below the viewport
+        # it turns out that each line is (1.5 * font_h) pixels tall, or so it looks
+
+        hidden_h = self.root.ids.chatlog.height - self.sw.height
+        font_h = self.root.ids.chatlog.font_size
+        near_the_bottom = (self.sw.scroll_y * hidden_h < 3.0 * font_h)
+        if near_the_bottom:
+            self.sw.scroll_y = 0
 
 
 if __name__ == '__main__':
