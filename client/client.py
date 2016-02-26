@@ -13,6 +13,8 @@ from twisted.internet import reactor, protocol
 
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.factory import Factory
+
 from twisted.logger import Logger, jsonFileLogObserver
 
 log = Logger(observer=jsonFileLogObserver(io.open("client.json", "a")),
@@ -39,12 +41,12 @@ class EchoFactory(protocol.ClientFactory):
     def clientConnectionLost(self, conn, reason):
         log.debug('Connection {connection} lost because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.print_message("connection lost")
+        self.app.print_message("Connection lost!")
 
     def clientConnectionFailed(self, conn, reason):
         log.debug('Failed to connect to {connection} because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.print_message("connection failed")
+        self.app.print_message("Connection failed!")
 
 
 # A simple kivy App, with a textbox to enter messages, and
@@ -53,15 +55,16 @@ class EchoFactory(protocol.ClientFactory):
 class TwistedClientApp(App):
     connection = None
 
+    # spawns a modal widget with connection settings
     def build(self):
-        self.connect_to_server('localhost', 8000)
-        return Builder.load_file('./client.kv')
+        root = Builder.load_file('./client.kv')
+        Factory.ConnectionWidget().open()
+        return root
 
     def connect_to_server(self, host, port):
         reactor.connectTCP(host, port, EchoFactory(self))
         log.info('Successfully connected to server {server} on port {port}',
                  server=host, port=port)
-
 
     def on_connection(self, connection):
         self.print_message("Connected succesfully!")
@@ -74,6 +77,7 @@ class TwistedClientApp(App):
 
     def print_message(self, msg):
         self.root.ids.chatlog.text += msg + "\n"
+
 
 if __name__ == '__main__':
     TwistedClientApp().run()

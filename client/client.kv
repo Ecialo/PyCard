@@ -1,14 +1,70 @@
 #: import Label kivy.uix.label
 #: import TextInput kivy.uix.textinput
 #: import BoxLayout kivy.uix.boxlayout
+#: import Button kivy.uix.button
+#: import Popup kivy.uix.popup
 
 BoxLayout:
     orientation: 'vertical'
+
     Label:
         id: chatlog
-        text: "Connecting...\n"
+        halign: 'left'
+        valign: 'top'
+
+        # add a 5px margin around the texture
+        text_size: self.width - dp(10), self.height - dp(10)
+
     TextInput:
         id: input_field
         size_hint_y: 0.1
         multiline: False
-        on_text_validate: app.send_message(self.text)
+        on_text_validate: app.send_message(self.text);
+
+
+<ConnectionWidget@Popup>:
+    title: 'Connection settings'
+    size: (350, 160)
+    size_hint: (None, None)
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 4
+
+        GridLayout:
+            size_hint_y: 0.6
+            cols: 2
+            rows: 2
+
+            Label:
+                size_hint_x: 0.3
+                text: 'Server:'
+
+            TextInput:
+                id: server
+                multiline: False
+                write_tab: False
+                text: 'localhost'
+
+            Label:
+                size_hint_x: 0.3
+                text: 'Port:'
+
+            TextInput:
+                id: port
+                multiline: False
+                write_tab: False
+                input_filter: 'int'
+                text: '8000'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.4
+
+            Button:
+                text: 'Connect'
+                on_press: root.dismiss(); app.connect_to_server(host=server.text, port=int(port.text))
+
+            Button:
+                text: 'Cancel'
+                on_press: root.dismiss()
