@@ -58,8 +58,10 @@ class TwistedClientApp(App):
     # spawns a modal widget with connection settings
     def build(self):
         root = Builder.load_file('./client.kv')
-        Factory.ConnectionWidget().open()
         return root
+
+    def on_start(self):
+        Factory.ConnectionWidget().open()
 
     def connect_to_server(self, host, port):
         reactor.connectTCP(host, port, EchoFactory(self))
