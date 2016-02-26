@@ -7,12 +7,12 @@ class DrawCards(Action):
     """
     Тянем карты из чего-то куда-то.
 
-    @param number: Сколько карт нужно вытянуть
-    @type number: int
-    @param source:
-    @type source: core.card.deck.Deck
-    @param target:
-    @type target: core.card.hand.Hand
+    :param number: Сколько карт нужно вытянуть
+    :type number: int
+    :param source:
+    :type source: core.card.deck.Deck
+    :param target:
+    :type target: core.card.hand.Hand
     """
 
     name = "draw_cards"

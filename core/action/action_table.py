@@ -24,12 +24,12 @@ class ActionTable(Table):
         """
         Создать на основе полученного Сообщения Действие с контекстом.
 
-        @param message: Сообщение
-        @type message: str
-        @param game: Игра для которой предназначено сообщение
-        @type game: core.game.Game
-        @return: Действие полученное в результате разбора и подстановки.
-        @rtype: core.action.Action
+        :param message: Сообщение
+        :type message: str
+        :param game: Игра для которой предназначено сообщение
+        :type game: core.game.Game
+        :return: Действие полученное в результате разбора и подстановки.
+        :rtype: core.action.Action
         """
         action = self._parse_message(message)
         action.substitute_enviroment(game)
@@ -40,9 +40,9 @@ class ActionTable(Table):
         """
         Разобрать Сообщение основываясь на известных Действиях.
 
-        @param message: Сообщение
-        @type message: str
-        @return: Действие без контекста
+        :param message: Сообщение
+        :type message: str
+        :return: Действие без контекста
         """
         raw_action = json.loads(message)
         action_type = raw_action[predef.MESSAGE_TYPE_KEY]

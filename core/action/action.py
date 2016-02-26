@@ -13,10 +13,10 @@ class Action(object):
 
     Не стоит обновлять параметры чем-то кроме метода setup.
 
-    @ivar name: название Действия, по которому оно идентифицируется в Таблице действий
-    @type name: str
-    @ivar default_args: аргументы по умолчанию для этого действия
-    @type default_args: dict[str, T]
+    :ivar name: название Действия, по которому оно идентифицируется в Таблице действий
+    :type name: str
+    :ivar default_args: аргументы по умолчанию для этого действия
+    :type default_args: dict[str, T]
     """
     name = None
     default_args = {}
@@ -34,8 +34,8 @@ class Action(object):
         """
         Правильный способ обновить внутренние параметы.
 
-        @param kwargs:
-        @return: Action
+        :param kwargs:
+        :return: Action
         """
         for arg, value in kwargs.iteritems():
             if hasattr(self, arg):
@@ -46,9 +46,10 @@ class Action(object):
     def substitute_enviroment(self, environment):   # TODO: исправить очепятку
         """
         Заменить пути до компонентов (начинается с SUBSTITUTION_SYMBOL) компонентами из окружения.
-        @param environment: Игра в которой происходит действие
-        @type environment: core.game.Game
-        @return:
+
+        :param environment: Игра в которой происходит действие
+        :type environment: core.game.Game
+        :return:
         """
         substituted_args = {}
         for argname, argval in self._args.iteritems():
@@ -61,8 +62,9 @@ class Action(object):
     def apply(self):
         """
         Применить мутацию.
-        @return: Параметры, которые возможно будут нужны другой мутации
-        @rtype: dict[str, T] | None
+
+        :return: Параметры, которые возможно будут нужны другой мутации
+        :rtype: dict[str, T] | None
         """
         return None
 
@@ -80,8 +82,9 @@ class Action(object):
             MESSAGE_ACTION_KEY: {arg: val} | [{arg: val}]
         }
         Если val - это компонент, то он представляется виде внутриигрового пути до него.
-        @return: json строка с сообщением
-        @rtype: str
+
+        :return: json строка с сообщением
+        :rtype: str
         """
         messageable_args = {
             argname: ((predef.SUBSTITUTION_SYMBOL + argval.path) if isinstance(argval, util.Component) else argval)
