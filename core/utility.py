@@ -87,6 +87,14 @@ def make_sequence_message(*args):
 
 
 def check_playnum(server_log):
+    """
+    Декоратор для server.pycard_server.MultiEcho.dataReceived
+    Суть в том чтобы произвести проверку числа клиентов и не возвращать метод если
+    их слишком мало, а вместо этого вернуть соответсвующий мессаг клиентам и
+    написать об этом в лог
+    :param server_log: twisted.logger.Logger
+    :return:
+    """
 
     def decorator_playnum(method):
 

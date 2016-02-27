@@ -24,7 +24,6 @@ log = Logger(observer=jsonFileLogObserver(io.open("server.json", "a")),
                  namespace="server")
 
 class MultiEcho(protocol.Protocol):
-    # TODO: исправить оставшиеся хаки
 
     def __init__(self, factory, players):
         self.factory = factory
@@ -103,20 +102,8 @@ class TwistedServerApp(App):
 
         # Если запускать это с сообщениями неподходящего формата то все валится НАХУЙ
         self.retard.receive_message(msg)
-
         action = self.retard.run()
-
         self.label.text = "received:  %s\n" % msg
-
-        # Попытка передать разные сообщения двум разным людям
-
-        if msg == "ping":
-            player_one_msg = "ping"
-            player_two_msg = "pong"
-        else:
-            player_one_msg = "I am sending this message"
-            player_two_msg = "I am receiving this message"
-
         player_one_msg = action.make_message()
         player_two_msg = action.make_message()
 
