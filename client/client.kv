@@ -3,12 +3,18 @@
 #: import BoxLayout kivy.uix.boxlayout
 #: import Button kivy.uix.button
 #: import Popup kivy.uix.popup
+#: import ScrollView kivy.uix.scrollview
 
 BoxLayout:
     orientation: 'vertical'
 
     ScrollView:
-        id: scroll_view
+    	id: field_view
+    	size_hint_y: 0.6
+
+    ScrollView:
+        id: chatlog_view
+        size_hint_y: 0.3
 
         Label:
             id: chatlog
@@ -24,7 +30,8 @@ BoxLayout:
 
     TextInput:
         id: input_field
-        size_hint_y: 0.1
+        size_hint_y: 0.05
+
         multiline: False
         on_text_validate: app.send_message(self.text);
 

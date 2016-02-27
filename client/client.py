@@ -80,11 +80,11 @@ class TwistedClientApp(App):
     # scroll down if there're less than 2 lines of text below the viewport
     # it turns out that each line is (1.5 * font_h) pixels tall, or so it looks
     def scroll_if_necessary(self):
-        hidden_h = self.root.ids.chatlog.height - self.root.ids.scroll_view.height
+        hidden_h = self.root.ids.chatlog.height - self.root.ids.chatlog_view.height
         font_h = self.root.ids.chatlog.font_size
-        near_the_bottom = (self.root.ids.scroll_view.scroll_y * hidden_h < 3.0 * font_h)
+        near_the_bottom = (self.root.ids.chatlog_view.scroll_y * hidden_h < 3.0 * font_h)
         if near_the_bottom:
-            self.root.ids.scroll_view.scroll_y = 0
+            self.root.ids.chatlog_view.scroll_y = 0
 
     def print_message(self, msg):
         self.root.ids.chatlog.text += msg + "\n"
