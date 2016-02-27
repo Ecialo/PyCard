@@ -4,7 +4,7 @@
 from uuid import getnode as get_mac
 
 # install_twisted_rector must be called before importing the reactor
-import io
+import io, sys
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 
@@ -61,6 +61,7 @@ class TwistedClientApp(App):
         return root
 
     def on_start(self):
+        self.stdout_hook = StdoutHook(self.root.ids.input_field)
         Factory.ConnectionWidget().open()
 
     def connect_to_server(self, host, port):
@@ -90,6 +91,18 @@ class TwistedClientApp(App):
         self.root.ids.chatlog.text += msg + "\n"
         self.scroll_if_necessary()
         self.root.ids.input_field.focus = True
+
+
+# duplicate stdout to chat
+class StdoutHook():
+    def __init__(self, chat):
+        self.ex_stdout = sys.stdout # in case there's already a hook installed by someone
+        sys.stdout = self
+        self.chat = chat
+
+    def write(self, s):
+        self.ex_stdout.write(s)
+        self.chat.text += 'STDOUT> ' + s
 
 
 if __name__ == '__main__':
