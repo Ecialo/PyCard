@@ -9,8 +9,8 @@ BoxLayout:
     orientation: 'vertical'
 
     ScrollView:
-    	id: field_view
-    	size_hint_y: 0.6
+        id: field_view
+        size_hint_y: 0.6
 
     ScrollView:
         id: chatlog_view
@@ -30,10 +30,11 @@ BoxLayout:
 
     TextInput:
         id: input_field
-        size_hint_y: 0.05
+        size_hint_y: None
 
+        height: dp(self.font_size * 2)
         multiline: False
-        on_text_validate: app.send_message(self.text);
+        on_text_validate: app.send_message(self.text)
 
 
 <ConnectionWidget@Popup>:

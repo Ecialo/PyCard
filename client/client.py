@@ -89,6 +89,7 @@ class TwistedClientApp(App):
     def print_message(self, msg):
         self.root.ids.chatlog.text += msg + "\n"
         self.scroll_if_necessary()
+        self.root.ids.input_field.focus = True
 
 
 if __name__ == '__main__':
