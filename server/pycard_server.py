@@ -34,6 +34,12 @@ class MultiEcho(protocol.Protocol):
 
     def connectionMade(self):
         log.info('Incoming connection on {host}', host=self)
+
+        # Обязательно должно работать до "self.factory.echoers.append(self)" иначе клиент дважды получит
+        # сообщение о подключении
+        for client in self.factory.echoers:
+            client.transport.write('A newcomer %s has arrived' % self)
+
         self.factory.echoers.append(self)
 
     @check_playnum(log)
@@ -52,6 +58,8 @@ class MultiEcho(protocol.Protocol):
                   conn=self, lost_reason=reason)
         self.factory.echoers.remove(self)
         self.players_settled = False
+        for client in self.factory.echoers:
+            client.transport.write('%s has left the lobby!' % self)
 
     def send_stuff(self, data):
         self.current_player_index = self.factory.echoers.index(self)
