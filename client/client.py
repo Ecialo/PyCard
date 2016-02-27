@@ -4,7 +4,7 @@
 from uuid import getnode as get_mac
 
 # install_twisted_rector must be called before importing the reactor
-import io
+import io, sys
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 
@@ -12,9 +12,9 @@ install_twisted_reactor()
 from twisted.internet import reactor, protocol
 
 from kivy.app import App
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.boxlayout import BoxLayout
+from kivy.lang import Builder
+from kivy.factory import Factory
+
 from twisted.logger import Logger, jsonFileLogObserver
 
 log = Logger(observer=jsonFileLogObserver(io.open("client.json", "a")),
@@ -41,12 +41,12 @@ class EchoFactory(protocol.ClientFactory):
     def clientConnectionLost(self, conn, reason):
         log.debug('Connection {connection} lost because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.print_message("connection lost")
+        self.app.print_message("Connection lost!")
 
     def clientConnectionFailed(self, conn, reason):
         log.debug('Failed to connect to {connection} because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.print_message("connection failed")
+        self.app.print_message("Connection failed!")
 
 
 # A simple kivy App, with a textbox to enter messages, and
@@ -55,38 +55,57 @@ class EchoFactory(protocol.ClientFactory):
 class TwistedClientApp(App):
     connection = None
 
+    # spawns a modal widget with connection settings
     def build(self):
-        root = self.setup_gui()
-        self.connect_to_server('localhost', 8000)
+        root = Builder.load_file('./client.kv')
         return root
 
-    def setup_gui(self):
-        self.textbox = TextInput(size_hint_y=.1, multiline=False)
-        self.textbox.bind(on_text_validate=self.send_message)
-        self.label = Label(text='connecting...\n')
-        self.layout = BoxLayout(orientation='vertical')
-        self.layout.add_widget(self.label)
-        self.layout.add_widget(self.textbox)
-        return self.layout
+    def on_start(self):
+        self.stdout_hook = StdoutHook(self.root.ids.chatlog)
+        Factory.ConnectionWidget().open()
 
     def connect_to_server(self, host, port):
         reactor.connectTCP(host, port, EchoFactory(self))
         log.info('Successfully connected to server {server} on port {port}',
                  server=host, port=port)
 
-
     def on_connection(self, connection):
-        self.print_message("connected succesfully!")
+        self.print_message("Connected succesfully!")
         self.connection = connection
 
-    def send_message(self, *args):
-        msg = self.textbox.text
+    def send_message(self, msg):
         if msg and self.connection:
-            self.connection.write(str(self.textbox.text))
-            self.textbox.text = ""
+            self.connection.write(str(msg))
+            self.root.ids.input_field.text = ""
+
+    # scroll down if there're less than 2 lines of text below the viewport
+    # it turns out that each line is (1.5 * font_h) pixels tall, or so it looks
+    def scroll_if_necessary(self):
+        hidden_h = self.root.ids.chatlog.height - self.root.ids.chatlog_view.height
+        font_h = self.root.ids.chatlog.font_size
+        near_the_bottom = (self.root.ids.chatlog_view.scroll_y * hidden_h < 3.0 * font_h)
+        if near_the_bottom:
+            self.root.ids.chatlog_view.scroll_y = 0
 
     def print_message(self, msg):
-        self.label.text += msg + "\n"
+        self.root.ids.chatlog.text += msg + "\n"
+        self.scroll_if_necessary()
+        self.root.ids.input_field.focus = True
+
+
+# duplicate stdout to chat
+class StdoutHook():
+    def __init__(self, chat):
+        self.ex_stdout = sys.stdout # in case there's already a hook installed by someone
+        sys.stdout = self
+        self.chat = chat
+
+    def write(self, s):
+        s = s.strip()
+        if s:
+            self.ex_stdout.write(s)
+            self.chat.text += 'STDOUT> ' + s + '\n'
+
 
 if __name__ == '__main__':
     TwistedClientApp().run()
