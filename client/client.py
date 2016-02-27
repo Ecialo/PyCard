@@ -61,7 +61,7 @@ class TwistedClientApp(App):
         return root
 
     def on_start(self):
-        self.stdout_hook = StdoutHook(self.root.ids.input_field)
+        self.stdout_hook = StdoutHook(self.root.ids.chatlog)
         Factory.ConnectionWidget().open()
 
     def connect_to_server(self, host, port):
@@ -101,8 +101,10 @@ class StdoutHook():
         self.chat = chat
 
     def write(self, s):
-        self.ex_stdout.write(s)
-        self.chat.text += 'STDOUT> ' + s
+        s = s.strip()
+        if s:
+            self.ex_stdout.write(s)
+            self.chat.text += 'STDOUT> ' + s + '\n'
 
 
 if __name__ == '__main__':
