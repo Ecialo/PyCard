@@ -5,6 +5,10 @@ from flow.flow import EndOfCurrentFlow
 __author__ = 'Ecialo'
 
 
+class WTFError(Exception):
+    pass
+
+
 class GameOver(Exception):
     pass
 
@@ -21,7 +25,13 @@ class Game(object):
             self,
             components,
             flow,
+            mode
     ):
+
+        self._mode = mode
+        if mode is CLIENT:      # TODO сделать более умное разделение режимов
+            self.run = None
+
         self._components = {
             PLAYER: {},
             DESK: {},
@@ -50,7 +60,7 @@ class Game(object):
     def run(self):
         try:
             action = self._flow.run()
-            print action
+            # print action
         except EndOfCurrentFlow:
             raise GameOver()
         else:
@@ -60,6 +70,8 @@ class Game(object):
                 return self.response(action, visibility)
             else:
                 return None
+
+    # def make_response(self):
 
     def expand_visibility(self, action):
         players = self.get_category(PLAYER).keys()
@@ -72,6 +84,11 @@ class Game(object):
         elif visibility == AUTHOR:
             return {
                 player: (player == action.author)
+                for player in players
+            }
+        else:
+            return {
+                player: False
                 for player in players
             }
 
@@ -96,4 +113,9 @@ class Game(object):
         Принимает сообщение, передаёт его в парсер, а затем передаёт полученное действие в игровой поток
         """
         action = self._components[TABLE][ACTION].receive_message(message, self)
-        self._flow.receive_action(action)
+        if self._mode is SERVER:
+            self._flow.receive_action(action)
+        elif self._mode is CLIENT:
+            action.apply()
+        else:
+            raise WTFError()

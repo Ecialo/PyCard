@@ -15,6 +15,8 @@ ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE = xrange(3)
 
 ALL, AUTHOR = "all", "author"
 
+CLIENT, SERVER = xrange(2)
+
 MESSAGE_TYPE_KEY = "type"
 MESSAGE_ACTION_KEY = "action"
 MESSAGE_AUTHOR_KEY = "author"
