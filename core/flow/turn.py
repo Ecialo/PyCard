@@ -31,6 +31,10 @@ class Turn(object):
         print "rec"
         self._action = action
 
+    @staticmethod
+    def next_stage():
+        raise EndOfCurrentFlow()
+
     def current_flow(self):
         return self
 

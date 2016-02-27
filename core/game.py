@@ -60,6 +60,14 @@ class Game(object):
             else:
                 return None
 
+    @property
+    def current_flow(self):
+        return self._flow.current_flow()
+
+    def next_stage(self):
+        self._flow.next_stage()
+
+
     def apply_action(self, action):
         action.apply(self)
 
