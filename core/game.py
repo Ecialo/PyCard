@@ -56,12 +56,34 @@ class Game(object):
         else:
             if action:
                 action.apply()
-                return action
+                visibility = self.expand_visibility(action)
+                return self.response(action, visibility)
             else:
                 return None
 
-    def apply_action(self, action):
-        action.apply(self)
+    def expand_visibility(self, action):
+        players = self.get_category(PLAYER).keys()
+        visibility = action.visibility
+        if visibility == ALL:
+            return {
+                player: True
+                for player in players
+            }
+        elif visibility == AUTHOR:
+            return {
+                player: (player == action.author)
+                for player in players
+            }
+
+    # def apply_action(self, action):
+    #     action.apply(self)
+
+    def response(self, action, visibility):
+        players = self.get_category(PLAYER).keys()
+        return {
+            player: (action.make_visible_response() if visibility[player] else action.make_invisible_response())
+            for player in players
+        }
 
     def register_component(self, component):
         for category in component.categories:
