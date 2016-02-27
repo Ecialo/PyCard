@@ -112,10 +112,11 @@ class Game(object):
         """
         Принимает сообщение, передаёт его в парсер, а затем передаёт полученное действие в игровой поток
         """
-        action = self._components[TABLE][ACTION].receive_message(message, self)
         if self._mode is SERVER:
+            action = self._components[TABLE][GAME_ACTION_TABLE].receive_message(message, self)
             self._flow.receive_action(action)
         elif self._mode is CLIENT:
+            action = self._components[TABLE][SYSTEM_ACTION_TABLE].receive_message(message, self)
             action.apply()
         else:
             raise WTFError()
