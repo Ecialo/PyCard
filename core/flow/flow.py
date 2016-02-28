@@ -5,6 +5,8 @@ from ..predef import FIRST_PLAYER_TOKEN
 from ..predef import PLAYER
 from condition import CyclesExceedCondition
 from .. import utility
+from ..action.common_actions import next_stage
+
 __author__ = 'Ecialo'
 
 
@@ -73,14 +75,16 @@ class Flow(object):
         if self._event:
             self._event = None
         else:
-            self._i += 1
+            try:
+                self.current_flow().next_stage()
+            except EndOfCurrentFlow:
+                self._i += 1
 
     def run(self):
         try:
             return self.current_flow().run()
         except EndOfCurrentFlow:
-            self.next_stage()
-            return self.current_flow().run()
+            return next_stage.NextStage(game=self._game)
 
     def raise_event(self, flow):
         if self._event:

@@ -71,7 +71,16 @@ class Game(object):
             else:
                 return None
 
-    # def make_response(self):
+    @property
+    def current_flow(self):
+        return self._flow.current_flow()
+
+    def next_stage(self):
+        self._flow.next_stage()
+
+
+    def apply_action(self, action):
+        action.apply(self)
 
     def expand_visibility(self, action):
         players = self.get_category(PLAYER).keys()
