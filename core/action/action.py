@@ -41,7 +41,7 @@ class Action(object):
     default_args = {}
     visibility = None       # all | author
 
-    def __init__(self, author, **kwargs):
+    def __init__(self, author=predef.SYSTEM, **kwargs):
         self._author = author
 
         self.game = None

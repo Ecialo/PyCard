@@ -24,3 +24,5 @@ MESSAGE_ACTION_KEY = "action"
 MESSAGE_AUTHOR_KEY = "author"
 
 SUBSTITUTION_SYMBOL = "!"
+
+SYSTEM = "system"

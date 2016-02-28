@@ -57,19 +57,32 @@ class Game(object):
     def get_category(self, category):
         return self._components[category]
 
+    # def run(self):
+    #     try:
+    #         action = self._flow.run()
+    #         # print action
+    #     except EndOfCurrentFlow:
+    #         raise GameOver()
+    #     else:
+    #         if action:
+    #             action.apply()
+    #             visibility = self.expand_visibility(action)
+    #             return self.response(action, visibility)
+    #         else:
+    #             return None
+
     def run(self):
-        try:
-            action = self._flow.run()
-            # print action
-        except EndOfCurrentFlow:
-            raise GameOver()
-        else:
-            if action:
+        action = self._flow.run()
+        if action:
+            try:
                 action.apply()
+            except EndOfCurrentFlow:
+                raise GameOver()
+            else:
                 visibility = self.expand_visibility(action)
                 return self.response(action, visibility)
-            else:
-                return None
+        else:
+            return None
 
     @property
     def current_flow(self):
@@ -77,10 +90,6 @@ class Game(object):
 
     def next_stage(self):
         self._flow.next_stage()
-
-
-    def apply_action(self, action):
-        action.apply(self)
 
     def expand_visibility(self, action):
         players = self.get_category(PLAYER).keys()
@@ -100,9 +109,6 @@ class Game(object):
                 player: False
                 for player in players
             }
-
-    # def apply_action(self, action):
-    #     action.apply(self)
 
     def response(self, action, visibility):
         players = self.get_category(PLAYER).keys()
