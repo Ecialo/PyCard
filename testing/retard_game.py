@@ -3,7 +3,7 @@ import core.game as game
 import core.player as player
 import core.resource as resource
 
-import core.action.action_table as action_table
+import core.action.common_action_tables.game_action_table as game_action_table
 import core.action.common_actions.draw_cards as draw_cards
 
 import core.card.card as card
@@ -20,7 +20,7 @@ import testing.test_reactor as test
 __author__ = 'ecialo'
 
 
-class RetardActionTable(action_table.ActionTable):
+class RetardActionTable(game_action_table.GameActionTable):
     actions = [
         draw_cards.DrawCards,
     ]
@@ -95,10 +95,12 @@ retard_components = [
 ]
 
 player1_draw_card = draw_cards.DrawCards(
+    author=player1.name,
     source=retard_deck,
     target=player1.resources["hand"]
 )
 player2_draw_card = draw_cards.DrawCards(
+    author=player2.name,
     source=retard_deck,
     target=player2.resources["hand"]
 )
@@ -108,15 +110,20 @@ class RetardGame(game.Game):
     def __init__(self):
         super(RetardGame, self).__init__(
             components=retard_components,
-            flow=RetardFlow
+            flow=RetardFlow,
+            mode=predef.SERVER
         )
 
 if __name__ == '__main__':
+    # print player1_draw_card.make_message()
+    # print player2_draw_card.make_message()
     game_ = RetardGame()
-    # try:
-    test.test(game_)
-    # except:
-    print len(retard_deck._deck)
+    try:
+        test.test(game_)
+    except game.GameOver:
+        pass
+    # print len(retard_deck._deck)
     print player1.resources["hand"]._cards
     print player2.resources["hand"]._cards
+    print retard_deck._deck
     # print player2_draw_card.make_message()

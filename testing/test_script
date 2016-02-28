@@ -1,13 +1,34 @@
 ---
-Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "type": 0}
+Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "type": 0, "author": "Eustace"}
 >>>
 >>>
-Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "type": 0}
+Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "type": 0, "author": "Spooky"}
 >>>
 >>>
-Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "type": 0}
 >>>
 >>>
-Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "type": 0}
+>>>
+Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "type": 0, "author": "Eustace"}
+>>>
+>>>
+Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "type": 0, "author": "Spooky"}
+>>>
+>>>
+Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "type": 0, "author": "Eustace"}
+>>>
+>>>
+Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "type": 0, "author": "Spooky"}
+>>>
+>>>
+Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "type": 0, "author": "Eustace"}
+>>>
+>>>
+Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "type": 0, "author": "Spooky"}
+>>>
+>>>
+Player1: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "type": 0, "author": "Eustace"}
+>>>
+>>>
+Player2: {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "type": 0, "author": "Spooky"}
 >>>
 >>>
