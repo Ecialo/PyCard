@@ -7,3 +7,5 @@ __author__ = 'Ecialo'
 class Card(utility.Component):
 
     categories = [predef.CARD]
+    description = ""
+
