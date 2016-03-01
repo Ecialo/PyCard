@@ -125,5 +125,5 @@ if __name__ == '__main__':
     # print len(retard_deck._deck)
     print player1.resources["hand"]._cards
     print player2.resources["hand"]._cards
-    print retard_deck._deck
+    # print retard_deck._deck
     # print player2_draw_card.make_message()

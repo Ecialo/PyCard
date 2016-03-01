@@ -60,28 +60,34 @@ def make_message(author, action_name, **kwargs):        # TODO нужно нем
     """
     message = {
         predef.MESSAGE_TYPE_KEY: predef.ACTION_JUST,
-        predef.MESSAGE_ACTION_KEY: {action_name: kwargs},
-        predef.MESSAGE_AUTHOR_KEY: author,
+        predef.MESSAGE_PARAMS_KEY: {
+            predef.MESSAGE_ACTION_KEY: {action_name: kwargs},
+            predef.MESSAGE_AUTHOR_KEY: author,
+        }
     }
     # return "(" + action_name + " " + json.dumps(kwargs) + ")"
     return json.dumps(message)
 
 
-def make_pipe_message(*args):
+def make_pipe_message(author, *args):
     message = {
         predef.MESSAGE_TYPE_KEY: predef.ACTION_PIPE,
-        predef.MESSAGE_ACTION_KEY: args
-
+        predef.MESSAGE_PARAMS_KEY: {
+            predef.MESSAGE_ACTION_KEY: args,
+            predef.MESSAGE_AUTHOR_KEY: author
+        }
     }
     # return "(" + "|".join(args) + ")"
     return json.dumps(message)
 
 
-def make_sequence_message(*args):
+def make_sequence_message(author, *args):
     message = {
         predef.MESSAGE_TYPE_KEY: predef.ACTION_SEQUENCE,
-        predef.MESSAGE_ACTION_KEY: args
-
+        predef.MESSAGE_PARAMS_KEY: {
+            predef.MESSAGE_ACTION_KEY: args,
+            predef.MESSAGE_AUTHOR_KEY: author
+        }
     }
     return json.dumps(message)
     # return "(" + "&".join(args) + ")"
