@@ -38,9 +38,10 @@ class MultiEcho(protocol.Protocol):
         # Обязательно должно работать до "self.factory.echoers.append(self)" иначе клиент дважды получит
         # сообщение о подключении
         for client in self.factory.echoers:
-            client.transport.write('A newcomer %s has arrived' % self)
+            client.transport.write('A newcomer has arrived')
 
         self.factory.echoers.append(self)
+
 
     @check_playnum(log)
     def dataReceived(self, data):
@@ -77,6 +78,13 @@ class MultiEcho(protocol.Protocol):
             self.players[player_num] = player
 
         self.players_settled = True
+
+    def catch_nicknames(self):
+        """
+        Это будем использовать для того чтобы записывать ники клиентов
+        :return:
+        """
+        pass
 
 
 class MultiEchoFactory(protocol.Factory):
