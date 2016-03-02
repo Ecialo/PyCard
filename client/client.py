@@ -53,6 +53,8 @@ class TwistedClientApp(App):
     connection = None
     player_name, macaddr = None, get_mac()
 
+    users = []
+
     def build(self):
         root = Builder.load_file('./client.kv')
         return root
@@ -135,6 +137,8 @@ class TwistedClientApp(App):
         name = params[predef.CHAT_NAME_KEY]
         self.print_message("%s has joined" % name)
 
+        users.append(name)
+
     def handle_chat_part(self, params):
         """
         Обработчик для ухода игрока с сервера.
@@ -142,6 +146,8 @@ class TwistedClientApp(App):
 
         name = params[predef.CHAT_NAME_KEY]
         self.print_message("%s has left" % name)
+
+        users.remove(name)
 
     def handle_chat_message(self, params):
         """
