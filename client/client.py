@@ -51,7 +51,7 @@ class EchoFactory(protocol.ClientFactory):
 
 class TwistedClientApp(App):
     connection = None
-    player_name = None
+    player_name, macaddr = None, get_mac()
 
     def build(self):
         root = Builder.load_file('./client.kv')
@@ -67,7 +67,7 @@ class TwistedClientApp(App):
     def connect_to_server(self, host, port):
         if self.player_name and host and port:
             reactor.connectTCP(host, port, EchoFactory(self))
-            log.info('Successfully connected to server {server} on port {port}',
+            log.info('Connecting to server {server} on port {port}',
                 server=host, port=port)
         
         else:
@@ -81,7 +81,7 @@ class TwistedClientApp(App):
 
         self.print_message("Connected succesfully!")
         self.connection = connection
-        self.send_chat_join()
+        self.send_chat_register()
 
     def print_message(self, msg):
         """
@@ -164,28 +164,16 @@ class TwistedClientApp(App):
         if msg and self.connection:
             self.connection.write(str(json.dumps(msg)))
 
-    def send_chat_join(self):
+    def send_chat_register(self):
         """
         Уведомляет сервер о заходе в лобби.
         """
 
         msg = {
-            predef.MESSAGE_TYPE_KEY: predef.CHAT_JOIN,
+            predef.MESSAGE_TYPE_KEY: predef.CHAT_REGISTER,
             predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_NAME_KEY: self.player_name
-            }
-        }
-        self.send_message(msg)
-
-    def send_chat_part(self):
-        """
-        Уведомляет сервер о выходе из лобби.
-        """
-
-        msg = {
-            predef.MESSAGE_TYPE_KEY: predef.CHAT_PART,
-            predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_NAME_KEY: self.player_name
+                predef.CHAT_NAME_KEY: self.player_name,
+                predef.CHAT_MAC_KEY: self.macaddr
             }
         }
         self.send_message(msg)
