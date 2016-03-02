@@ -1,3 +1,3 @@
-/client/client.json
-/server/server.json
+**/*.json
+**/*.pyc
 /.idea/**
