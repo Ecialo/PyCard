@@ -14,7 +14,8 @@ BoxLayout:
 
     ScrollView:
         id: chatlog_view
-        size_hint_y: 0.3
+        size_hint_y: None
+        height: min(0.3 * root.height, dp(160))
 
         Label:
             id: chatlog
