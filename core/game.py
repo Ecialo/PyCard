@@ -101,7 +101,7 @@ class Game(object):
             }
         elif visibility == AUTHOR:
             return {
-                player: (player == action.author)
+                player: (player == action.author.name)
                 for player in players
             }
         else:
