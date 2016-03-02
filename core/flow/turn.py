@@ -28,7 +28,7 @@ class Turn(object):
         self._action = None
 
     def receive_action(self, action):
-        print "rec"
+        # print "rec"
         self._action = action
 
     @staticmethod
@@ -39,7 +39,6 @@ class Turn(object):
         return self
 
     def run(self):
-        print "runned"
         if not self.is_runned and self._action:
             # print "HOO-HOO"
             self.is_runned = True

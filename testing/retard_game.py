@@ -95,12 +95,12 @@ retard_components = [
 ]
 
 player1_draw_card = draw_cards.DrawCards(
-    author=player1.name,
+    author=player1,
     source=retard_deck,
     target=player1.resources["hand"]
 )
 player2_draw_card = draw_cards.DrawCards(
-    author=player2.name,
+    author=player2,
     source=retard_deck,
     target=player2.resources["hand"]
 )
