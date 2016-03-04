@@ -71,8 +71,8 @@ class RetardCondition(cond.Condition):
         self._deck = deck_
 
     def __call__(self, (flow_, game_)):
-        deck_ = game_[(predef.DECK, self._deck)]
-        return deck_.is_empty()
+        # deck_ = game_[(predef.DECK, self._deck)]
+        return self._deck.is_empty()
 
 player1 = RetardPlayer('Eustace')
 player2 = RetardPlayer('Spooky')
@@ -84,7 +84,7 @@ retard_action_table = RetardActionTable()
 class RetardFlow(flow.TurnCycle):
 
     turn = RetardTurn
-    condition = RetardCondition("retard_deck")
+    condition = RetardCondition(retard_deck)
 
 retard_components = [
     retard_action_table,
@@ -125,5 +125,6 @@ if __name__ == '__main__':
     # print len(retard_deck._deck)
     print player1.resources["hand"]._cards
     print player2.resources["hand"]._cards
+    print game_._components
     # print retard_deck._deck
     # print player2_draw_card.make_message()

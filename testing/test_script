@@ -1,34 +1,34 @@
 ---
-Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "author": "Eustace"}, "type": 0}
+Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Eustace_hand_1"}}, "author": "Eustace"}, "type": 0}
 >>>
 >>>
-Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "author": "Spooky"}, "type": 0}
+Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Spooky_hand_2"}}, "author": "Spooky"}, "type": 0}
 >>>
 >>>
 >>>
 >>>
 >>>
-Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "author": "Eustace"}, "type": 0}
+Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Eustace_hand_1"}}, "author": "Eustace"}, "type": 0}
 >>>
 >>>
-Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "author": "Spooky"}, "type": 0}
+Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Spooky_hand_2"}}, "author": "Spooky"}, "type": 0}
 >>>
 >>>
-Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "author": "Eustace"}, "type": 0}
+Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Eustace_hand_1"}}, "author": "Eustace"}, "type": 0}
 >>>
 >>>
-Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "author": "Spooky"}, "type": 0}
+Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Spooky_hand_2"}}, "author": "Spooky"}, "type": 0}
 >>>
 >>>
-Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "author": "Eustace"}, "type": 0}
+Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Eustace_hand_1"}}, "author": "Eustace"}, "type": 0}
 >>>
 >>>
-Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "author": "Spooky"}, "type": 0}
+Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Spooky_hand_2"}}, "author": "Spooky"}, "type": 0}
 >>>
 >>>
-Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Eustace_hand"}}, "author": "Eustace"}, "type": 0}
+Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Eustace_hand_1"}}, "author": "Eustace"}, "type": 0}
 >>>
 >>>
-Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck", "number": 1, "target": "!resource_Spooky_hand"}}, "author": "Spooky"}, "type": 0}
+Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Spooky_hand_2"}}, "author": "Spooky"}, "type": 0}
 >>>
 >>>

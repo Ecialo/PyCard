@@ -13,8 +13,10 @@ PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION = (
 )
 
 GAME_ACTION_TABLE, SYSTEM_ACTION_TABLE = "game_action_table", "system_action_table"
+UNINDEXABLE = {PLAYER, TABLE}
 ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE = xrange(3)
 
+CARD_BACK = "back"
 
 ALL, AUTHOR = "all", "author"
 
@@ -26,5 +28,7 @@ MESSAGE_ACTION_KEY = "action"
 MESSAGE_AUTHOR_KEY = "author"
 
 SUBSTITUTION_SYMBOL = "!"
+
+HAND_CONTEXT = HAND
 
 SYSTEM = "system"

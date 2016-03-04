@@ -8,12 +8,14 @@ __author__ = 'Ecialo'
 class Card(utility.Component):
 
     categories = [predef.CARD]
+    back = predef.CARD_BACK
     description = ""
     available_resources = []
     available_actions = {}
 
     def __init__(self):
-        self._current_context = None
+        self._current_context = predef.HAND_CONTEXT
+        self._back = None
         self._components = collections.defaultdict(dict)
 
         for resource in self.available_resources:
@@ -38,4 +40,7 @@ class Card(utility.Component):
             lambda action: action.setup(source=self),
             self.available_actions[self._current_context.name]
         )
+
+    def change_context(self, context):
+        self._current_context = context
 
