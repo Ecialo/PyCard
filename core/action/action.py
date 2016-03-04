@@ -62,6 +62,7 @@ class Action(object):
     def substitute_enviroment(self, enviroment):    # TODO научиться отличать то что нужно подставлять от того, что нет
         substituted_args = {}
         self._author = enviroment[(predef.PLAYER, self._author)]
+        self.game = enviroment
         for argname, argval in self._args.iteritems():
             if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
                 category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)

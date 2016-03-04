@@ -18,10 +18,7 @@ class CardTable(utility.Table):
             self._cards[card.name] = card
 
     def __getitem__(self, item):
-        return self._cards[item]
-
-    def register_card(self, environment, id_=None):
-        pass
+        return self._cards.get(item)
 
 if __name__ == '__main__':
     CardTable()
