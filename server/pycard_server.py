@@ -5,6 +5,7 @@
 """
 
 import io
+import json
 from twisted.internet.task import LoopingCall
 from twisted.application import service
 from twisted.application.internet import TimerService
@@ -16,7 +17,7 @@ from kivy.app import App
 from kivy.uix.label import Label
 from twisted.logger import Logger, jsonFileLogObserver
 from testing.retard_game import RetardGame
-from core.utility import check_playnum
+import core.predef as predef
 
 __author__ = 'Anton Korobkov'
 
@@ -27,64 +28,85 @@ class MultiEcho(protocol.Protocol):
 
     def __init__(self, factory, players):
         self.factory = factory
-        self.required_players_number = players
-        self.current_player_index = None
         self.players = {}
-        self.players_settled = False
 
     def connectionMade(self):
         log.info('Incoming connection on {host}', host=self)
 
-        # Обязательно должно работать до "self.factory.echoers.append(self)" иначе клиент дважды получит
-        # сообщение о подключении
-        for client in self.factory.echoers:
-            client.transport.write('A newcomer has arrived')
-
-        self.factory.echoers.append(self)
-
-
-    @check_playnum(log)
     def dataReceived(self, data):
         log.info('Data obtained {data}', data=data)
-
-        if self.players_settled is False:
-            self.set_players(self.factory.echoers)
-
-        response = self.factory.app.handle_message(data)
-        self.send_stuff(response)
-
+        self.parse_incoming_message(data)
 
     def connectionLost(self, reason):
         log.debug('Connection {conn} is lost because of {lost_reason}',
                   conn=self, lost_reason=reason)
+        self.handle_chat_disconnection()
+
+    def send_global_message(self, msg):
+        """
+        Юзать этот метод когда нужно что-то одинаковое написать всем клиентам
+        """
+
+        for player in self.factory.echoers:
+            player.transport.write(msg)
+
+    # Обработка сообщений клиента
+
+    def parse_incoming_message(self, msg):
+        """
+        Родной брат метода client.parse_message
+        """
+
+        event = json.loads(msg)
+        event_type, params = event[predef.MESSAGE_TYPE_KEY], event[predef.MESSAGE_PARAMS_KEY]
+
+        # Не будем лепить костылей по отсылке приватных сообщений до тех пор пока это не будет
+        # запилено на стороне клиента
+
+        if event_type == predef.CHAT_REGISTER:
+            self.handle_chat_join(event)
+        elif event_type == predef.CHAT_MESSAGE:
+            self.handle_chat_message(event)
+
+    # Отправка сообщений клиентам
+
+    def handle_chat_join(self, params):
+        """
+        Посылаем всем клиентам сообщения о том кто зашел и сохраняем адрес и ник
+        """
+
+        # TODO: отрефакторить это обязательно!
+        self.players[self] = [params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_MAC_KEY],
+                              params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_NAME_KEY]]
+
+        params[predef.MESSAGE_TYPE_KEY] = predef.CHAT_JOIN
+
+        log.info('some {data} sent', data=str(params))
+        self.send_global_message(json.dumps(params))
+        self.factory.echoers.append(self)
+
+    def handle_chat_disconnection(self):
+        """
+        Говорим всем о том кто ушел
+        """
+
         self.factory.echoers.remove(self)
-        self.players_settled = False
-        for client in self.factory.echoers:
-            client.transport.write('%s has left the lobby!' % self)
 
-    def send_stuff(self, data):
-        self.current_player_index = self.factory.echoers.index(self)
-        self.factory.echoers[self.current_player_index].transport.write(data[0])
+        part_message = {predef.MESSAGE_TYPE_KEY: predef.CHAT_PART,
+                        predef.MESSAGE_PARAMS_KEY: {
+                            predef.CHAT_NAME_KEY: self.players[self][1],  # TODO: ещё один хак который надо будет убрать
+                            predef.CHAT_MAC_KEY: self.players[self][0]
+                        }
+                        }
 
-        # Переделать когда настанет пора отсылать совсем разным клиентам совсем разные данные
-        for player_num in xrange(len(self.factory.echoers)):
-            if player_num != self.current_player_index:
-                self.factory.echoers[player_num].transport.write(data[1])
+        log.info('some {data} sent', data=str(part_message))
+        self.send_global_message(json.dumps(part_message))
 
-    def set_players(self, players):
-        # Пока не используется. Юзать когда разным клиентам нужно будет совсем разные сообщения посылать
-
-        for player_num, player in enumerate(players):
-            self.players[player_num] = player
-
-        self.players_settled = True
-
-    def catch_nicknames(self):
+    def handle_chat_message(self, params):
         """
-        Это будем использовать для того чтобы записывать ники клиентов
-        :return:
+        Просто отсылаем всем то, что нам пришло
         """
-        pass
+        self.send_global_message(json.dumps(params))
 
 
 class MultiEchoFactory(protocol.Factory):
@@ -111,8 +133,6 @@ class TwistedServerApp(App):
     def handle_message(self, msg):
         """
         Обрабатывает входящие сообщения от клиентов
-        :param msg: str
-        :return:
         """
         # TODO: fix retard.recieve_message
 
@@ -120,13 +140,13 @@ class TwistedServerApp(App):
         self.retard.receive_message(msg)
         action = self.retard.run()
         self.label.text = "received:  %s\n" % msg
-        player_one_msg = action.make_message()
-        player_two_msg = action.make_message()
+        client_one_msg = action.make_message()
+        client_two_msg = action.make_message()
 
         self.label.text += "responded: %s\n" % msg
         log.info('Message for player one is {message_one}, for player two is {message_two}'
-                 , message_one=player_one_msg, message_two=player_two_msg)
-        return [player_one_msg, player_two_msg]
+                 , message_one=client_one_msg, message_two=client_two_msg)
+        return [client_one_msg, client_two_msg]
 
 if __name__ == '__main__':
     TwistedServerApp().run()
