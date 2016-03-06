@@ -7,8 +7,6 @@
 import io
 import json
 from twisted.internet.task import LoopingCall
-from twisted.application import service
-from twisted.application.internet import TimerService
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 from twisted.internet import reactor, defer
