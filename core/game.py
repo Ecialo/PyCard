@@ -5,6 +5,10 @@ from flow.flow import EndOfCurrentFlow
 __author__ = 'Ecialo'
 
 
+class WTFError(Exception):
+    pass
+
+
 class GameOver(Exception):
     pass
 
@@ -21,7 +25,13 @@ class Game(object):
             self,
             components,
             flow,
+            mode
     ):
+
+        self._mode = mode
+        if mode is CLIENT:      # TODO сделать более умное разделение режимов
+            self.run = None
+
         self._components = {
             PLAYER: {},
             DESK: {},
@@ -47,21 +57,65 @@ class Game(object):
     def get_category(self, category):
         return self._components[category]
 
-    def run(self):
-        try:
-            action = self._flow.run()
-            print action
-        except EndOfCurrentFlow:
-            raise GameOver()
-        else:
-            if action:
-                action.apply()
-                return action
-            else:
-                return None
+    # def run(self):
+    #     try:
+    #         action = self._flow.run()
+    #         # print action
+    #     except EndOfCurrentFlow:
+    #         raise GameOver()
+    #     else:
+    #         if action:
+    #             action.apply()
+    #             visibility = self.expand_visibility(action)
+    #             return self.response(action, visibility)
+    #         else:
+    #             return None
 
-    def apply_action(self, action):
-        action.apply(self)
+    def run(self):
+        action = self._flow.run()
+        if action:
+            try:
+                action.apply()
+            except EndOfCurrentFlow:
+                raise GameOver()
+            else:
+                visibility = self.expand_visibility(action)
+                return self.response(action, visibility)
+        else:
+            return None
+
+    @property
+    def current_flow(self):
+        return self._flow.current_flow()
+
+    def next_stage(self):
+        self._flow.next_stage()
+
+    def expand_visibility(self, action):
+        players = self.get_category(PLAYER).keys()
+        visibility = action.visibility
+        if visibility == ALL:
+            return {
+                player: True
+                for player in players
+            }
+        elif visibility == AUTHOR:
+            return {
+                player: (player == action.author.name)
+                for player in players
+            }
+        else:
+            return {
+                player: False
+                for player in players
+            }
+
+    def response(self, action, visibility):
+        players = self.get_category(PLAYER).keys()
+        return {
+            player: (action.make_visible_response() if visibility[player] else action.make_invisible_response())
+            for player in players
+        }
 
     def register_component(self, component):
         for category in component.categories:
@@ -73,5 +127,11 @@ class Game(object):
         """
         Принимает сообщение, передаёт его в парсер, а затем передаёт полученное действие в игровой поток
         """
-        action = self._components[TABLE][ACTION].receive_message(message, self)
-        self._flow.receive_action(action)
+        if self._mode is SERVER:
+            action = self._components[TABLE][GAME_ACTION_TABLE].receive_message(message, self)
+            self._flow.receive_action(action)
+        elif self._mode is CLIENT:
+            action = self._components[TABLE][SYSTEM_ACTION_TABLE].receive_message(message, self)
+            action.apply()
+        else:
+            raise WTFError()

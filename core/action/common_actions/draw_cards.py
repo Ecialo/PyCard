@@ -10,11 +10,11 @@ class DrawCards(Action):
         'number': 1
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, author, **kwargs):
         self.source = None
         self.target = None
         self.number = None
-        super(DrawCards, self).__init__(**kwargs)
+        super(DrawCards, self).__init__(author, **kwargs)
 
     def apply(self):
         cards = []

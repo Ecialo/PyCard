@@ -11,9 +11,20 @@ PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION = (
     'table',
     'action',
 )
+
+GAME_ACTION_TABLE, SYSTEM_ACTION_TABLE = "game_action_table", "system_action_table"
 ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE = xrange(3)
 
+
+ALL, AUTHOR = "all", "author"
+
+CLIENT, SERVER = xrange(2)
+
 MESSAGE_TYPE_KEY = "type"
+MESSAGE_PARAMS_KEY = "params"
 MESSAGE_ACTION_KEY = "action"
+MESSAGE_AUTHOR_KEY = "author"
 
 SUBSTITUTION_SYMBOL = "!"
+
+SYSTEM = "system"

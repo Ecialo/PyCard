@@ -39,8 +39,11 @@ class Action(object):
 
     name = None
     default_args = {}
+    visibility = None       # all | author
 
-    def __init__(self, **kwargs):
+    def __init__(self, author=predef.SYSTEM, **kwargs):
+        self._author = author
+
         self.game = None
         self._args = {}
 
@@ -58,6 +61,7 @@ class Action(object):
 
     def substitute_enviroment(self, enviroment):    # TODO научиться отличать то что нужно подставлять от того, что нет
         substituted_args = {}
+        self._author = enviroment[(predef.PLAYER, self._author)]
         for argname, argval in self._args.iteritems():
             if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
                 category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)
@@ -65,26 +69,37 @@ class Action(object):
                 substituted_args[argname] = enviroment[(category, name)]
         self.setup(**substituted_args)
 
+    @property
+    def author(self):
+        return self._author
+
     def apply(self):
         return {}
 
     def __ror__(self, other):
-        return ActionPipe([other, self])
+        return ActionPipe(self._author, [other, self])
 
     def __rand__(self, other):
-        return ActionSequence([other, self])
+        return ActionSequence(self._author, [other, self])
 
     def make_message(self):
         messageable_args = {
             argname: ((predef.SUBSTITUTION_SYMBOL + argval.path) if isinstance(argval, util.Component) else argval)
             for argname, argval in self._args.iteritems()
         }
-        return util.make_message(self.name, **messageable_args)
+        return util.make_message(self._author, self.name, **messageable_args)
+
+    def make_visible_response(self):
+        pass
+
+    def make_invisible_response(self):
+        pass
 
 
 class ActionCollection(Action):
 
-    def __init__(self, actions=None):
+    def __init__(self, author, actions=None):
+        self._author = author
         self._actions = collections.deque(actions) or collections.deque()
 
     def __iter__(self):

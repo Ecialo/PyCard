@@ -26,11 +26,13 @@ class ActionTable(Table):
 
     # @staticmethod
     def _parse_message(self, message):
-        raw_action = json.loads(message)
+        raw_action = json.loads(message) if isinstance(message, basestring) else message
         action_type = raw_action[predef.MESSAGE_TYPE_KEY]
+        raw_action = raw_action[predef.MESSAGE_PARAMS_KEY]
+        author = raw_action[predef.MESSAGE_AUTHOR_KEY]
         if action_type is predef.ACTION_JUST:
             action_name, action_args = raw_action[predef.MESSAGE_ACTION_KEY].items()[0]
-            action = self._actions[action_name]()
+            action = self._actions[action_name](author)
             # print action_args
             return action.setup(**action_args)
 
