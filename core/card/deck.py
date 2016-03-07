@@ -17,9 +17,20 @@ class Deck(utility.Component):
         self._deck = []
         for card_name, amount in self.content:
             self._deck += [card_name] * amount
+        self._num_of_cards = len(self._deck)
+
+    @property
+    def number_of_cards(self):
+        return self._num_of_cards
 
     def draw_card(self):
+        self._num_of_cards -= 1
         return self._deck.pop()
+
+    def remove_card(self, card):
+        if card:
+            self._deck.remove(card)
+        self._num_of_cards -= 1
 
     def shuffle(self):
         rnd.shuffle(self._deck)
