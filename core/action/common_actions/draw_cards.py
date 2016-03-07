@@ -14,6 +14,7 @@ class DrawCards(Action):
         self.source = None
         self.target = None
         self.number = None
+        self._cards = None
         super(DrawCards, self).__init__(author, **kwargs)
 
     def apply(self):
@@ -21,5 +22,12 @@ class DrawCards(Action):
         for _ in xrange(self.number):
             card = self.source.draw_card()
             cards.append(card)
+        self._cards = cards
         self.target.get_cards(*cards)
         return {'cards': cards}
+
+    def make_invisible_response(self):
+        pass
+
+    def make_visible_response(self):
+        pass
