@@ -6,15 +6,9 @@
 
 import io
 import json
-from twisted.internet.task import LoopingCall
-from kivy.support import install_twisted_reactor
-install_twisted_reactor()
 from twisted.internet import reactor, defer
 from twisted.internet import protocol
-from kivy.app import App
-from kivy.uix.label import Label
 from twisted.logger import Logger, jsonFileLogObserver
-from testing.retard_game import RetardGame
 import core.predef as predef
 
 __author__ = 'Anton Korobkov'
@@ -119,32 +113,17 @@ class MultiEchoFactory(protocol.Factory):
         return MultiEcho(self, self.players)
 
 
-class TwistedServerApp(App):
-    def build(self):
-        self.label = Label(text="server started\n")
+class RetardLauncher(object):
+    """
+    Просто запустить все
+    """
+
+    def __init__(self):
         reactor.listenTCP(8000, MultiEchoFactory(self))
-        self.retard = RetardGame()
-        test_call = LoopingCall(self.retard.run)
-        test_call.start(0.5)
-        return self.label
 
-    def handle_message(self, msg):
-        """
-        Обрабатывает входящие сообщения от клиентов
-        """
-        # TODO: fix retard.recieve_message
+    def launch(self):
+        reactor.run()
 
-        # Если запускать это с сообщениями неподходящего формата то все валится НАХУЙ
-        self.retard.receive_message(msg)
-        action = self.retard.run()
-        self.label.text = "received:  %s\n" % msg
-        client_one_msg = action.make_message()
-        client_two_msg = action.make_message()
-
-        self.label.text += "responded: %s\n" % msg
-        log.info('Message for player one is {message_one}, for player two is {message_two}'
-                 , message_one=client_one_msg, message_two=client_two_msg)
-        return [client_one_msg, client_two_msg]
 
 if __name__ == '__main__':
-    TwistedServerApp().run()
+    RetardLauncher().launch()
