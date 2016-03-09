@@ -59,9 +59,9 @@ class Action(object):
         self.game = environment
         for argname, argval in self._args.iteritems():
             if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
-                category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)
-                category = category
-                substituted_args[argname] = environment[(category, name)]
+                # category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)
+                # category = category
+                substituted_args[argname] = environment[argval]
         self.setup(**substituted_args)
 
     @property

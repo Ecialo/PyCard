@@ -61,8 +61,14 @@ class Game(util.Component):
             self.register_component(component)
         self._flow = flow(self)
 
-    def __getitem__(self, (category, name)):
-        return self._components[category][name]
+    def __getitem__(self, item):
+        if isinstance(item, tuple):
+            category, name = item
+            return self._components[category][name]
+        else:
+            category, name = item.lstrip(SUBSTITUTION_SYMBOL).split("_", 1)
+            # category = category
+            return self[(category, name)]
 
     def get_category(self, category):
         return self._components[category]
