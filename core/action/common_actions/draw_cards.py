@@ -5,7 +5,7 @@ from ..common_system_actions import *
 __author__ = 'ecialo'
 
 
-class DrawCards(Action):
+class DrawCards(action.Action):
     """
     Тянем карты из чего-то куда-то.
 

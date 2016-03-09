@@ -46,7 +46,7 @@ class Action(object):
                 self._args[arg] = value
         return self
 
-    def substitute_enviroment(self, environment):   # TODO: исправить очепятку
+    def substitute_enviroment(self, environment):
         """
         Заменить пути до компонентов (начинается с SUBSTITUTION_SYMBOL) компонентами из окружения.
 
@@ -55,8 +55,8 @@ class Action(object):
         :return:
         """
         substituted_args = {}
-        self._author = enviroment[(predef.PLAYER, self._author)]
-        self.game = enviroment
+        self._author = environment[(predef.PLAYER, self._author)]
+        self.game = environment
         for argname, argval in self._args.iteritems():
             if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
                 category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)
