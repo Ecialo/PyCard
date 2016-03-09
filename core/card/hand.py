@@ -31,3 +31,9 @@ class Hand(utility.Component):
         if card:
             self._cards.remove(card)
         self._num_of_cards += 1
+
+    def __eq__(self, other):
+        if isinstance(other, Hand):
+            self == other._cards
+        else:
+            return sorted(self._cards) == sorted(other)
