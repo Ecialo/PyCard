@@ -4,39 +4,20 @@ from .. import utility as util
 from .. import predef
 __author__ = 'Ecialo'
 
-
-def modification(func):
-    func.apply = func
-    return func
-
-
-@modification
-def set_flag(flag):
-    flag.set()
-
-
 ArgPack = collections.namedtuple('ArgPack', ['category', 'name'])
-
-
-def action_pipe(target_action_pairs):
-    """
-    Превращает набор пар цель, действие/модификация в сложное действие
-    """
-    # TODO сделать приём как коллекций, так и произвольного числа пар
-    prev = None
-    for target, action in reversed(target_action_pairs):
-        if target:
-            prev = action(target, prev)
-        else:
-            prev = action
-    return prev
 
 
 class Action(object):
     """
-    Ищет у хозяина свою цель target и применяет к ней действие
-    """
+    Отложенная мутация над игрой или её компонентами.
 
+    Не стоит обновлять параметры чем-то кроме метода setup.
+
+    :ivar name: название Действия, по которому оно идентифицируется в Таблице действий
+    :type name: str
+    :ivar default_args: аргументы по умолчанию для этого действия
+    :type default_args: dict[str, T]
+    """
     name = None
     default_args = {}
     visibility = None       # all | author
@@ -53,20 +34,33 @@ class Action(object):
         self.setup(**args)
 
     def setup(self, **kwargs):
+        """
+        Правильный способ обновить внутренние параметы.
+
+        :param kwargs:
+        :return: Action
+        """
         for arg, value in kwargs.iteritems():
             if hasattr(self, arg):
                 self.__setattr__(arg, value)
                 self._args[arg] = value
         return self
 
-    def substitute_enviroment(self, enviroment):    # TODO научиться отличать то что нужно подставлять от того, что нет
+    def substitute_enviroment(self, environment):   # TODO: исправить очепятку
+        """
+        Заменить пути до компонентов (начинается с SUBSTITUTION_SYMBOL) компонентами из окружения.
+
+        :param environment: Игра в которой происходит действие
+        :type environment: core.game.Game
+        :return:
+        """
         substituted_args = {}
         self._author = enviroment[(predef.PLAYER, self._author)]
         for argname, argval in self._args.iteritems():
             if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
                 category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)
                 category = category
-                substituted_args[argname] = enviroment[(category, name)]
+                substituted_args[argname] = environment[(category, name)]
         self.setup(**substituted_args)
 
     @property
@@ -74,7 +68,13 @@ class Action(object):
         return self._author
 
     def apply(self):
-        return {}
+        """
+        Применить мутацию.
+
+        :return: Параметры, которые возможно будут нужны другой мутации
+        :rtype: dict[str, T] | None
+        """
+        return None
 
     def __ror__(self, other):
         return ActionPipe(self._author, [other, self])
@@ -83,6 +83,17 @@ class Action(object):
         return ActionSequence(self._author, [other, self])
 
     def make_message(self):
+        """
+        Создает на основе действия json строку сообщения. Сообщение имеет следующий формат:
+        {
+            MESSAGE_TYPE_KEY: ACTION_JUST | ACTION_SEQUENCE | ACTION_PIPE
+            MESSAGE_ACTION_KEY: {arg: val} | [{arg: val}]
+        }
+        Если val - это компонент, то он представляется виде внутриигрового пути до него.
+
+        :return: json строка с сообщением
+        :rtype: str
+        """
         messageable_args = {
             argname: ((predef.SUBSTITUTION_SYMBOL + argval.path) if isinstance(argval, util.Component) else argval)
             for argname, argval in self._args.iteritems()

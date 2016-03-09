@@ -6,6 +6,9 @@ __author__ = 'Ecialo'
 
 
 class ActionTable(Table):
+    """
+    Таблица допустимых действий.
+    """
 
     name = predef.ACTION
     actions = []
@@ -18,7 +21,14 @@ class ActionTable(Table):
 
     def receive_message(self, message, game):
         """
-        Формат сообщения (имя_сообщения именованный_аргумент=сообщение_или_значение;другой_именованный_аргумент=...
+        Создать на основе полученного Сообщения Действие с контекстом.
+
+        :param message: Сообщение
+        :type message: str
+        :param game: Игра для которой предназначено сообщение
+        :type game: core.game.Game
+        :return: Действие полученное в результате разбора и подстановки.
+        :rtype: core.action.Action
         """
         action = self._parse_message(message)
         action.substitute_enviroment(game)
@@ -26,7 +36,14 @@ class ActionTable(Table):
 
     # @staticmethod
     def _parse_message(self, message):
-        raw_action = json.loads(message) if isinstance(message, basestring) else message
+        """
+        Разобрать Сообщение основываясь на известных Действиях.
+
+        :param message: Сообщение
+        :type message: str
+        :return: Действие без контекста
+        """
+        raw_action = json.loads(message)
         action_type = raw_action[predef.MESSAGE_TYPE_KEY]
         raw_action = raw_action[predef.MESSAGE_PARAMS_KEY]
         author = raw_action[predef.MESSAGE_AUTHOR_KEY]
