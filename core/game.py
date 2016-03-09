@@ -2,6 +2,7 @@
 from itertools import chain
 from collections import defaultdict
 from predef import *
+from . import utility as util
 from flow.flow import EndOfCurrentFlow
 __author__ = 'Ecialo'
 
@@ -14,7 +15,7 @@ class GameOver(Exception):
     pass
 
 
-class Game(object):
+class Game(util.Component):
     """
     Агрегирует все компоненты необходимые для игры. Так же через этот класс
     реализуется игровое взаимодействие, тут регистрируются эффекты и прочее.
@@ -22,6 +23,7 @@ class Game(object):
     Многие прочие компоненты вместе с именами генерируются на основе flow игры.
     Генерируемые компоненты лежат в общих таблицах под своими полными именами.
     """
+    categories = [GAME]
 
     def __init__(
             self,
@@ -29,12 +31,13 @@ class Game(object):
             flow,
             mode
     ):
-
+        super(Game, self).__init__()
         self._mode = mode
         if mode is CLIENT:      # TODO сделать более умное разделение режимов
             self.run = None
 
         self._components = {
+            GAME: {},
             PLAYER: {},
             DESK: {},
             DECK: {},
@@ -44,6 +47,8 @@ class Game(object):
         }
         self._next_id = 0
         self._components_by_id = {}
+
+        components.append(self)
 
         # components = chain(
         #     components,

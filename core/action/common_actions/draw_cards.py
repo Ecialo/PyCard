@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-from ..action import Action
+from .. import action
+from ... import predef
+from ..common_system_actions import *
 __author__ = 'ecialo'
 
 
-class DrawCards(Action):
+class DrawCards(action.Action):
 
     name = "draw_cards"
     default_args = {
@@ -27,7 +29,30 @@ class DrawCards(Action):
         return {'cards': cards}
 
     def make_invisible_response(self):
-        pass
+        cards = [None for _ in xrange(self.number)]
+        cards_backs = [predef.CARD_BACK for _ in xrange(self.number)]
+        remove = remove_cards.RemoveCards(
+            predef.SYSTEM,
+            target=self.source,
+            cards=cards
+            )
+        append = append_cards.AppendCards(
+            predef.SYSTEM,
+            target=self.target,
+            cards=cards_backs
+        )
+        return remove & append
 
     def make_visible_response(self):
-        pass
+        cards = self._cards
+        remove = remove_cards.RemoveCards(
+            predef.SYSTEM,
+            target=self.source,
+            cards=cards
+            )
+        append = append_cards.AppendCards(
+            predef.SYSTEM,
+            target=self.target,
+            cards=cards
+        )
+        return remove & append

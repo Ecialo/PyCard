@@ -35,6 +35,11 @@ class ActionTable(Table):
             action = self._actions[action_name](author)
             # print action_args
             return action.setup(**action_args)
+        elif action_type is predef.ACTION_SEQUENCE:
+            pass
+        elif action_type is predef.ACTION_PIPE:
+            pass
+
 
     # def _distinct_sequence(self, message):
     #     return message.split("&")

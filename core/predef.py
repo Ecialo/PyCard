@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Ecialo'
 FIRST_PLAYER_TOKEN = 'first player'
-PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION = (
+PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION, GAME = (
     'player',
     'deck',
     'desk',
@@ -10,6 +10,7 @@ PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION = (
     'card',
     'table',
     'action',
+    'game',
 )
 
 GAME_ACTION_TABLE, SYSTEM_ACTION_TABLE = "game_action_table", "system_action_table"

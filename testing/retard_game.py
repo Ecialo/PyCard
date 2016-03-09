@@ -43,6 +43,11 @@ class RetardWhiteCard(card.Card):
     name = "white_card"
 
 
+class RetardBack(card.Card):
+
+    name = predef.CARD_BACK
+
+
 class RetardCardTable(card_table.CardTable):
 
     cards = [
@@ -90,8 +95,8 @@ retard_components = [
     retard_action_table,
     retard_card_table,
     retard_deck,
-    player1,
-    player2,
+    # player1,
+    # player2,
 ]
 
 player1_draw_card = draw_cards.DrawCards(
@@ -107,9 +112,12 @@ player2_draw_card = draw_cards.DrawCards(
 
 
 class RetardGame(game.Game):
-    def __init__(self):
+
+    name = "retard_game"
+
+    def __init__(self, players):
         super(RetardGame, self).__init__(
-            components=retard_components,
+            components=retard_components + players,
             flow=RetardFlow,
             mode=predef.SERVER
         )
@@ -117,7 +125,7 @@ class RetardGame(game.Game):
 if __name__ == '__main__':
     # print player1_draw_card.make_message()
     # print player2_draw_card.make_message()
-    game_ = RetardGame()
+    game_ = RetardGame([player1, player2])
     try:
         test.test(game_)
     except game.GameOver:
