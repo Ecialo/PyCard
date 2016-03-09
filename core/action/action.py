@@ -56,6 +56,7 @@ class Action(object):
         """
         substituted_args = {}
         self._author = enviroment[(predef.PLAYER, self._author)]
+        self.game = enviroment
         for argname, argval in self._args.iteritems():
             if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
                 category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split("_", 1)
@@ -141,6 +142,12 @@ class ActionPipe(ActionCollection):
             {}
         )
 
+    def make_message(self):
+        return util.make_pipe_message(
+            self._author,
+            [action.make_message() for action in self._actions]
+        )
+
 
 class ActionSequence(ActionCollection):
 
@@ -160,4 +167,10 @@ class ActionSequence(ActionCollection):
             lambda prev, action: prev.update(action.apply()),
             self,
             {}
+        )
+
+    def make_message(self):
+        return util.make_sequence_message(
+            self._author,
+            [action.make_message() for action in self._actions]
         )

@@ -4,6 +4,10 @@ from . import predef
 __author__ = 'Ecialo'
 
 
+class ChangeIdentityError(Exception):
+    pass
+
+
 class Component(object):
 
     name = None
@@ -12,9 +16,22 @@ class Component(object):
 
     def __init__(self):
         self._name = self.name
+        self._id = None
 
     def setup_prefix(self, prefix):
-        self._name = prefix + "_" + self.name
+        self._name = prefix + "_" + self._name
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        if self._id is None:
+            self._id = value
+            self._name += "_" + str(value)
+        else:
+            raise ChangeIdentityError()
 
     @property
     def fullname(self):

@@ -17,6 +17,9 @@ class CardTable(utility.Table):
         for card in self.cards:
             self._cards[card.name] = card
 
+    def __getitem__(self, item):
+        return self._cards.get(item)
+
 if __name__ == '__main__':
     CardTable()
     CardTable()

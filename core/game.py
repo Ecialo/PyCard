@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from itertools import chain
+from collections import defaultdict
 from predef import *
+from . import utility as util
 from flow.flow import EndOfCurrentFlow
 __author__ = 'Ecialo'
 
@@ -13,7 +15,7 @@ class GameOver(Exception):
     pass
 
 
-class Game(object):
+class Game(util.Component):
     """
     Агрегирует все компоненты необходимые для игры. Так же через этот класс
     реализуется игровое взаимодействие, тут регистрируются эффекты и прочее.
@@ -21,18 +23,21 @@ class Game(object):
     Многие прочие компоненты вместе с именами генерируются на основе flow игры.
     Генерируемые компоненты лежат в общих таблицах под своими полными именами.
     """
+    categories = [GAME]
+
     def __init__(
             self,
             components,
             flow,
             mode
     ):
-
+        super(Game, self).__init__()
         self._mode = mode
         if mode is CLIENT:      # TODO сделать более умное разделение режимов
             self.run = None
 
         self._components = {
+            GAME: {},
             PLAYER: {},
             DESK: {},
             DECK: {},
@@ -40,6 +45,11 @@ class Game(object):
             HAND: {},
             TABLE: {},
         }
+        self._next_id = 0
+        self._components_by_id = {}
+
+        components.append(self)
+
         # components = chain(
         #     components,
         #     *(map(
@@ -117,9 +127,27 @@ class Game(object):
             for player in players
         }
 
-    def register_component(self, component):
+    def get_component_by_id(self, id_):
+        return self._components_by_id.get(id_)
+
+    def _get_new_id(self):
+        res = self._next_id
+        self._next_id += 1
+        return res
+
+    def register_component(self, component, id_=None):
+        # print set(component.categories) & UNINDEXABLE, component.categories, UNINDEXABLE
+        if not set(component.categories) & UNINDEXABLE:
+            if id_ is None:
+                component.id = self._get_new_id()
+            else:
+                component.id = id_
+            self._components_by_id[component.id] = component
         for category in component.categories:
-            self._components[category][component.fullname] = component
+            if component.fullname in self._components[category]:
+                raise WTFError()
+            else:
+                self._components[category][component.fullname] = component
         for associated_component in component.associated_components:
             self.register_component(associated_component)
 

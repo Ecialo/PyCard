@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Ecialo'
 FIRST_PLAYER_TOKEN = 'first player'
-PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION = (
+PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION, GAME = (
     'player',
     'deck',
     'desk',
@@ -10,9 +10,12 @@ PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION = (
     'card',
     'table',
     'action',
+    'game',
 )
 
 GAME_ACTION_TABLE, SYSTEM_ACTION_TABLE = "game_action_table", "system_action_table"
+UNINDEXABLE = {PLAYER, TABLE}
+ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE = xrange(3)
 
 (
 	ACTION_JUST,
@@ -23,7 +26,7 @@ GAME_ACTION_TABLE, SYSTEM_ACTION_TABLE = "game_action_table", "system_action_tab
 	CHAT_PART,
 	CHAT_MESSAGE
 ) = xrange(7)
-
+CARD_BACK = "back"
 
 ALL, AUTHOR = "all", "author"
 
@@ -35,6 +38,8 @@ MESSAGE_ACTION_KEY = "action"
 MESSAGE_AUTHOR_KEY = "author"
 
 SUBSTITUTION_SYMBOL = "!"
+
+HAND_CONTEXT = HAND
 
 SYSTEM = "system"
 

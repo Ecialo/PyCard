@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import random as rnd
 import operator as op
+
+from core.action.common_system_actions import next_stage
 from ..predef import FIRST_PLAYER_TOKEN
 from ..predef import PLAYER
 from condition import CyclesExceedCondition
 from .. import utility
-from ..action.common_actions import next_stage
+
 
 __author__ = 'Ecialo'
 
