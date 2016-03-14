@@ -1,5 +1,5 @@
 <-CardWidget>:
-    size_hint: 0.2, 0.4
+    size_hint: 0.1, 0.2
     on_card: name.text = self.card.name
     drag_rectangle: self.x, self.y, self.width, self.height
     drag_timeout: 10000000
@@ -13,5 +13,5 @@
     Label:
         id: name
         text: ""
-        pos_hint: {'x': 0.0, 'y': 0.0}
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 #        pos: root.pos

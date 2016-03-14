@@ -6,13 +6,15 @@ def bind_widget(widget):
 
     def bind(component_cls):
 
-        class ComponentWithWidget(component_cls):
+        # class ComponentWithWidget(component_cls):
 
-            def make_widget(self, **kwargs):
-                return widget(self, **kwargs)
+        def make_widget(self, **kwargs):
+            return widget(self, **kwargs)
 
-        ComponentWithWidget.__name__ = component_cls.__name__
+        component_cls.make_widget = make_widget
 
-        return ComponentWithWidget
+        # ComponentWithWidget.__name__ = component_cls.__name__ + "WithWidget"
+
+        return component_cls
 
     return bind
