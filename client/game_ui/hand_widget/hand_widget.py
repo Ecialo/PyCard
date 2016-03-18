@@ -17,10 +17,21 @@ from kivy.lang import Builder
 class HandWidget(slayout.StackLayout):
 
     hand = prop.ObjectProperty()
+    cards = prop.ListProperty()
 
     def __init__(self, hand, **kwargs):
         super(HandWidget, self).__init__(**kwargs)
         self.hand = hand
+        self.register_event_type('on_get_cards')
+
+    def on_get_cards(self, *cards):
+        print "\n\n"
+        print cards
+        print self.hand._cards
+        print self.cards
+        self.cards.extend(cards)
+        print self.cards
+        print "\n\n"
 
 
 Builder.load_file('./hand_widget/hand_widget.kv')
