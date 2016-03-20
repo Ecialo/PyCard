@@ -60,6 +60,9 @@ class TagResource(Resource):
         super(TagResource, self).__init__()
         self._tag = tag
 
+    def set(self, value):
+        self._tag = value
+
 
 class ParameterResource(Resource):
     pass
