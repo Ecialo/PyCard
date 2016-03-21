@@ -27,8 +27,9 @@ log = Logger(
 
 class MultiEcho(protocol.Protocol):
 
-    def __init__(self, factory):
+    def __init__(self, factory, players):
         self.factory = factory
+        self.players = {}
 
     def connectionMade(self):
         log.info('Incoming connection on {host}', host=self)
@@ -76,10 +77,8 @@ class MultiEcho(protocol.Protocol):
         """
 
         # TODO: отрефакторить это обязательно!
-        self.players[self] = [
-            params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_MAC_KEY],
-            params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_NAME_KEY],
-        ]
+        self.players[self] = [params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_MAC_KEY],
+                              params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_NAME_KEY]]
 
         params[predef.MESSAGE_TYPE_KEY] = predef.CHAT_JOIN
 
@@ -94,24 +93,32 @@ class MultiEcho(protocol.Protocol):
 
         self.factory.echoers.remove(self)
 
-        part_message = {
-            predef.MESSAGE_TYPE_KEY: predef.CHAT_PART,
-            predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_NAME_KEY: self.players[self][1],  # TODO: ещё один хак который надо будет убрать
-                predef.CHAT_MAC_KEY: self.players[self][0]
-            }
-        }
+        part_message = {predef.MESSAGE_TYPE_KEY: predef.CHAT_PART,
+                        predef.MESSAGE_PARAMS_KEY: {
+                            predef.CHAT_NAME_KEY: self.players[self][1],  # TODO: ещё один хак который надо будет убрать
+                            predef.CHAT_MAC_KEY: self.players[self][0]
+                        }
+                        }
+
         log.info('some {data} sent', data=str(part_message))
         self.send_global_message(json.dumps(part_message))
+
+    def handle_chat_message(self, params):
+        """
+        Просто отсылаем всем то, что нам пришло
+        """
+        self.send_global_message(json.dumps(params))
 
 
 class MultiEchoFactory(protocol.Factory):
 
-    protocol = MultiEcho
-
     def __init__(self):
         self.echoers = []
+        self.players = 2
         log.info('Instantiated server for {playernum} players', playernum=self.players)
+
+    def buildProtocol(self, addr):
+        return MultiEcho(self, self.players)
 
 
 if __name__ == '__main__':
