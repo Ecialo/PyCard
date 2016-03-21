@@ -9,3 +9,7 @@ class Suit(resource.TagResource):
 
 class Value(resource.AmountResource):
     name = 'value'
+
+
+class IsAttacker(resource.FlagResource):
+    name = 'is_attacker'

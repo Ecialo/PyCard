@@ -141,6 +141,30 @@ class Game(util.Component):
         self._next_id += 1
         return res
 
+    def make_card(self, card_name, id_=None):
+        """
+        Ввести карту в игру. Если id карты известен, то он и будет выдан, иначе - сгенерирован
+        :param card_name: Название нужной карты
+        :type card_name: str
+        :param id_: известный id карты
+        :type id_: int | None
+        :return: Зарегистрированная полная версия карты
+        :rtype: core.card.card.Card
+        """
+        card = self.view_card(card_name)
+        self.register_component(card, id_=id_)
+        return card
+
+    def view_card(self, card_name):
+        """
+        Взглянуть на полную версию карты.
+        :param card_name: Название интересующей карты
+        :type card_name: str
+        :return: Полная версия карты
+        :rtype: core.card.card.Card
+        """
+        return self[(TABLE, CARD)][card_name]()
+
     def register_component(self, component, id_=None):
         # print set(component.categories) & UNINDEXABLE, component.categories, UNINDEXABLE
         if not set(component.categories) & UNINDEXABLE:

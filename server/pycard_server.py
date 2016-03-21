@@ -6,21 +6,29 @@
 
 import io
 import json
-from twisted.internet import reactor, defer
+from twisted.internet import (
+    reactor,
+    defer,
+)
 from twisted.internet import protocol
-from twisted.logger import Logger, jsonFileLogObserver
+from twisted.logger import (
+    Logger,
+    jsonFileLogObserver,
+)
 import core.predef as predef
 
 __author__ = 'Anton Korobkov'
 
-log = Logger(observer=jsonFileLogObserver(io.open("server.json", "a")),
-                 namespace="server")
+log = Logger(
+    observer=jsonFileLogObserver(io.open("server.json", "a")),
+    namespace="server"
+)
+
 
 class MultiEcho(protocol.Protocol):
 
-    def __init__(self, factory, players):
+    def __init__(self, factory):
         self.factory = factory
-        self.players = {}
 
     def connectionMade(self):
         log.info('Incoming connection on {host}', host=self)
@@ -68,8 +76,10 @@ class MultiEcho(protocol.Protocol):
         """
 
         # TODO: отрефакторить это обязательно!
-        self.players[self] = [params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_MAC_KEY],
-                              params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_NAME_KEY]]
+        self.players[self] = [
+            params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_MAC_KEY],
+            params[predef.MESSAGE_PARAMS_KEY][predef.CHAT_NAME_KEY],
+        ]
 
         params[predef.MESSAGE_TYPE_KEY] = predef.CHAT_JOIN
 
@@ -84,46 +94,26 @@ class MultiEcho(protocol.Protocol):
 
         self.factory.echoers.remove(self)
 
-        part_message = {predef.MESSAGE_TYPE_KEY: predef.CHAT_PART,
-                        predef.MESSAGE_PARAMS_KEY: {
-                            predef.CHAT_NAME_KEY: self.players[self][1],  # TODO: ещё один хак который надо будет убрать
-                            predef.CHAT_MAC_KEY: self.players[self][0]
-                        }
-                        }
-
+        part_message = {
+            predef.MESSAGE_TYPE_KEY: predef.CHAT_PART,
+            predef.MESSAGE_PARAMS_KEY: {
+                predef.CHAT_NAME_KEY: self.players[self][1],  # TODO: ещё один хак который надо будет убрать
+                predef.CHAT_MAC_KEY: self.players[self][0]
+            }
+        }
         log.info('some {data} sent', data=str(part_message))
         self.send_global_message(json.dumps(part_message))
-
-    def handle_chat_message(self, params):
-        """
-        Просто отсылаем всем то, что нам пришло
-        """
-        self.send_global_message(json.dumps(params))
 
 
 class MultiEchoFactory(protocol.Factory):
 
-    def __init__(self, app):
-        self.echoers = []
-        self.app = app
-        self.players = 2
-        log.info('Instantiated server for {playernum} players', playernum=self.players)
-
-    def buildProtocol(self, addr):
-        return MultiEcho(self, self.players)
-
-
-class RetardLauncher(object):
-    """
-    Просто запустить все
-    """
+    protocol = MultiEcho
 
     def __init__(self):
-        reactor.listenTCP(8000, MultiEchoFactory(self))
-
-    def launch(self):
-        reactor.run()
+        self.echoers = []
+        log.info('Instantiated server for {playernum} players', playernum=self.players)
 
 
 if __name__ == '__main__':
-    RetardLauncher().launch()
+    reactor.listenTCP(8000, MultiEchoFactory())
+    reactor.run()

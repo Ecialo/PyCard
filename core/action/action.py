@@ -77,6 +77,14 @@ class Action(object):
         """
         return None
 
+    def check(self):
+        """
+        Проверяет возможно ли выполнить данное действие. По умолчанию любое действие можно выполнить.
+        :return: Возможно ли выполнить действие
+        :rtype: bool
+        """
+        return True
+
     def __ror__(self, other):
         return ActionPipe(self._author, [other, self])
 

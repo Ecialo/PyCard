@@ -18,6 +18,7 @@ class UnorderedDesk(desk.Desk):
 
     def take_of(self, card):
         self._cards.remove(card)
+        # super(UnorderedDesk, self).take_of(card)
 
     @property
     def cards(self):
