@@ -116,6 +116,7 @@ class RetardGame(game.Game):
     name = "retard_game"
 
     def __init__(self, players):
+        players = [player if isinstance(player, RetardPlayer) else RetardPlayer(**player) for player in players]
         super(RetardGame, self).__init__(
             components=retard_components + players,
             flow=RetardFlow,

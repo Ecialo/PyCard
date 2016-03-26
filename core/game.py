@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from itertools import chain
 from collections import defaultdict
+import inspect
 from predef import *
 from . import utility as util
 from flow.flow import EndOfCurrentFlow
@@ -47,7 +48,13 @@ class Game(util.Component):
         }
         self._next_id = 0
         self._components_by_id = {}
+        # self._components_factories = {}
+        #
+        # for component in components:
+        #     if inspect.isclass(component):
+        #         self._components_factories[component.__name__] = component
 
+        components = filter(lambda x: not inspect.isclass(x), components)
         components.append(self)
 
         # components = chain(
@@ -155,6 +162,18 @@ class Game(util.Component):
         self.register_component(card, id_=id_)
         return card
 
+    # def make_component(self, component_name, **kwargs):
+    #     """
+    #     Создает, но не регистрирует асоциированый с игрой компонент.
+    #     :param component_name:
+    #     :type component_name:
+    #     :param kwargs:
+    #     :type kwargs:
+    #     :return:
+    #     :rtype:
+    #     """
+    #     return self._components_factories[component_name](**kwargs)
+
     def view_card(self, card_name):
         """
         Взглянуть на полную версию карты.
@@ -173,6 +192,7 @@ class Game(util.Component):
             else:
                 component.id = id_
             self._components_by_id[component.id] = component
+        # print component, component.id
         for category in component.categories:
             if component.fullname in self._components[category]:
                 raise WTFError()

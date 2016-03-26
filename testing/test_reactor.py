@@ -11,12 +11,34 @@
 """
 
 import argparse
+
 import sys
 import json
 import unittest
 import os
+import collections as col
 from core.game import GameOver
 from core import predef
+
+PREDEFS_SCENAIO_SEPARATOR = "---"
+NAME = 'name'
+
+
+def extract_predefs(log):
+    """
+    Извлекает предопределённые сценарием параметры.
+    :param log:
+    :type log:
+    :return: Параметры
+    :rtype: dict
+    """
+    params = col.defaultdict(list)
+    for line in log:
+        if line.startswith(PREDEFS_SCENAIO_SEPARATOR):
+            return log, params
+        else:
+            param = json.loads(line)
+            params[param[NAME]].append(param['value'])
 
 
 class TestReactor(object):
@@ -27,27 +49,12 @@ class TestReactor(object):
 
         }
 
-    @staticmethod
-    def _lock_log(log):
-        return iter(log)
-
-    def _make_predef(self, log):
-        """
-        Делает предустановки из лога.
-        :param log:
-        :return:
-        """
-        for line in log:
-            if line.startswith("---"):
-                self.complete_configure()
-                return log
-
-    def complete_configure(self):
+    def configure(self, params):
         """
         Завершает предварительную конфигурацию
         :return:
         """
-        pass
+        self.game = self.game(**params)
 
     def autotest(self, log):
         """
@@ -58,9 +65,7 @@ class TestReactor(object):
         * Если видит точку остановки - переходит в интерактивный режим. Не реализовано.
         :return:
         """
-        locked_log = self._lock_log(log)
-        self._make_predef(locked_log)
-        self._autotest(locked_log)
+        self._autotest(log)
 
     def _autotest(self, log):
         for line in log:
@@ -102,7 +107,10 @@ def make_test_method(path_to_test_scenario):
     def test_method(self):
         with open(path_to_test_scenario) as test_scenario:
             try:
-                self.reactor.autotest(test_scenario)
+                scenario = iter(test_scenario)
+                log, params = extract_predefs(scenario)
+                self.reactor.configure(params)
+                self.reactor.autotest(log)
             except GameOver:
                 pass
 
@@ -133,11 +141,20 @@ class TestGame(unittest.TestCase):
     path_to_scenarios = None
 
     def setUp(self):
-        self.reactor = TestReactor(self.game())
+        self.reactor = TestReactor(self.game)
         self.reactor.asserts["=="] = self.assertEqual
 
     def tearDown(self):
         self.reactor = None
+
+
+class FullTestGame(TestGame):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
 
 
 def test(game):         # TODO переписать на argparse

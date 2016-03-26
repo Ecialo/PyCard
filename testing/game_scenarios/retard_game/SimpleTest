@@ -1,3 +1,5 @@
+{"name": "players", "value": {"name": "Eustace"}}
+{"name": "players", "value": {"name": "Spooky"}}
 ---
 Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Eustace_hand_1"}}, "author": "Eustace"}, "type": 0}
 >>>
