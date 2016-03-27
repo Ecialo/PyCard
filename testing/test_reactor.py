@@ -22,6 +22,7 @@ from core import predef
 
 PREDEFS_SCENAIO_SEPARATOR = "---"
 NAME = 'name'
+AT = "@"
 
 
 def extract_predefs(log):
@@ -42,6 +43,9 @@ def extract_predefs(log):
 
 
 class TestReactor(object):
+    """
+    Прогоняет тестовый сценарий на серверной копии игры.
+    """
 
     def __init__(self, game):
         self.game = game
@@ -70,12 +74,18 @@ class TestReactor(object):
     def _autotest(self, log):
         for line in log:
             if line.startswith(">>>"):   # TODO remove hardcode
-                self.game.run()
+                self._run_game()
             elif line.startswith(predef.SUBSTITUTION_SYMBOL):
                 self._test_components(line)
             else:
                 author, message = line.rstrip().split(" ", 1)
-                self.game.receive_message(message)
+                self._send_message(message)
+
+    def _run_game(self):
+        self.game.run()
+
+    def _send_message(self, message):
+        self.game.receive_message(message)
 
     def interactive(self, log=None):
         """
@@ -93,13 +103,61 @@ class TestReactor(object):
         for assertion in self.asserts:
             if assertion in line:
                 raw_component_1, raw_component_2 = line.rstrip().split(" " + assertion + " ")
-                component_1 = self.game[raw_component_1]
-                component_2 = (
-                    self.game[raw_component_2]
-                    if raw_component_2.startswith(predef.SUBSTITUTION_SYMBOL) else
-                    eval(raw_component_2)
-                )
+                component_1 = self._parse_component(raw_component_1)
+                component_2 = self._parse_component(raw_component_2)
                 self.asserts[assertion](component_1, component_2, line)
+
+    def _parse_component(self, raw_component):
+        is_path = predef.SUBSTITUTION_SYMBOL in raw_component
+        with_address = AT in raw_component
+        if is_path:
+            if with_address:
+                path, _ = raw_component.split(AT)
+            else:
+                path = raw_component
+            return self.game[path]
+        else:
+            return eval(raw_component)
+
+
+class FullTestReactor(TestReactor):
+    """
+    Прогоняет тестовый сценарий на серверной копии игры, но так же отслеживает состояние клиентских частей.
+    """
+    def __init__(self, game):
+        super(FullTestReactor, self).__init__(game)
+        self.clients = {}
+
+    def configure(self, params):
+        players = params['players']
+        for player in players:
+            self.clients[player['name']] = self.game(
+                mode=predef.CLIENT,
+                **params
+            )
+        self.clients[predef.SYSTEM] = self.game(**params)
+
+    def _run_game(self):
+        response = self.clients[predef.SYSTEM].run()
+        if response:
+            for receiver, message in response.iteritems():
+                self.clients[receiver].receive_message(message)
+
+    def _send_message(self, message):
+        self.clients[predef.SYSTEM].receive_message(message)
+
+    def _parse_component(self, raw_component):
+        is_path = predef.SUBSTITUTION_SYMBOL in raw_component
+        with_address = AT in raw_component
+        if is_path:
+            if with_address:
+                path, address = raw_component.split(AT)
+            else:
+                path, address = raw_component, predef.SYSTEM
+            # print "\n\n\n", address
+            return self.clients[address][path]
+        else:
+            return eval(raw_component)
 
 
 def make_test_method(path_to_test_scenario):
@@ -141,24 +199,15 @@ class TestGame(unittest.TestCase):
     path_to_scenarios = None
 
     def setUp(self):
-        self.reactor = TestReactor(self.game)
+        self.reactor = FullTestReactor(self.game)
         self.reactor.asserts["=="] = self.assertEqual
 
     def tearDown(self):
         self.reactor = None
 
 
-class FullTestGame(TestGame):
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-
 def test(game):         # TODO переписать на argparse
-    test_reactor = TestReactor(game)
+    test_reactor = FullTestReactor(game)
     try:
         filename = sys.argv[1]
         # print filename

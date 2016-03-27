@@ -55,7 +55,7 @@ class Action(object):
         :return:
         """
         substituted_args = {}
-        self._author = environment[(predef.PLAYER, self._author)]
+        self._author = environment[(predef.PLAYER, self._author)] if self._author != predef.SYSTEM else environment
         self.game = environment
         for argname, argval in self._args.iteritems():
             if isinstance(argval, basestring) and argval.startswith(predef.SUBSTITUTION_SYMBOL):
@@ -91,6 +91,13 @@ class Action(object):
     def __rand__(self, other):
         return ActionSequence(self._author, [other, self])
 
+    def get_message_struct(self):
+        messageable_args = {
+            argname: ((predef.SUBSTITUTION_SYMBOL + argval.path) if isinstance(argval, util.Component) else argval)
+            for argname, argval in self._args.iteritems()
+        }
+        return {self.name: messageable_args}
+
     def make_message(self):
         """
         Создает на основе действия json строку сообщения. Сообщение имеет следующий формат:
@@ -103,11 +110,8 @@ class Action(object):
         :return: json строка с сообщением
         :rtype: str
         """
-        messageable_args = {
-            argname: ((predef.SUBSTITUTION_SYMBOL + argval.path) if isinstance(argval, util.Component) else argval)
-            for argname, argval in self._args.iteritems()
-        }
-        return util.make_message(self._author, self.name, **messageable_args)
+        messageable_struct = self.get_message_struct()
+        return util.make_message(self._author, messageable_struct)
 
     def make_visible_response(self):
         pass
@@ -126,8 +130,9 @@ class ActionCollection(Action):
         for action in self._actions:
             yield action
 
-    def make_message(self):
-        pass
+    def substitute_enviroment(self, environment):
+        for action in self._actions:
+            action.substitute_enviroment(environment)
 
 
 class ActionPipe(ActionCollection):
@@ -153,7 +158,7 @@ class ActionPipe(ActionCollection):
     def make_message(self):
         return util.make_pipe_message(
             self._author,
-            [action.make_message() for action in self._actions]
+            *[action.get_message_struct() for action in self._actions]
         )
 
 
@@ -172,13 +177,12 @@ class ActionSequence(ActionCollection):
 
     def apply(self):
         return reduce(
-            lambda prev, action: prev.update(action.apply()),
+            lambda _, action: action.apply(),
             self,
-            {}
         )
 
     def make_message(self):
         return util.make_sequence_message(
             self._author,
-            [action.make_message() for action in self._actions]
+            *[action.get_message_struct() for action in self._actions]
         )

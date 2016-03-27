@@ -71,14 +71,14 @@ class Table(Singleton, Component):
         cls._name = prefix + "_" + cls.name
 
 
-def make_message(author, action_name, **kwargs):        # TODO нужно немного обобщить
+def make_message(author, message_struct):        # TODO нужно немного обобщить
     """
     Формат сообщения {имя_сообщения: {параметр: значение}}
     """
     message = {
         predef.MESSAGE_TYPE_KEY: predef.ACTION_JUST,
         predef.MESSAGE_PARAMS_KEY: {
-            predef.MESSAGE_ACTION_KEY: {action_name: kwargs},
+            predef.MESSAGE_ACTION_KEY: message_struct,
             predef.MESSAGE_AUTHOR_KEY: author,
         }
     }

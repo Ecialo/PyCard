@@ -103,7 +103,12 @@ class Game(util.Component):
                 raise GameOver()
             else:
                 visibility = self.expand_visibility(action)
-                return self.response(action, visibility)
+                response = self.response(action, visibility)
+                # print "\n\nresponse\n", response
+                return {
+                    receiver: response_action.make_message()
+                    for receiver, response_action in response.iteritems()
+                }
         else:
             return None
 

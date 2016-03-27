@@ -66,3 +66,13 @@ class DrawCards(action.Action):
             cards=cards
         )
         return remove & append
+
+if __name__ == '__main__':
+    draw_cards = DrawCards(
+        author="system",
+        source="Ololo",
+        target="Azaza",
+        _cards=["push"]
+    )
+    print draw_cards.make_visible_response().make_message()
+    print draw_cards.make_message()

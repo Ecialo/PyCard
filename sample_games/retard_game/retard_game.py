@@ -4,7 +4,9 @@ import core.player as player
 import core.resource as resource
 
 import core.action.common_action_tables.game_action_table as game_action_table
+from core.action.common_action_tables import system_action_table
 import core.action.common_actions.draw_cards as draw_cards
+from core.action import common_system_actions
 
 import core.card.card as card
 import core.card.card_table as card_table
@@ -23,6 +25,14 @@ __author__ = 'ecialo'
 class RetardActionTable(game_action_table.GameActionTable):
     actions = [
         draw_cards.DrawCards,
+    ]
+
+
+class RetardSystemActionTable(system_action_table.SystemActionTable):
+    actions = [
+        common_system_actions.append_cards.AppendCards,
+        common_system_actions.remove_cards.RemoveCards,
+        common_system_actions.next_stage.NextStage,
     ]
 
 
@@ -79,48 +89,59 @@ class RetardCondition(cond.Condition):
         # deck_ = game_[(predef.DECK, self._deck)]
         return self._deck.is_empty()
 
-player1 = RetardPlayer('Eustace')
-player2 = RetardPlayer('Spooky')
-retard_deck = RetardDeck()
-retard_card_table = RetardCardTable()
-retard_action_table = RetardActionTable()
+# player1 = RetardPlayer('Eustace')
+# player2 = RetardPlayer('Spooky')
+# retard_deck = RetardDeck()
+# retard_card_table = RetardCardTable()
+# retard_action_table = RetardActionTable()
 
-
-class RetardFlow(flow.TurnCycle):
-
-    turn = RetardTurn
-    condition = RetardCondition(retard_deck)
-
-retard_components = [
-    retard_action_table,
-    retard_card_table,
-    retard_deck,
-    # player1,
-    # player2,
-]
-
-player1_draw_card = draw_cards.DrawCards(
-    author=player1,
-    source=retard_deck,
-    target=player1.resources["hand"]
-)
-player2_draw_card = draw_cards.DrawCards(
-    author=player2,
-    source=retard_deck,
-    target=player2.resources["hand"]
-)
+# retard_components = [
+#     retard_action_table,
+#     retard_card_table,
+#     retard_deck,
+#     # player1,
+#     # player2,
+# ]
+#
+# player1_draw_card = draw_cards.DrawCards(
+#     author=player1,
+#     source=retard_deck,
+#     target=player1.resources["hand"]
+# )
+# player2_draw_card = draw_cards.DrawCards(
+#     author=player2,
+#     source=retard_deck,
+#     target=player2.resources["hand"]
+# )
 
 
 class RetardGame(game.Game):
 
     name = "retard_game"
 
-    def __init__(self, players):
+    def __init__(self, players, mode=predef.SERVER):
         players = [player if isinstance(player, RetardPlayer) else RetardPlayer(**player) for player in players]
+        retard_deck = RetardDeck()
+        retard_card_table = RetardCardTable()
+        retard_action_table = RetardActionTable()
+        retard_system_action_table = RetardSystemActionTable()
+        retard_components = [
+            retard_action_table,
+            retard_card_table,
+            retard_system_action_table,
+            retard_deck,
+            # player1,
+            # player2,
+        ]
+
+        class RetardFlow(flow.TurnCycle):
+            turn = RetardTurn
+            condition = RetardCondition(retard_deck)
+
         super(RetardGame, self).__init__(
             components=retard_components + players,
             flow=RetardFlow,
-            mode=predef.SERVER
+            mode=mode
         )
 
 if __name__ == '__main__':

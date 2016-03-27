@@ -11,7 +11,7 @@ class NextStage(Action):
         self.game.next_stage()
 
     def make_visible_response(self):
-        return self.make_message()
+        return self
 
     def make_invisible_response(self):
-        return self.make_message()
+        return self

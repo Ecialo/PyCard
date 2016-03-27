@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from operator import and_
 from ..utility import Table
 from .. import predef
 __author__ = 'Ecialo'
@@ -31,6 +32,10 @@ class ActionTable(Table):
         :rtype: core.action.Action
         """
         action = self._parse_message(message)
+        # print "\n\n\n"
+        # print message
+        # print action
+        # print "\n\n\n"
         action.substitute_enviroment(game)
         return action
 
@@ -45,18 +50,29 @@ class ActionTable(Table):
         """
         raw_action = json.loads(message)
         action_type = raw_action[predef.MESSAGE_TYPE_KEY]
+
         raw_action = raw_action[predef.MESSAGE_PARAMS_KEY]
         author = raw_action[predef.MESSAGE_AUTHOR_KEY]
         if action_type is predef.ACTION_JUST:
-            action_name, action_args = raw_action[predef.MESSAGE_ACTION_KEY].items()[0]
-            action = self._actions[action_name](author)
-            # print action_args
-            return action.setup(**action_args)
+            return self._cook_action(raw_action[predef.MESSAGE_ACTION_KEY], author)
         elif action_type is predef.ACTION_SEQUENCE:
-            pass
+            return reduce(
+                and_,
+                map(
+                    lambda canned_raw_action: self._cook_action(canned_raw_action, author),
+                    raw_action[predef.MESSAGE_ACTION_KEY]
+                )
+            )
         elif action_type is predef.ACTION_PIPE:
             pass
 
+    def _cook_action(self, raw_action, author):
+        # print "bullshit"
+        # print raw_action
+        # print raw_action.items()
+        action_name, params = raw_action.items()[0]
+        cooked_action = self[action_name](author, **params)
+        return cooked_action
 
-    # def _distinct_sequence(self, message):
-    #     return message.split("&")
+    def __getitem__(self, item):
+        return self._actions[item]

@@ -5,6 +5,8 @@ __author__ = 'ecialo'
 
 class RemoveCards(action.Action):
 
+    name = "remove_cards"
+
     def __init__(self, author, **kwargs):
         self.target = None
         self.cards = None
