@@ -8,13 +8,36 @@
 BoxLayout:
     orientation: 'vertical'
 
-    ScrollView:
-        id: field_view
+    BoxLayout:
+        id: top_view
         size_hint_y: 0.6
+        orientation: 'horizontal'
+
+        ScrollView:
+            id: field_view
+
+        BoxLayout:
+            id: users_view
+            orientation: 'vertical'
+            size_hint_x: None
+            width: min(0.25 * root.width, dp(150))
+
+            Label:
+                id: users_caption
+                text: "Players online:"
+                size_hint_y: None
+                height: min(dp(self.font_size * 2), root.height * 0.1)
+
+            ListView:
+                id: users
+                size_hint_y: 0.85
+
+                item_strings: app.users
 
     ScrollView:
         id: chatlog_view
-        size_hint_y: 0.3
+        size_hint_y: None
+        height: min(0.3 * root.height, dp(160))
 
         Label:
             id: chatlog
