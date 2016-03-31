@@ -85,6 +85,8 @@ class TwistedClientApp(App):
         self.connection = connection
         self.send_chat_register()
 
+        self.users.append(self.player_name)
+
     def print_message(self, msg):
         """
         Выводит текст в чат.
@@ -137,7 +139,7 @@ class TwistedClientApp(App):
         name = params[predef.CHAT_NAME_KEY]
         self.print_message("%s has joined" % name)
 
-        users.append(name)
+        self.users.append(name)
 
     def handle_chat_part(self, params):
         """
@@ -147,7 +149,10 @@ class TwistedClientApp(App):
         name = params[predef.CHAT_NAME_KEY]
         self.print_message("%s has left" % name)
 
-        users.remove(name)
+        for i, u in enumerate(self.users):
+            if u == name:
+                self.users.pop(i)
+                break
 
     def handle_chat_message(self, params):
         """
