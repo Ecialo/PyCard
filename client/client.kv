@@ -6,9 +6,11 @@
 #: import ScrollView kivy.uix.scrollview
 #: import sla kivy.adapters.simplelistadapter
 
+
 <ControlButton@Button>:
     size_hint_y: None
     height: dp(30)
+
 
 <LobbyScreen@Screen>:
     BoxLayout:
@@ -25,8 +27,9 @@
                 rows: 1
 
                 ControlButton:
-                    text: "Play"
-                    on_press: root.manager.current = 'game'
+                    id: ready_button
+                    text: "Ready"
+                    on_press: app.on_ready_clicked()
 
                 ControlButton:
                     text: "Options"
@@ -86,7 +89,7 @@
 <GameScreen@Screen>:
     BoxLayout:
         ControlButton:
-            text: "Stay tuned for more sick UI updates!"
+            text: "You should be playing right now."
             on_press: root.manager.current = 'lobby'
 
 
