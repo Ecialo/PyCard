@@ -13,6 +13,7 @@ class Component(object):
     name = None
     categories = []
     associated_components = []
+    hooks = []
 
     def __init__(self):
         self._name = self.name

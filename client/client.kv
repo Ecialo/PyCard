@@ -4,37 +4,90 @@
 #: import Button kivy.uix.button
 #: import Popup kivy.uix.popup
 #: import ScrollView kivy.uix.scrollview
+#: import sla kivy.adapters.simplelistadapter
 
-BoxLayout:
-    orientation: 'vertical'
+<ControlButton@Button>:
+    size_hint_y: None
+    height: dp(30)
 
-    ScrollView:
-        id: field_view
-        size_hint_y: 0.6
+<LobbyScreen@Screen>:
+    BoxLayout:
+        orientation: 'vertical'
 
-    ScrollView:
-        id: chatlog_view
-        size_hint_y: 0.3
+        BoxLayout:
+            id: top_view
+            size_hint_y: 1
+            orientation: 'horizontal'
 
-        Label:
-            id: chatlog
-            halign: 'left'
-            valign: 'top'
+            GridLayout:
+                id: buttons_view
+                cols: 3
+                rows: 1
 
-            # add a 5px margin around the texture
-            text_size: self.width - dp(10), None
+                ControlButton:
+                    text: "Play"
+                    on_press: root.manager.current = 'game'
 
-            # make label scrollable
+                ControlButton:
+                    text: "Options"
+                    disabled: True
+
+                ControlButton:
+                    text: "Exit"
+                    on_press: app.stop()
+            
+            BoxLayout:
+                size_hint_y: 1
+
+            BoxLayout:
+                id: users_view
+                orientation: 'vertical'
+                size_hint_x: None
+                width: min(0.25 * root.width, dp(200))
+
+                Label:
+                    id: users_caption
+                    text: "Players online:"
+                    size_hint_y: None
+                    height: min(dp(self.font_size * 2), root.height * 0.1)
+
+                ListView:
+                    id: users
+                    size_hint_y: 0.85
+                    adapter:
+                        sla.SimpleListAdapter(data=app.users, cls=Label.Label)
+
+        ScrollView:
+            id: chatlog_view
             size_hint_y: None
-            height: self.texture_size[1]
+            height: min(0.3 * root.height, dp(160))
 
-    TextInput:
-        id: input_field
-        size_hint_y: None
+            Label:
+                id: chatlog
+                halign: 'left'
+                valign: 'top'
 
-        height: dp(self.font_size * 2)
-        multiline: False
-        on_text_validate: app.send_chat_message()
+                # add a 5px margin around the texture
+                text_size: self.width - dp(10), None
+
+                # make label scrollable
+                size_hint_y: None
+                height: self.texture_size[1]
+
+        TextInput:
+            id: input_field
+            size_hint_y: None
+
+            height: dp(self.font_size * 2)
+            multiline: False
+            on_text_validate: app.send_chat_message()
+
+
+<GameScreen@Screen>:
+    BoxLayout:
+        ControlButton:
+            text: "Stay tuned for more sick UI updates!"
+            on_press: root.manager.current = 'lobby'
 
 
 <ConnectionWidget@Popup>:
