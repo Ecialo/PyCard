@@ -66,6 +66,7 @@ class TwistedClientApp(App):
     player_name, macaddr = None, get_mac()
 
     users = []
+    ready = False
 
     def build(self):
         sm = ScreenManager(transition=FadeTransition())
@@ -145,6 +146,9 @@ class TwistedClientApp(App):
         elif ev_type == predef.CHAT_MESSAGE:
             self.handle_chat_message(params)
 
+        elif ev_type == predef.LOBBY_ALL_READY:
+        	self.handle_lobby_all_ready(params)
+        	
         else:
             pass # TODO: add handlers for all events
 
@@ -179,6 +183,13 @@ class TwistedClientApp(App):
         author = params[predef.CHAT_AUTHOR_KEY]
         msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY]
         self.print_message("<%s> %s" % (author, text))
+
+    def handle_lobby_all_ready(self, params):
+    	"""
+    	Обработчик для сообщения «все готовы, пора играть».
+    	"""
+
+    	self.root.current = 'game'
 
 
     # Генерация сообщений для сервера
@@ -221,6 +232,43 @@ class TwistedClientApp(App):
         }
         self.lobby_scr.ids.input_field.text = ""
         self.send_message(msg)
+
+    def send_lobby_ready(self):
+        """
+        Отправляет сигнал о готовности к началу игры.
+        """
+
+        msg = {
+            predef.MESSAGE_TYPE_KEY: predef.LOBBY_READY,
+            predef.MESSAGE_PARAMS_KEY: {
+                predef.CHAT_MAC_KEY: self.macaddr
+            }
+        }
+        self.send_message(msg)
+
+    def send_lobby_not_ready(self):
+        """
+        Отправляет сигнал об отмене готовности к началу игры.
+        """
+
+        msg = {
+            predef.MESSAGE_TYPE_KEY: predef.LOBBY_NOT_READY,
+            predef.MESSAGE_PARAMS_KEY: {
+                predef.CHAT_MAC_KEY: self.macaddr
+            }
+        }
+        self.send_message(msg)
+
+
+    # Обработка событий с виджетов
+
+    def on_ready_clicked(self):
+        self.lobby_scr.ids.ready_button.text = "Ready" if self.ready else "Not ready"
+        self.ready = not self.ready
+        if self.ready:
+            self.send_lobby_ready()
+        else:
+            self.send_lobby_not_ready()
 
 
 class StdoutHook():
