@@ -9,7 +9,10 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.factory import Factory
 from kivy.support import install_twisted_reactor
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+
 install_twisted_reactor()
+
 from twisted.internet import reactor, protocol
 from twisted.logger import Logger, jsonFileLogObserver
 
@@ -49,19 +52,36 @@ class EchoFactory(protocol.ClientFactory):
         self.app.print_message("Connection failed!")
 
 
+Builder.load_file('./client.kv')
+
+# пустые экраны, разметка для которых содержится в client.kv
+class LobbyScreen(Screen):
+    pass
+class GameScreen(Screen):
+    pass
+
+
 class TwistedClientApp(App):
     connection = None
     player_name, macaddr = None, get_mac()
 
+    users = []
+    ready = False
+
     def build(self):
-        root = Builder.load_file('./client.kv')
-        return root
+        sm = ScreenManager(transition=FadeTransition())
+        sm.add_widget(LobbyScreen(name='lobby'))
+        sm.add_widget(GameScreen(name='game'))
+
+        self.lobby_scr = sm.get_screen('lobby')
+        self.game_scr = sm.get_screen('game')
+        return sm
 
     def on_start(self):
         """
         Вызывается автоматически после создания интерфейса.
         """
-        self.stdout_hook = StdoutHook(self.root.ids.chatlog)
+        self.stdout_hook = StdoutHook(self.lobby_scr.ids.chatlog)
         Factory.ConnectionWidget().open()
 
     def connect_to_server(self, host, port):
@@ -83,14 +103,16 @@ class TwistedClientApp(App):
         self.connection = connection
         self.send_chat_register()
 
+        self.users.append(self.player_name)
+
     def print_message(self, msg):
         """
         Выводит текст в чат.
         """
 
-        self.root.ids.chatlog.text += msg + "\n"
+        self.lobby_scr.ids.chatlog.text += msg + "\n"
         self.scroll_if_necessary()
-        self.root.ids.input_field.focus = True
+        self.lobby_scr.ids.input_field.focus = True
 
     def scroll_if_necessary(self):
         """
@@ -98,11 +120,11 @@ class TwistedClientApp(App):
         Судя по наблюдениям за интерфейсом, каждая строка имеет высоту 1.5 * font_h.
         """
 
-        hidden_h = self.root.ids.chatlog.height - self.root.ids.chatlog_view.height
-        font_h = self.root.ids.chatlog.font_size
-        near_the_bottom = (self.root.ids.chatlog_view.scroll_y * hidden_h < 3.0 * font_h)
+        hidden_h = self.lobby_scr.ids.chatlog.height - self.lobby_scr.ids.chatlog_view.height
+        font_h = self.lobby_scr.ids.chatlog.font_size
+        near_the_bottom = (self.lobby_scr.ids.chatlog_view.scroll_y * hidden_h < 3.0 * font_h)
         if near_the_bottom:
-            self.root.ids.chatlog_view.scroll_y = 0
+            self.lobby_scr.ids.chatlog_view.scroll_y = 0
 
 
     # Обработка сообщений сервера
@@ -124,6 +146,9 @@ class TwistedClientApp(App):
         elif ev_type == predef.CHAT_MESSAGE:
             self.handle_chat_message(params)
 
+        elif ev_type == predef.LOBBY_ALL_READY:
+        	self.handle_lobby_all_ready(params)
+        	
         else:
             pass # TODO: add handlers for all events
 
@@ -135,6 +160,8 @@ class TwistedClientApp(App):
         name = params[predef.CHAT_NAME_KEY]
         self.print_message("%s has joined" % name)
 
+        self.users.append(name)
+
     def handle_chat_part(self, params):
         """
         Обработчик для ухода игрока с сервера.
@@ -142,6 +169,11 @@ class TwistedClientApp(App):
 
         name = params[predef.CHAT_NAME_KEY]
         self.print_message("%s has left" % name)
+
+        for i, u in enumerate(self.users):
+            if u == name:
+                self.users.pop(i)
+                break
 
     def handle_chat_message(self, params):
         """
@@ -151,6 +183,13 @@ class TwistedClientApp(App):
         author = params[predef.CHAT_AUTHOR_KEY]
         msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY]
         self.print_message("<%s> %s" % (author, text))
+
+    def handle_lobby_all_ready(self, params):
+    	"""
+    	Обработчик для сообщения «все готовы, пора играть».
+    	"""
+
+    	self.root.current = 'game'
 
 
     # Генерация сообщений для сервера
@@ -188,11 +227,48 @@ class TwistedClientApp(App):
             predef.MESSAGE_PARAMS_KEY: {
                 predef.CHAT_AUTHOR_KEY: self.player_name,
                 predef.CHAT_MESSAGE_TYPE_KEY: predef.CHAT_MESSAGE_BROADCAST, # TODO: implement private messages
-                predef.CHAT_TEXT_KEY: self.root.ids.input_field.text,
+                predef.CHAT_TEXT_KEY: self.lobby_scr.ids.input_field.text,
             }
         }
-        self.root.ids.input_field.text = ""
+        self.lobby_scr.ids.input_field.text = ""
         self.send_message(msg)
+
+    def send_lobby_ready(self):
+        """
+        Отправляет сигнал о готовности к началу игры.
+        """
+
+        msg = {
+            predef.MESSAGE_TYPE_KEY: predef.LOBBY_READY,
+            predef.MESSAGE_PARAMS_KEY: {
+                predef.CHAT_MAC_KEY: self.macaddr
+            }
+        }
+        self.send_message(msg)
+
+    def send_lobby_not_ready(self):
+        """
+        Отправляет сигнал об отмене готовности к началу игры.
+        """
+
+        msg = {
+            predef.MESSAGE_TYPE_KEY: predef.LOBBY_NOT_READY,
+            predef.MESSAGE_PARAMS_KEY: {
+                predef.CHAT_MAC_KEY: self.macaddr
+            }
+        }
+        self.send_message(msg)
+
+
+    # Обработка событий с виджетов
+
+    def on_ready_clicked(self):
+        self.lobby_scr.ids.ready_button.text = "Ready" if self.ready else "Not ready"
+        self.ready = not self.ready
+        if self.ready:
+            self.send_lobby_ready()
+        else:
+            self.send_lobby_not_ready()
 
 
 class StdoutHook():

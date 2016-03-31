@@ -15,16 +15,20 @@ PLAYER, DECK, DESK, RESOURCE, HAND, CARD, TABLE, ACTION, GAME = (
 
 GAME_ACTION_TABLE, SYSTEM_ACTION_TABLE = "game_action_table", "system_action_table"
 UNINDEXABLE = {PLAYER, TABLE}
+ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE = xrange(3)
 
 (
-    ACTION_JUST,
-    ACTION_SEQUENCE,
-    ACTION_PIPE,
-    CHAT_REGISTER,
-    CHAT_JOIN,
-    CHAT_PART,
-    CHAT_MESSAGE
-) = xrange(7)
+	ACTION_JUST,
+	ACTION_SEQUENCE,
+	ACTION_PIPE,
+	CHAT_REGISTER,
+	CHAT_JOIN,
+	CHAT_PART,
+	CHAT_MESSAGE,
+	LOBBY_READY,
+	LOBBY_NOT_READY,
+	LOBBY_ALL_READY
+) = xrange(10)
 CARD_BACK = "back"
 
 ALL, AUTHOR = "all", "author"
@@ -48,10 +52,10 @@ CHAT_MESSAGE_PRIVATE, CHAT_MESSAGE_BROADCAST = xrange(2)
 
 CHAT_NAME_KEY, CHAT_AUTHOR_KEY, CHAT_MESSAGE_TYPE_KEY, CHAT_TEXT_KEY, CHAT_RECEIVER_KEY, \
 CHAT_MAC_KEY = (
-    'name',
-    'author',
-    'message_type',
-    'text',
-    'receiver',
-    'mac'
+	'name',
+	'author',
+	'message_type',
+	'text',
+	'receiver',
+	'mac'
 )
