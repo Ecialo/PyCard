@@ -2,6 +2,7 @@
 """ Test client """
 
 from uuid import getnode as get_mac
+from hashlib import md5
 import io, sys
 import json
 
@@ -63,9 +64,12 @@ class GameScreen(Screen):
 
 class TwistedClientApp(App):
     connection = None
-    player_name, macaddr = None, get_mac()
+    player_name, macaddr, identity = None, get_mac(), None
 
     users = []
+
+    def rehash(self):
+        self.identity = md5(macaddr + player_name)
 
     def build(self):
         sm = ScreenManager(transition=FadeTransition())
@@ -103,6 +107,7 @@ class TwistedClientApp(App):
 
         self.print_message("Connected succesfully!")
         self.connection = connection
+        self.rehash()
         self.send_chat_register()
 
         self.users.append(self.player_name)
@@ -149,8 +154,8 @@ class TwistedClientApp(App):
             self.handle_chat_message(params)
 
         elif ev_type == predef.LOBBY_ALL_READY:
-        	self.handle_lobby_all_ready(params)
-        	
+            self.handle_lobby_all_ready(params)
+
         else:
             pass # TODO: add handlers for all events
 
@@ -187,11 +192,11 @@ class TwistedClientApp(App):
         self.print_message("<%s> %s" % (author, text))
 
     def handle_lobby_all_ready(self, params):
-    	"""
-    	Обработчик для сообщения «все готовы, пора играть».
-    	"""
+        """
+        Обработчик для сообщения «все готовы, пора играть».
+        """
 
-    	self.root.current = 'game'
+        self.root.current = 'game'
 
 
     # Генерация сообщений для сервера
@@ -214,7 +219,7 @@ class TwistedClientApp(App):
             predef.MESSAGE_TYPE_KEY: predef.CHAT_REGISTER,
             predef.MESSAGE_PARAMS_KEY: {
                 predef.CHAT_NAME_KEY: self.player_name,
-                predef.CHAT_MAC_KEY: self.macaddr
+                predef.CHAT_PLAYER_ID_KEY: self.identity
             }
         }
         self.send_message(msg)
@@ -243,7 +248,7 @@ class TwistedClientApp(App):
         msg = {
             predef.MESSAGE_TYPE_KEY: predef.LOBBY_READY,
             predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_MAC_KEY: self.macaddr
+                predef.CHAT_PLAYER_ID_KEY: self.identity
             }
         }
         self.send_message(msg)
@@ -256,7 +261,7 @@ class TwistedClientApp(App):
         msg = {
             predef.MESSAGE_TYPE_KEY: predef.LOBBY_NOT_READY,
             predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_MAC_KEY: self.macaddr
+                predef.CHAT_PLAYER_ID_KEY: self.identity
             }
         }
         self.send_message(msg)

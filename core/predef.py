@@ -51,11 +51,11 @@ SYSTEM = "system"
 CHAT_MESSAGE_PRIVATE, CHAT_MESSAGE_BROADCAST = xrange(2)
 
 CHAT_NAME_KEY, CHAT_AUTHOR_KEY, CHAT_MESSAGE_TYPE_KEY, CHAT_TEXT_KEY, CHAT_RECEIVER_KEY, \
-CHAT_MAC_KEY = (
+CHAT_PLAYER_ID_KEY = (
 	'name',
 	'author',
 	'message_type',
 	'text',
 	'receiver',
-	'mac'
+	'player_id'
 )
