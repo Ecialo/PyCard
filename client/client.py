@@ -66,7 +66,6 @@ class TwistedClientApp(App):
     player_name, macaddr = None, get_mac()
 
     users = []
-    ready = False
 
     def build(self):
         sm = ScreenManager(transition=FadeTransition())
@@ -75,6 +74,9 @@ class TwistedClientApp(App):
 
         self.lobby_scr = sm.get_screen('lobby')
         self.game_scr = sm.get_screen('game')
+
+        self.lobby_scr.ids.ready_checkbox.bind(state=self.on_ready_clicked)
+
         return sm
 
     def on_start(self):
@@ -262,10 +264,8 @@ class TwistedClientApp(App):
 
     # Обработка событий с виджетов
 
-    def on_ready_clicked(self):
-        self.lobby_scr.ids.ready_button.text = "Ready" if self.ready else "Not ready"
-        self.ready = not self.ready
-        if self.ready:
+    def on_ready_clicked(self, checkbox, state):
+        if state == 'down':
             self.send_lobby_ready()
         else:
             self.send_lobby_not_ready()
