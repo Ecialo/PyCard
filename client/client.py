@@ -70,7 +70,8 @@ class TwistedClientApp(App):
     ready = False
 
     def rehash(self):
-        self.identity = md5(macaddr + player_name)
+        self.identity = md5(str(self.macaddr) + self.player_name).hexdigest()
+
 
     def build(self):
         sm = ScreenManager(transition=FadeTransition())
@@ -110,7 +111,6 @@ class TwistedClientApp(App):
         self.connection = connection
         self.rehash()
         self.send_chat_register()
-
         self.users.append(self.player_name)
 
     def print_message(self, msg):
@@ -158,7 +158,7 @@ class TwistedClientApp(App):
             self.handle_lobby_all_ready(params)
 
         else:
-            pass # TODO: add handlers for all events
+            pass  # TODO: add handlers for all events
 
     def handle_chat_join(self, params):
         """
