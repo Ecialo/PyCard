@@ -17,8 +17,9 @@ import core.flow.turn as turn
 import core.flow.condition as cond
 
 import core.predef as predef
-
-import testing.test_reactor as test
+from client.game_ui.bind_widget import bind_widget
+from client.game_ui.game_widget import GameWidget
+from client.game_ui.player_widget import PlayerWidget
 __author__ = 'ecialo'
 
 
@@ -36,6 +37,7 @@ class RetardSystemActionTable(system_action_table.SystemActionTable):
     ]
 
 
+@bind_widget(PlayerWidget)
 class RetardPlayer(player.Player):
 
     available_resources = [
@@ -115,6 +117,7 @@ class RetardCondition(cond.Condition):
 # )
 
 
+@bind_widget(GameWidget)
 class RetardGame(game.Game):
 
     name = "retard_game"
@@ -143,18 +146,3 @@ class RetardGame(game.Game):
             flow=RetardFlow,
             mode=mode
         )
-
-if __name__ == '__main__':
-    # print player1_draw_card.make_message()
-    # print player2_draw_card.make_message()
-    game_ = RetardGame([player1, player2])
-    try:
-        test.test(game_)
-    except game.GameOver:
-        pass
-    # print len(retard_deck._deck)
-    print player1.resources["hand"]._cards
-    print player2.resources["hand"]._cards
-    print game_._components
-    # print retard_deck._deck
-    # print player2_draw_card.make_message()
