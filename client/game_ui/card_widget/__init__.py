@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = 'ecialo'
 from card_widget import CardWidget
+__author__ = 'ecialo'
 
 __all__ = ['CardWidget']
