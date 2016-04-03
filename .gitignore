@@ -1,5 +1,5 @@
 **/*.json
 **/*.pyc
-/server/twistd.pid
-/server/twistd.log
+/server/server_application/twistd.log
+/server/server_application/twistd.pid
 /.idea/**
