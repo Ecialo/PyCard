@@ -4,6 +4,7 @@
 import re
 import os
 import sys
+import json
 from twisted.application import internet, service
 
 __author__ = 'Anton Korobkov'
@@ -17,16 +18,15 @@ def return_root_directory(dirname):
     return re.sub(pattern, dirname, os.getcwd())
 
 sys.path.append(return_root_directory('PyCard'))
+from server.pycard_server import MultiEchoFactory
 
-from pycard_server import MultiEchoFactory
+params = json.load(open('server_configs'))
 
-port = 8000
-factory = MultiEchoFactory()
+port = params['configs']['port']
+players_per_game = params['configs']['playnum']
+factory = MultiEchoFactory(players_per_game)
 
 # Просто запустить сервер
 application = service.Application("PyCard server")
 pycard_listener = internet.TCPServer(port, factory)
 pycard_listener.setServiceParent(application)
-
-
-
