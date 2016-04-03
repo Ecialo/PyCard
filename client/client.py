@@ -2,6 +2,7 @@
 """ Test client """
 
 from uuid import getnode as get_mac
+from hashlib import md5
 import io, sys
 import json
 
@@ -63,9 +64,14 @@ class GameScreen(Screen):
 
 class TwistedClientApp(App):
     connection = None
-    player_name, macaddr = None, get_mac()
+    player_name, macaddr, identity = None, get_mac(), None
 
     users = []
+    ready = False
+
+    def rehash(self):
+        self.identity = md5(str(self.macaddr) + self.player_name).hexdigest()
+
 
     def build(self):
         sm = ScreenManager(transition=FadeTransition())
@@ -74,6 +80,9 @@ class TwistedClientApp(App):
 
         self.lobby_scr = sm.get_screen('lobby')
         self.game_scr = sm.get_screen('game')
+
+        self.lobby_scr.ids.ready_checkbox.bind(state=self.on_ready_clicked)
+
         return sm
 
     def on_start(self):
@@ -100,8 +109,8 @@ class TwistedClientApp(App):
 
         self.print_message("Connected succesfully!")
         self.connection = connection
+        self.rehash()
         self.send_chat_register()
-
         self.users.append(self.player_name)
 
     def print_message(self, msg):
@@ -145,8 +154,11 @@ class TwistedClientApp(App):
         elif ev_type == predef.CHAT_MESSAGE:
             self.handle_chat_message(params)
 
+        elif ev_type == predef.LOBBY_ALL_READY:
+            self.handle_lobby_all_ready(params)
+
         else:
-            pass # TODO: add handlers for all events
+            pass  # TODO: add handlers for all events
 
     def handle_chat_join(self, params):
         """
@@ -180,6 +192,13 @@ class TwistedClientApp(App):
         msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY]
         self.print_message("<%s> %s" % (author, text))
 
+    def handle_lobby_all_ready(self, params):
+        """
+        Обработчик для сообщения «все готовы, пора играть».
+        """
+
+        self.root.current = 'game'
+
 
     # Генерация сообщений для сервера
 
@@ -201,7 +220,7 @@ class TwistedClientApp(App):
             predef.MESSAGE_TYPE_KEY: predef.CHAT_REGISTER,
             predef.MESSAGE_PARAMS_KEY: {
                 predef.CHAT_NAME_KEY: self.player_name,
-                predef.CHAT_MAC_KEY: self.macaddr
+                predef.CHAT_PLAYER_ID_KEY: self.identity
             }
         }
         self.send_message(msg)
@@ -221,6 +240,41 @@ class TwistedClientApp(App):
         }
         self.lobby_scr.ids.input_field.text = ""
         self.send_message(msg)
+
+    def send_lobby_ready(self):
+        """
+        Отправляет сигнал о готовности к началу игры.
+        """
+
+        msg = {
+            predef.MESSAGE_TYPE_KEY: predef.LOBBY_READY,
+            predef.MESSAGE_PARAMS_KEY: {
+                predef.CHAT_PLAYER_ID_KEY: self.identity
+            }
+        }
+        self.send_message(msg)
+
+    def send_lobby_not_ready(self):
+        """
+        Отправляет сигнал об отмене готовности к началу игры.
+        """
+
+        msg = {
+            predef.MESSAGE_TYPE_KEY: predef.LOBBY_NOT_READY,
+            predef.MESSAGE_PARAMS_KEY: {
+                predef.CHAT_PLAYER_ID_KEY: self.identity
+            }
+        }
+        self.send_message(msg)
+
+
+    # Обработка событий с виджетов
+
+    def on_ready_clicked(self, checkbox, state):
+        if state == 'down':
+            self.send_lobby_ready()
+        else:
+            self.send_lobby_not_ready()
 
 
 class StdoutHook():
