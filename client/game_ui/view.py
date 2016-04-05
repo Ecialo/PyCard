@@ -24,8 +24,16 @@ class TestApp(App):
             Button(
                 text=hands[0].fullname,
                 size_hint=(0.1, 0.1),
-                pos=(0, 250),
+                pos=(50, 250),
                 on_press=lambda self_: hands[0].get_cards("black_card")
+            )
+        )
+        retard_game_widget.add_widget(
+            Button(
+                text=hands[1].fullname,
+                size_hint=(0.1, 0.1),
+                pos=(250, 250),
+                on_press=lambda self_: hands[1].get_cards("black_card")
             )
         )
         return retard_game_widget
