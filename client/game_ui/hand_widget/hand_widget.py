@@ -21,11 +21,16 @@ class HandWidget(slayout.StackLayout):
 
     def __init__(self, hand, **kwargs):
         super(HandWidget, self).__init__(**kwargs)
+        self.ids = kwargs.get('ids')
         self.hand = hand
         self.register_event_type('on_get_cards')
 
     def on_get_cards(self, *cards):
-        self.cards.extend(cards)
+        # print "\n\n\nIDS\n", self.ids.game
+        for card in cards:
+            card = self.ids.game.game.view_card(card)
+            card_widget = card.make_widget()
+            self.add_widget(widget=card_widget)
 
 
 Builder.load_file('./hand_widget/hand_widget.kv')

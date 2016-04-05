@@ -15,11 +15,11 @@ class GameWidget(flayout.FloatLayout):
 
     game = prop.ObjectProperty()
 
-    def __init__(self, game):
-        super(GameWidget, self).__init__()
+    def __init__(self, game, **kwargs):
+        super(GameWidget, self).__init__(**kwargs)
         self.game = game
-        player_widgets = [player.make_widget() for player in self.game.get_category(predef.PLAYER).itervalues()]
-        player_zone = self.ids['player_zone']
+        player_widgets = [player.make_widget(ids={'game': self}) for player in self.game.get_category(predef.PLAYER).itervalues()]
+        player_zone = self.ids.player_zone
         for widget in player_widgets:
             tab = tabbedpanel.TabbedPanelItem(text=widget.player.name)
             tab.add_widget(widget=widget)
