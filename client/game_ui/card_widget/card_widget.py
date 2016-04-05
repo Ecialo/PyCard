@@ -22,7 +22,7 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
     def __init__(self, card, **kwargs):
         super(CardWidget, self).__init__(**kwargs)
         self.card = card
-        print "\n\n\n\n", self.card, "\n\n\n\n"
+        # print "\n\n\n\n", self.card, "\n\n\n\n"
 
 
 Builder.load_file('./card_widget/card_widget.kv')

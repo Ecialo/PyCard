@@ -20,6 +20,8 @@ import core.predef as predef
 from client.game_ui.bind_widget import bind_widget
 from client.game_ui.game_widget import GameWidget
 from client.game_ui.player_widget import PlayerWidget
+from client.game_ui.hand_widget import HandWidget
+from client.game_ui.card_widget import CardWidget
 __author__ = 'ecialo'
 
 
@@ -37,14 +39,19 @@ class RetardSystemActionTable(system_action_table.SystemActionTable):
     ]
 
 
+@bind_widget(HandWidget)
+class RetardHandResource(resource.HandResource):
+    pass
+
+
 @bind_widget(PlayerWidget)
 class RetardPlayer(player.Player):
 
     available_resources = [
-        resource.HandResource
+        RetardHandResource
     ]
 
-
+@bind_widget(CardWidget)
 class RetardBlackCard(card.Card):
 
     name = "black_card"
