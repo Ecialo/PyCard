@@ -10,7 +10,10 @@ from twisted.internet import (
     reactor,
     defer,
 )
-from twisted.internet import protocol
+from twisted.internet import (
+    protocol,
+    task
+)
 from twisted.logger import (
     Logger,
     jsonFileLogObserver,
@@ -44,9 +47,10 @@ log = Logger(
 
 class MultiEcho(protocol.Protocol):
 
-    def __init__(self, factory, playernum):
-        self.factory = factory
-        self.playernum = playernum
+    def __init__(self, *args):
+        self.factory = args[0]
+        self.playernum = args[1]
+        self.anncounter = args[2]
 
     # Twisted методы
 
@@ -87,18 +91,41 @@ class MultiEcho(protocol.Protocol):
                 counter += 1
 
         if counter == self.playernum:
-            msg = {
-                MESSAGE_TYPE_KEY: CHAT_MESSAGE,
-                MESSAGE_PARAMS_KEY: {
-                    CHAT_AUTHOR_KEY: u'Server message',
-                    CHAT_MESSAGE_TYPE_KEY: CHAT_MESSAGE_BROADCAST,
-                    CHAT_TEXT_KEY: u'game is about to start!',
-                }
+            self.prepare_session()
+
+    def warning(self):
+        """
+        Оповещает всех о скором запуске
+        """
+        # TODO: перенести заранее сгенерированные сообщения куда-то
+        # и сделать так чтобы снятие флага "ready" отменяло запуск
+
+        msg = {
+            MESSAGE_TYPE_KEY: CHAT_MESSAGE,
+            MESSAGE_PARAMS_KEY: {
+                CHAT_AUTHOR_KEY: 'Server message',
+                CHAT_MESSAGE_TYPE_KEY: CHAT_MESSAGE_BROADCAST,
+                CHAT_TEXT_KEY: ' '.join(['game will start in', str(5 - self.anncounter), 'seconds'])
             }
+        }
 
-            log.info('starting the {game}', game=self)
+        log.info('starting the {game}', game=self)
 
-            self.send_global_message(json.dumps(msg))
+        self.send_global_message(json.dumps(msg))
+        self.anncounter += 1
+        # Через 5 секунд сообщаем о запуске игры
+        if self.anncounter == 5:
+            self.run_warning.stop()
+
+
+    def prepare_session(self):
+        """ Подготовить сессию игровую к запуску. Если кто-то
+         из клиентов в течении n секунд отожмет чекбокс "готов" -
+         сессию не запускать
+        """
+
+        self.run_warning = task.LoopingCall(self.warning)
+        self.run_warning.start(1)
 
     # Обработка сообщений клиента
 
@@ -171,6 +198,9 @@ class MultiEcho(protocol.Protocol):
         """ Вызывать если клиент отжимает чекбокс "ready" """
 
         self.factory.players[self].get_unready()
+
+        # if self.launch_game:
+        #     self.launch_game.cancel()
         log.info('This {player} now is not ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_PLAYER_ID_KEY]))
 
     def handle_chat_message(self, params):
@@ -188,10 +218,11 @@ class MultiEchoFactory(protocol.Factory):
         self.echoers = []
         self.player_num = playnum
         self.players = {}
+        self.announcment_counter = 0
         log.info('Instantiated server for {playernum} players', playernum=self.player_num)
 
     def buildProtocol(self, addr):
-        return MultiEcho(self, self.player_num)
+        return MultiEcho(self, self.player_num, self.announcment_counter)
 
 
 if __name__ == '__main__':
