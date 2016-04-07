@@ -1,10 +1,29 @@
 <-HandWidget>:
     size_hint: 1, 0.5
     spacing: (1, 0)
-#    on_card: name.text = self.card.name
     canvas.before:
         Color:
             rgb: 0.5, 0.5, 0.5
         Rectangle:
             pos: self.pos
             size: self.size
+	
+    ScrollView:
+        id: scroll_view
+        size_hint: (1, 1)
+        do_scroll: (True, False)
+        
+        scroll_timeout: 70
+        scroll_distance: 20
+
+        GridLayout:
+            id: card_stack
+            rows: 1
+            width: self.minimum_width
+            do_scroll: (True, False)
+            orientation: 'horizontal'
+            size_hint: (None, 1)
+            spacing: 1
+
+<MyView@ScrollView>:
+
