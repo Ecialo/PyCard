@@ -20,6 +20,8 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
     card = prop.ObjectProperty()
     game = prop.ObjectProperty()
     hand = prop.ObjectProperty()
+    
+    touch_pos = None
 
     def __init__(self, card, **kwargs):
         super(CardWidget, self).__init__(**kwargs)
@@ -28,30 +30,40 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
     
     def on_touch_down(self, touch, *args):
         if self.collide_point(*touch.pos):
-            touch.grab(self)            
+            touch.grab(self)
             self.size_hint_y = None
-
-            self.hand.remove_widget(self)
-            self.game.add_widget(self)
-            self.center = touch.pos
+            self.touch_pos = touch.pos
+ 
+            if self.parent != self.game:
+                self.hand.remove_widget(self)
+                self.game.add_widget(self)
             return True
 
         return super(CardWidget, self).on_touch_down(touch, *args)
 
     def on_touch_move(self, touch, *args):
         if touch.grab_current == self:
-            self.center = touch.pos
-
+            for i in xrange(2):
+                self.center[i] += (touch.pos[i] - self.touch_pos[i])
+            self.touch_pos = touch.pos
         return super(CardWidget, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
         if touch.grab_current == self:
-            self.game.remove_widget(self)
-            self.hand.add_widget(self)
+            player_hand_zone = self.hand.parent # scroll_view
+            if player_hand_zone.collide_point(*touch.pos):
+                self.game.remove_widget(self)
 
-            self.size_hint_y = 1
-            touch.ungrab(self)
-            return True
+                for i,c in enumerate(self.hand.children):
+                    if c.collide_point(*touch.pos):
+                        self.hand.add_widget(self, i)
+                        break
+                else:
+                    self.hand.add_widget(self)
+
+                self.size_hint_y = 1
+                touch.ungrab(self)
+                return True
 
         return super(CardWidget, self).on_touch_up(touch, *args)
 
