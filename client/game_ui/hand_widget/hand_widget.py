@@ -30,7 +30,8 @@ class HandWidget(blayout.BoxLayout):
     def on_get_cards(self, *cards):
         for card in cards:
             card = self.ids.game.game.view_card(card)
-            card_widget = card.make_widget()
+            
+            card_widget = card.make_widget(game=self.ids.game, hand=self.ids.card_stack)
             self.ids.card_stack.add_widget(widget=card_widget)
 
 Builder.load_file('./hand_widget/hand_widget.kv')

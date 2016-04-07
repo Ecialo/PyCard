@@ -56,7 +56,7 @@ class RetardBlackCard(card.Card):
 
     name = "black_card"
 
-
+@bind_widget(CardWidget)
 class RetardWhiteCard(card.Card):
 
     name = "white_card"
