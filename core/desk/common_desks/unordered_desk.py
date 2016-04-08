@@ -16,9 +16,9 @@ class UnorderedDesk(desk.Desk):
         self._cards.append(card)
         super(UnorderedDesk, self).place_on(card)
 
-    def take_of(self, card):
+    def take_off(self, card):
         self._cards.remove(card)
-        # super(UnorderedDesk, self).take_of(card)
+        # super(UnorderedDesk, self).take_off(card)
 
     @property
     def cards(self):

@@ -14,5 +14,5 @@ class Desk(utility.Component):
     def place_on(self, card, *args, **kwargs):
         card.change_context(self)
 
-    def take_of(self, card):
+    def take_off(self, card):
         pass

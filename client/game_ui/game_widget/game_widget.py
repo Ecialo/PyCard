@@ -24,3 +24,9 @@ class GameWidget(flayout.FloatLayout):
             tab = tabbedpanel.TabbedPanelItem(text=widget.player.name)
             tab.add_widget(widget=widget)
             player_zone.add_widget(tab)
+
+        main_zone = self.ids.main_zone
+        desk_widgets = [desk.make_widget() for desk in self.game.get_category(predef.DESK).itervalues()]
+
+        for w in desk_widgets:
+            main_zone.add_widget(w)
