@@ -1,0 +1,15 @@
+<-DeckWidget>:
+    name: 'deck'
+    
+    size_hint: None, None
+    width: 70 + 2 * 5
+    height: 80 + 2 * 5
+    # TODO: adjust height according to cards height
+
+    canvas.before:
+        Color:
+            rgb: 0.4, 0.4, 0.7
+        Rectangle:
+            pos: self.pos
+            size: self.size
+

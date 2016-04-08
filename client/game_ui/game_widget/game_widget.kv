@@ -1,12 +1,24 @@
 <-GameWidget>:
-    PlayerZone:
-        id: player_zone
+    name: 'game'
+
     MainZone:
         id: main_zone
 
-<MainZone@RelativeLayout>:
+        DeskZone:
+            id: desk_zone
+
+        DeckZone:
+            id: deck_zone
+ 
+    PlayerZone:
+        id: player_zone
+
+
+<MainZone@BoxLayout>:
     size_hint: 1, 0.7
-    pos_hint: {'x': 0.0, 'y': 0.15}
+    orientation: 'horizontal'
+
+    pos_hint: {'x': 0.0, 'y': 0.3}
     canvas.before:
         Color:
             rgba: 0.0, 1, 0.0, 0.3
@@ -14,8 +26,18 @@
             pos: self.pos
             size: self.size
 
+
 <PlayerZone@TabbedPanel>
     size_hint: 1, 0.3
     tab_height: 20
     do_default_tab: False
+
+
+<DeskZone@StackLayout>:
+    size_hint: 0.8, 1
+
+
+<DeckZone@StackLayout>:
+    size_hint: 0.2, 0.7
+    orientation: 'bt-rl'
 

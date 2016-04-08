@@ -12,60 +12,89 @@ import kivy.uix.behaviors as beh
 
 from kivy.lang import Builder
 
+from core import predef
+
 __author__ = 'ecialo'
 
 
 class CardWidget(beh.DragBehavior, flayout.FloatLayout):
 
     card = prop.ObjectProperty()
-    game = prop.ObjectProperty()
     hand = prop.ObjectProperty()
-    
+
     touch_pos = None
+    origin = None
+
+    game_widget = prop.ObjectProperty()
+    player_widget = prop.ObjectProperty()
+
 
     def __init__(self, card, **kwargs):
         super(CardWidget, self).__init__(**kwargs)
         self.card = card
-        # print "\n\n\n\n", self.card, "\n\n\n\n"
-    
+
     def on_touch_down(self, touch, *args):
         if self.collide_point(*touch.pos):
             touch.grab(self)
             self.size_hint_y = None
             self.touch_pos = touch.pos
- 
-            if self.parent != self.game:
-                self.hand.remove_widget(self)
-                self.game.add_widget(self)
+     
+            self.hackity_hack = self.parent.parent.parent
+            if self.parent is not None:
+                self.parent.remove_widget(self)
+                self.game_widget.add_widget(self)
             return True
 
         return super(CardWidget, self).on_touch_down(touch, *args)
 
     def on_touch_move(self, touch, *args):
         if touch.grab_current == self:
+            if self.touch_pos is None:
+                self.touch_pos = touch.pos
+
             for i in xrange(2):
                 self.center[i] += (touch.pos[i] - self.touch_pos[i])
             self.touch_pos = touch.pos
         return super(CardWidget, self).on_touch_move(touch, *args)
 
+    
     def on_touch_up(self, touch, *args):
         if touch.grab_current == self:
-            player_hand_zone = self.hand.parent # scroll_view
-            if player_hand_zone.collide_point(*touch.pos):
-                self.game.remove_widget(self)
 
-                for i,c in enumerate(self.hand.children):
-                    if c.collide_point(*touch.pos):
-                        self.hand.add_widget(self, i)
-                        break
-                else:
-                    self.hand.add_widget(self)
+            # попытка вложить карту в руку: на самом деле нам нужна не рука, а scroll view, в котором она лежит
+            # карта вкладывается, если она либо лежит над рукой, либо её куда-то несли из руки, но не донесли
 
-                self.size_hint_y = 1
-                touch.ungrab(self)
+            if self.player_widget is not None:
+                #hw = self.player_widget.widgets['hand'] # это не работает
+
+                hw = self.hackity_hack
+                if hw.collide_point(*touch.pos) or self.origin == predef.CARD_FROM_HAND:
+                    self.parent.remove_widget(self)
+                    hw.ui_add_card_widget(self, touch.pos)
+
+                    self.origin = predef.CARD_FROM_HAND
+                    self.size_hint_y = 1
+                    touch.ungrab(self)
+
+                    # если карта из руки, то, собственно, ничего не нужно делать
+                    # если карта из дека, нужно её оттуда убрать
+                    # TODO: убрать карту из дека
+
+                    return True
+
+
+            # представим, что тут написана логика для выкладывания карты на стол
+            if False:
                 return True
 
+
+            # во всех остальных случаях карту надо удалить из игры
+            # на самом деле, удаляется только виджет, а карта лежит где лежала
+
+            self.parent.remove_widget(self)
+           
         return super(CardWidget, self).on_touch_up(touch, *args)
 
 
 Builder.load_file('./card_widget/card_widget.kv')
+

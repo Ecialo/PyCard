@@ -22,6 +22,8 @@ from client.game_ui.game_widget import GameWidget
 from client.game_ui.player_widget import PlayerWidget
 from client.game_ui.hand_widget import HandWidget
 from client.game_ui.card_widget import CardWidget
+from client.game_ui.deck_widget import DeckWidget
+
 __author__ = 'ecialo'
 
 
@@ -74,7 +76,7 @@ class RetardCardTable(card_table.CardTable):
         RetardWhiteCard,
     ]
 
-
+@bind_widget(DeckWidget)
 class RetardDeck(deck.Deck):
 
     name = "retard_deck"
