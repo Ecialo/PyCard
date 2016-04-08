@@ -20,7 +20,7 @@ class TestApp(App):
         )
         players = retard_game_.get_category(predef.PLAYER).itervalues()
         hands = [player.associated_components[0] for player in players]
-        # print "\n\n\nHands\n", hands
+        
         retard_game_widget = retard_game_.make_widget(app=self)
         retard_game_widget.add_widget(
             Button(
@@ -38,6 +38,7 @@ class TestApp(App):
                 on_press=lambda self_: hands[1].get_cards(choice(["black_card", "white_card"]))
             )
         )
+
         return retard_game_widget
 
 if __name__ == '__main__':

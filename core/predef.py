@@ -61,3 +61,8 @@ CHAT_PLAYER_ID_KEY = (
     'receiver',
     'player_id'
 )
+
+
+# UI
+CARD_FROM_HAND, CARD_FROM_DECK, CARD_FROM_DESK = xrange(3)
+
