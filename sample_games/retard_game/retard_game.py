@@ -13,7 +13,8 @@ import core.card.card_table as card_table
 import core.card.deck as deck
 
 import core.flow.flow as flow
-import core.flow.turn as turn
+# import core.flow.turn as turn
+import core.flow.common_turns.personal_turn as personal_turn
 import core.flow.condition as cond
 
 import core.predef as predef
@@ -76,8 +77,14 @@ class RetardDeck(deck.Deck):
     ]
 
 
-class RetardTurn(turn.Turn):
+class RetardTurn(personal_turn.PersonalTurn):
     pass
+
+
+class RetardWinCondition(cond.WinCondition):
+
+    def __call__(self, (flow_, game_)):
+        pass
 
 
 class RetardCondition(cond.Condition):
@@ -143,7 +150,8 @@ class RetardGame(game.Game):
         super(RetardGame, self).__init__(
             components=retard_components + players,
             flow=RetardFlow,
-            mode=mode
+            mode=mode,
+            win_condition=RetardWinCondition()
         )
 
 if __name__ == '__main__':

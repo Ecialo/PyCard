@@ -44,3 +44,6 @@ class Card(utility.Component):
     def change_context(self, context):
         self._current_context = context
 
+    def __eq__(self, other):
+        return self.name == other.name
+
