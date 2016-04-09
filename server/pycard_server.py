@@ -105,7 +105,7 @@ class MultiEcho(protocol.Protocol):
             MESSAGE_PARAMS_KEY: {
                 CHAT_AUTHOR_KEY: 'Server message',
                 CHAT_MESSAGE_TYPE_KEY: CHAT_MESSAGE_BROADCAST,
-                CHAT_TEXT_KEY: ' '.join(['game will start in', str(5 - self.anncounter), 'seconds'])
+                CHAT_TEXT_KEY: ' '.join(['game is going to start in', str(5 - self.anncounter), 'seconds'])
             }
         }
 
@@ -117,6 +117,20 @@ class MultiEcho(protocol.Protocol):
         if self.anncounter == 5:
             self.run_warning.stop()
 
+    def launch_game(self):
+        """
+        Запустить игру
+        """
+        msg = {
+            MESSAGE_TYPE_KEY: CHAT_MESSAGE,
+            MESSAGE_PARAMS_KEY: {
+                CHAT_AUTHOR_KEY: 'Server message',
+                CHAT_MESSAGE_TYPE_KEY: CHAT_MESSAGE_BROADCAST,
+                CHAT_TEXT_KEY: 'The game is starting!',
+            }
+        }
+        self.send_global_message(json.dumps(msg))
+
 
     def prepare_session(self):
         """ Подготовить сессию игровую к запуску. Если кто-то
@@ -124,6 +138,7 @@ class MultiEcho(protocol.Protocol):
          сессию не запускать
         """
 
+        self.run_game_launcher = reactor.callLater(5, self.launch_game)
         self.run_warning = task.LoopingCall(self.warning)
         self.run_warning.start(1)
 
@@ -199,8 +214,12 @@ class MultiEcho(protocol.Protocol):
 
         self.factory.players[self].get_unready()
 
-        # if self.launch_game:
-        #     self.launch_game.cancel()
+        if self.run_game_launcher:
+            # Кина не будет, все вырубаем
+            self.run_game_launcher.cancel()
+            self.run_warning.stop()
+            self.anncounter = 0
+
         log.info('This {player} now is not ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_PLAYER_ID_KEY]))
 
     def handle_chat_message(self, params):
