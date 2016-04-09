@@ -6,5 +6,5 @@ __author__ = 'ecialo'
 class PersonalTurn(Turn):
 
     def receive_action(self, action):
-        if action.author == self._target:
+        if action.author == self._author:
             self._action = action

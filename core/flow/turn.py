@@ -7,8 +7,8 @@ class Turn(object):
     """
     Ожидает определённое действие конкретного игрока
     """
-    def __init__(self, target):
-        self._target = target
+    def __init__(self, author):
+        self._author = author
         self.is_runned = False
         self._action = None
 
