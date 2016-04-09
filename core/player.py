@@ -38,3 +38,6 @@ class Player(utility.Component):
         player_resource = resource()
         player_resource.setup_prefix(self._name)
         self._components[predef.RESOURCE][resource.name] = player_resource
+
+    def __eq__(self, other):
+        return self.name == other.name

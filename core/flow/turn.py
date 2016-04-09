@@ -2,21 +2,6 @@
 from flow import EndOfCurrentFlow
 __author__ = 'Ecialo'
 
-# TODO Rewrite all
-
-
-def make_factory(**default_kwargs):
-
-    def run_or_init_with_kwargs(func_or_class):
-
-        def new_func_or_class(*args, **kwargs):
-            default_kwargs.update(kwargs)
-            return func_or_class(*args, **default_kwargs)
-
-        return new_func_or_class()
-
-    return run_or_init_with_kwargs
-
 
 class Turn(object):
     """
