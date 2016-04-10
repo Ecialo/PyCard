@@ -34,3 +34,17 @@ class LobbyPerson(object):
         Вызвать если клиент отменяет готовность
         """
         self.ready = False
+
+    def get_person_data(self):
+        """
+        Вызвать когда нужно в стороннее место
+        скормить аттрибуты этого класса как словарь
+        пока возвращает только нужные поля для retard game
+        """
+
+        # TODO: fix this hack
+        return {'name': self.identifier}
+
+    @property
+    def name_getter(self):
+        return self.name
