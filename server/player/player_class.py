@@ -12,15 +12,14 @@ class LobbyPerson(object):
     Подсоединяющийся к pycard_server клиент
     """
 
-    def __init__(self, identifier, name):
+    def __init__(self, name):
         """
         На входе принимает те параметры с которыми прилетает коннект
         к серверу от клиента, а именно имя и идентификатор;
         также у игрока есть статус готов/не готов
         """
 
-        self.name = name
-        self.identifier = identifier
+        self._name = name
         self.ready = False
 
     def get_ready(self):
@@ -34,3 +33,7 @@ class LobbyPerson(object):
         Вызвать если клиент отменяет готовность
         """
         self.ready = False
+
+    @property
+    def name(self):
+        return self._name

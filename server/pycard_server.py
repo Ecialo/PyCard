@@ -32,10 +32,15 @@ from core.predef import (
     MESSAGE_TYPE_KEY,
     CHAT_AUTHOR_KEY,
     CHAT_MESSAGE_TYPE_KEY,
-    CHAT_TEXT_KEY
+    CHAT_TEXT_KEY,
+    LOBBY_ALL_READY,
+    ACTION_JUST,
+    ACTION_PIPE,
+    ACTION_SEQUENCE
 )
 
 from player.player_class import LobbyPerson
+from sample_games.retard_game import retard_game
 
 __author__ = 'Anton Korobkov'
 
@@ -122,15 +127,15 @@ class MultiEcho(protocol.Protocol):
         Запустить игру
         """
         msg = {
-            MESSAGE_TYPE_KEY: CHAT_MESSAGE,
-            MESSAGE_PARAMS_KEY: {
-                CHAT_AUTHOR_KEY: 'Server message',
-                CHAT_MESSAGE_TYPE_KEY: CHAT_MESSAGE_BROADCAST,
-                CHAT_TEXT_KEY: 'The game is starting!',
-            }
+            MESSAGE_TYPE_KEY: LOBBY_ALL_READY,
+            MESSAGE_PARAMS_KEY: {}
         }
         self.send_global_message(json.dumps(msg))
+        self.game = retard_game.RetardGame([x.name for x in self.factory.players.values()])
+        log.info('this is our game: {game}', game=self.game)
 
+    def dummy_sender(self):
+        pass
 
     def prepare_session(self):
         """ Подготовить сессию игровую к запуску. Если кто-то
@@ -150,8 +155,6 @@ class MultiEcho(protocol.Protocol):
         """
 
         event = json.loads(msg)
-        test = open('hi.txt', 'a')
-        test.write(str(event) + '\n')
         event_type, params = event[MESSAGE_TYPE_KEY], event[MESSAGE_PARAMS_KEY]
 
         # Не будем лепить костылей по отсылке приватных сообщений до тех пор пока это не будет
@@ -167,6 +170,9 @@ class MultiEcho(protocol.Protocol):
             self.handle_lobby_ready(event)
         elif event_type == LOBBY_NOT_READY:
             self.handle_lobby_not_ready(event)
+        elif event_type in [ACTION_JUST, ACTION_PIPE, ACTION_SEQUENCE]:
+            self.game.receive_message(event)
+
 
     # Отправка сообщений клиентам
 
@@ -175,14 +181,16 @@ class MultiEcho(protocol.Protocol):
         Посылаем всем клиентам сообщения о том кто зашел и сохраняем адрес и ник
         """
 
-        self.factory.players[self] = LobbyPerson(params[MESSAGE_PARAMS_KEY][CHAT_PLAYER_ID_KEY],
-                                                 params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY])
+
+        self.factory.players[self] = LobbyPerson(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY])
+        self.factory.echoers.append(self)
 
         params[MESSAGE_TYPE_KEY] = CHAT_JOIN
+        params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY] = json.dumps([player.name for player in self.factory.players.values()])
+
 
         log.info('some {data} sent', data=str(params))
         self.send_global_message(json.dumps(params))
-        self.factory.echoers.append(self)
 
     def handle_chat_disconnection(self):
         """
@@ -194,8 +202,7 @@ class MultiEcho(protocol.Protocol):
 
         part_message = {MESSAGE_TYPE_KEY: CHAT_PART,
                         MESSAGE_PARAMS_KEY: {
-                            CHAT_NAME_KEY: getattr(parted, 'name'),
-                            CHAT_PLAYER_ID_KEY: getattr(parted, 'identifier')
+                            CHAT_NAME_KEY: getattr(parted, 'name')
                         }
                         }
 
@@ -206,7 +213,7 @@ class MultiEcho(protocol.Protocol):
         """ Вызывать если клиент жмет чекбокс "ready" """
 
         self.factory.players[self].get_ready()
-        log.info('This {player} now is ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_PLAYER_ID_KEY]))
+        log.info('This {player} now is ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY]))
         self.check_playnum()
 
     def handle_lobby_not_ready(self, params):
@@ -220,7 +227,7 @@ class MultiEcho(protocol.Protocol):
             self.run_warning.stop()
             self.anncounter = 0
 
-        log.info('This {player} now is not ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_PLAYER_ID_KEY]))
+        log.info('This {player} now is not ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY]))
 
     def handle_chat_message(self, params):
         """
