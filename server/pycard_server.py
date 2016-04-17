@@ -187,7 +187,7 @@ class MultiEcho(protocol.Protocol):
 
         params[MESSAGE_TYPE_KEY] = CHAT_JOIN
         # TODO: fix later
-        params[MESSAGE_PARAMS_KEY][CHAT_NAMES_KEY] = json.dumps([player.name for player in self.factory.players.values()])
+        params[MESSAGE_PARAMS_KEY][CHAT_NAMES_KEY] = [player.name for player in self.factory.players.values()]
         h = open('hi.txt', 'a')
         h.write(json.dumps(params))
 
