@@ -30,7 +30,7 @@ ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE = xrange(3)
 	LOBBY_ALL_READY,
     LOBBY_START_GAME,
     CHAT_NAMES_KEY
-) = xrange(10)
+) = xrange(12)
 CARD_BACK = "back"
 
 ALL, AUTHOR = "all", "author"
