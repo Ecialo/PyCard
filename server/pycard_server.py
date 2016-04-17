@@ -222,10 +222,8 @@ class MultiEcho(protocol.Protocol):
         """ Вызывать если клиент отжимает чекбокс "ready" """
 
         self.factory.players[self].get_unready()
-        h = open('hi.txt', 'w')
-        h.write('ureadied')
 
-        if self.run_game_launcher:
+        if hasattr(self, 'run_game_launcher'):
             # Кина не будет, все вырубаем
             self.run_game_launcher.cancel()
             self.run_warning.stop()
