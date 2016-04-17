@@ -181,7 +181,6 @@ class MultiEcho(protocol.Protocol):
         Посылаем всем клиентам сообщения о том кто зашел и сохраняем адрес и ник
         """
 
-
         self.factory.players[self] = LobbyPerson(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY])
         self.factory.echoers.append(self)
 
