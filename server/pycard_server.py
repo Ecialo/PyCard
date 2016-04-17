@@ -24,19 +24,20 @@ from core.predef import (
     LOBBY_READY,
     LOBBY_NOT_READY,
     MESSAGE_PARAMS_KEY,
-    CHAT_PLAYER_ID_KEY,
-    CHAT_NAME_KEY,
+    LOBBY_START_GAME,
+    CHAT_NAMES_KEY,
     CHAT_JOIN,
     CHAT_PART,
     CHAT_MESSAGE_BROADCAST,
     MESSAGE_TYPE_KEY,
-    CHAT_AUTHOR_KEY,
     CHAT_MESSAGE_TYPE_KEY,
     CHAT_TEXT_KEY,
     LOBBY_ALL_READY,
     ACTION_JUST,
     ACTION_PIPE,
-    ACTION_SEQUENCE
+    ACTION_SEQUENCE,
+    CHAT_NAME_KEY,
+
 )
 
 from player.player_class import LobbyPerson
@@ -108,7 +109,7 @@ class MultiEcho(protocol.Protocol):
         msg = {
             MESSAGE_TYPE_KEY: CHAT_MESSAGE,
             MESSAGE_PARAMS_KEY: {
-                CHAT_AUTHOR_KEY: 'Server message',
+                CHAT_NAME_KEY: 'Server message',
                 CHAT_MESSAGE_TYPE_KEY: CHAT_MESSAGE_BROADCAST,
                 CHAT_TEXT_KEY: ' '.join(['game is going to start in', str(5 - self.anncounter), 'seconds'])
             }
@@ -127,7 +128,7 @@ class MultiEcho(protocol.Protocol):
         Запустить игру
         """
         msg = {
-            MESSAGE_TYPE_KEY: LOBBY_ALL_READY,
+            MESSAGE_TYPE_KEY: LOBBY_START_GAME,
             MESSAGE_PARAMS_KEY: {}
         }
         self.send_global_message(json.dumps(msg))
@@ -185,8 +186,10 @@ class MultiEcho(protocol.Protocol):
         self.factory.echoers.append(self)
 
         params[MESSAGE_TYPE_KEY] = CHAT_JOIN
-        params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY] = json.dumps([player.name for player in self.factory.players.values()])
-
+        # TODO: fix later
+        params[MESSAGE_PARAMS_KEY][CHAT_NAMES_KEY] = json.dumps([player.name for player in self.factory.players.values()])
+        h = open('hi.txt', 'a')
+        h.write(json.dumps(params))
 
         log.info('some {data} sent', data=str(params))
         self.send_global_message(json.dumps(params))
@@ -219,6 +222,8 @@ class MultiEcho(protocol.Protocol):
         """ Вызывать если клиент отжимает чекбокс "ready" """
 
         self.factory.players[self].get_unready()
+        h = open('hi.txt', 'w')
+        h.write('ureadied')
 
         if self.run_game_launcher:
             # Кина не будет, все вырубаем
