@@ -7,6 +7,8 @@ from kivy.lang import Builder
 
 from core import predef
 
+#Builder.load_file('./client/game_ui/deck_widget/deck_widget.kv')
+
 class DeckWidget(Label):
     deck = prop.ObjectProperty()
     game_widget = prop.ObjectProperty()
@@ -42,5 +44,4 @@ class DeckWidget(Label):
     def on_remove_card(self, card):
         pass
 
-Builder.load_file('./deck_widget/deck_widget.kv')
 

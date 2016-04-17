@@ -15,12 +15,11 @@ from kivy.lang import Builder
 from core import predef
 
 __author__ = 'ecialo'
-
+#Builder.load_file('./client/game_ui/card_widget/card_widget.kv')
 
 class CardWidget(beh.DragBehavior, flayout.FloatLayout):
 
     card = prop.ObjectProperty()
-    hand = prop.ObjectProperty()
 
     touch_pos = None
     origin = None
@@ -95,6 +94,4 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
            
         return super(CardWidget, self).on_touch_up(touch, *args)
 
-
-Builder.load_file('./card_widget/card_widget.kv')
 

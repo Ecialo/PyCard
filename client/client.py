@@ -19,6 +19,9 @@ from twisted.logger import Logger, jsonFileLogObserver
 
 import core.predef as predef
 
+from game_ui.game_widget import game_widget as gw
+from sample_games.retard_game import retard_game
+
 
 log = Logger(observer=jsonFileLogObserver(io.open("client.json", "a")),
                  namespace="client")
@@ -85,11 +88,7 @@ class TwistedClientApp(App):
 
         sm = ScreenManager(transition=FadeTransition())
         sm.add_widget(LobbyScreen(name='lobby'))
-        sm.add_widget(GameScreen(name='game'))
-
         self.lobby_scr = sm.get_screen('lobby')
-        self.game_scr = sm.get_screen('game')
-
         self.lobby_scr.ids.ready_checkbox.bind(state=self.on_ready_clicked)
 
         return sm
@@ -192,6 +191,15 @@ class TwistedClientApp(App):
         """
         Обработчик для сообщения «все готовы, пора играть».
         """
+        
+        #STUB
+        rg = retard_game.RetardGame(
+                [{'name': user} for user in ['abc', 'def']],#self.users],
+                mode=predef.CLIENT)
+
+        rgw = rg.make_widget(name='game', app=self)
+        self.root.add_widget(rgw)
+        self.game_scr = self.root.get_screen('game')
 
         self.root.current = 'game'
 
@@ -247,6 +255,10 @@ class TwistedClientApp(App):
         """
         Отправляет сигнал о готовности к началу игры.
         """
+
+        #STUB
+        self.handle_lobby_start_game({})
+        return
 
         msg = {
             predef.MESSAGE_TYPE_KEY: predef.LOBBY_READY,

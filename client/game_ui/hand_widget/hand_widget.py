@@ -16,6 +16,8 @@ from kivy.lang import Builder
 
 from core import predef
 
+#Builder.load_file('./client/game_ui/hand_widget/hand_widget.kv')
+
 class HandWidget(blayout.BoxLayout):
 
     hand = prop.ObjectProperty()
@@ -46,6 +48,4 @@ class HandWidget(blayout.BoxLayout):
                 break
         else:
             self.ids.card_stack.add_widget(card)
-
-Builder.load_file('./hand_widget/hand_widget.kv')
 

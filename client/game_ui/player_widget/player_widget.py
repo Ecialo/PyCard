@@ -6,9 +6,7 @@ import kivy.properties as prop
 from kivy.lang import Builder
 
 __author__ = 'ecialo'
-
-Builder.load_file('./player_widget/player_widget.kv')
-
+#Builder.load_file('./client/game_ui/player_widget/player_widget.kv')
 
 class PlayerWidget(flayout.FloatLayout):
 
