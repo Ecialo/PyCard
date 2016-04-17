@@ -68,9 +68,21 @@ class TwistedClientApp(App):
 
     users = []
     ready = False
+    msg_handlers = {}
 
+
+    def set_message_handlers(self):
+        self.msg_handlers = {
+            predef.CHAT_JOIN:                   self.handle_chat_join,
+            predef.CHAT_PART:                   self.handle_chat_part,
+            predef.CHAT_MESSAGE:                self.handle_chat_message,
+            predef.LOBBY_START_GAME:            self.handle_lobby_start_game,
+            predef.LOBBY_NAME_ALREADY_EXISTS:   self.handle_lobby_name_already_exists
+        }
 
     def build(self):
+        self.set_message_handlers()
+
         sm = ScreenManager(transition=FadeTransition())
         sm.add_widget(LobbyScreen(name='lobby'))
         sm.add_widget(GameScreen(name='game'))
@@ -94,7 +106,7 @@ class TwistedClientApp(App):
             reactor.connectTCP(host, port, EchoFactory(self))
             log.info('Connecting to server {server} on port {port}',
                 server=host, port=port)
-        
+
         else:
             self.print_message("One or more fields are empty.") # TODO: make a proper error message
             Factory.ConnectionWidget().open()
@@ -140,20 +152,12 @@ class TwistedClientApp(App):
         ev = json.loads(msg)
         ev_type, params = ev[predef.MESSAGE_TYPE_KEY], ev[predef.MESSAGE_PARAMS_KEY]
 
-        if ev_type == predef.CHAT_JOIN:
-            self.handle_chat_join(params)
-
-        elif ev_type == predef.CHAT_PART:
-            self.handle_chat_part(params)
-
-        elif ev_type == predef.CHAT_MESSAGE:
-            self.handle_chat_message(params)
-
-        elif ev_type == predef.LOBBY_START_GAME:
-            self.handle_lobby_start_game(params)
+        if ev_type in self.msg_handlers:
+            self.msg_handlers[ev_type](params)
 
         else:
-            pass  # TODO: add handlers for all events
+            print('Unknown event type: {evt}'.format(evt=ev_type))
+            pass
 
     def handle_chat_join(self, params):
         """
@@ -191,6 +195,13 @@ class TwistedClientApp(App):
 
         self.root.current = 'game'
 
+    def handle_lobby_name_already_exists(self, params):
+        """
+        Когда имя занято. TODO: сообщать пользователю о том, что имя занято.
+        """
+
+        self.connection.loseConnection()
+        Factory.ConnectionWidget().open()
 
     # Генерация сообщений для сервера
 
