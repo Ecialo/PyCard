@@ -1,0 +1,28 @@
+RelativeLayout:
+    NotificationsManager:
+        id: nm
+    Button:
+        text: "Add notification"
+        height: 30
+        size_hint: 1, None
+        on_press: nm.notify("Blah")
+        pos_hint: {'x': 0.0, 'y': 0.0}
+
+
+<Notification>:
+    text: self.text
+    size_hint: 1, 0
+    height: dp(30)
+    canvas.before:
+        Color:
+            rgba: 1, 0.5, 0.5, 0.7
+
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<NotificationManager>:
+    orientation: 'lr-tb'
+    size_hint: 1, 0
+    pos_hint: {'x': 0.0, 'y': 0.8}
+
