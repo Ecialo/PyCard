@@ -63,7 +63,7 @@ class RetardWhiteCard(card.Card):
 
     name = "white_card"
 
-
+@bind_widget(CardWidget)
 class RetardBack(card.Card):
 
     name = predef.CARD_BACK

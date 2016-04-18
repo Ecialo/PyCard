@@ -9,7 +9,7 @@ from kivy.uix.screenmanager import Screen
 from core import predef
 
 __author__ = 'ecialo'
-#Builder.load_file('./client/game_ui/game_widget/game_widget.kv')
+Builder.load_file('./client/game_ui/game_widget/game_widget.kv')
 
 class GameWidget(Screen):
 
@@ -21,7 +21,6 @@ class GameWidget(Screen):
 
         player_widgets = [player.make_widget(game_widget=self) for player in self.game.get_category(predef.PLAYER).itervalues()]
         player_zone = self.ids.player_zone
-
         for widget in player_widgets:
             tab = tabbedpanel.TabbedPanelItem(text=widget.player.name)
             tab.add_widget(widget=widget)

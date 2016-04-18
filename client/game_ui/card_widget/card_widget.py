@@ -15,7 +15,7 @@ from kivy.lang import Builder
 from core import predef
 
 __author__ = 'ecialo'
-#Builder.load_file('./client/game_ui/card_widget/card_widget.kv')
+Builder.load_file('./client/game_ui/card_widget/card_widget.kv')
 
 class CardWidget(beh.DragBehavior, flayout.FloatLayout):
 

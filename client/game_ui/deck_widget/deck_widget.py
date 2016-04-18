@@ -7,7 +7,7 @@ from kivy.lang import Builder
 
 from core import predef
 
-#Builder.load_file('./client/game_ui/deck_widget/deck_widget.kv')
+Builder.load_file('./client/game_ui/deck_widget/deck_widget.kv')
 
 class DeckWidget(Label):
     deck = prop.ObjectProperty()

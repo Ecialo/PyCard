@@ -16,7 +16,7 @@ from kivy.lang import Builder
 
 from core import predef
 
-#Builder.load_file('./client/game_ui/hand_widget/hand_widget.kv')
+Builder.load_file('./client/game_ui/hand_widget/hand_widget.kv')
 
 class HandWidget(blayout.BoxLayout):
 
