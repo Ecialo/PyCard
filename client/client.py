@@ -154,9 +154,11 @@ class TwistedClientApp(App):
         if ev_type in self.msg_handlers:
             self.msg_handlers[ev_type](params)
 
+        elif ev_type in [ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE]:
+            self.handle_game_action(msg)
+
         else:
             print('Unknown event type: {evt}'.format(evt=ev_type))
-            pass
 
     def handle_chat_join(self, params):
         """
@@ -192,9 +194,8 @@ class TwistedClientApp(App):
         Обработчик для сообщения «все готовы, пора играть».
         """
         
-        #STUB
         rg = retard_game.RetardGame(
-                [{'name': user} for user in ['asd', 'Tester']],#self.users],
+                [{'name': user} for user in self.users],
                 mode=predef.CLIENT)
 
         rgw = rg.make_widget(name='game', app=self)
@@ -213,14 +214,17 @@ class TwistedClientApp(App):
 
     # Генерация сообщений для сервера
 
+    def send_raw_message(self, raw_msg):
+        if raw_msg and self.connection:
+            self.connection.write(raw_msg)
+
     def send_message(self, msg):
         """
         Отправляет сообщение на сервер.
         Сообщение должно иметь формат, указанный в описании протокола, и являться словарём.
         """
-
-        if msg and self.connection:
-            self.connection.write(str(json.dumps(msg)))
+        
+        self.send_raw_message(str(json.dumps(msg)))
 
     def send_chat_register(self):
         """
@@ -256,10 +260,6 @@ class TwistedClientApp(App):
         Отправляет сигнал о готовности к началу игры.
         """
 
-        #STUB
-        self.handle_lobby_start_game({})
-        return
-
         msg = {
             predef.MESSAGE_TYPE_KEY: predef.LOBBY_READY,
             predef.MESSAGE_PARAMS_KEY: {
@@ -280,6 +280,12 @@ class TwistedClientApp(App):
             }
         }
         self.send_message(msg)
+
+
+    # Обработка игровых событий (простая передача их по цепочке)
+
+    def handle_game_action(self, action_msg):
+        self.game_scr.game.receive_message(action_msg)
 
 
     # Обработка событий с виджетов

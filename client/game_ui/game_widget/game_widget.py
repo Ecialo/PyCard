@@ -58,11 +58,12 @@ class GameWidget(Screen):
         self.pending_actions.append(action)
         print(self.pending_actions)
 
-    def send_actions(self):
-        for action in self.pending_actions:
-           pass
+    def send_actions(self, *actions):
+        for action in actions:
+            msg = action.make_message()
+            self.app.send_raw_message(msg)
 
-    def push_game_forward(self, actions):
+    def push_game_forward(self, *actions):
         for action in actions:
             pass
 

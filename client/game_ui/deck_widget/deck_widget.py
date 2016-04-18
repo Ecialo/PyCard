@@ -17,7 +17,6 @@ class DeckWidget(Label):
         super(DeckWidget, self).__init__(**kwargs)
         self.deck = deck
 
-        self.register_event_type('on_draw_card')
         self.register_event_type('on_remove_card')
 
     def on_touch_down(self, touch, *args):

@@ -29,6 +29,9 @@ class DrawCards(action.Action):
         self._cards = None
         super(DrawCards, self).__init__(author, **kwargs)
 
+    def check(self):
+        return self.source.number_of_cards > 0
+
     def apply(self):
         cards = []
         for _ in xrange(self.number):

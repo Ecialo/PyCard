@@ -157,3 +157,7 @@ class RetardGame(game.Game):
             flow=RetardFlow,
             mode=mode
         )
+
+    def make_dummy_card(self):
+        return RetardBack()
+

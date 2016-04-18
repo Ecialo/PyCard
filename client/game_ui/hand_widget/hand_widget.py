@@ -57,9 +57,10 @@ class HandWidget(blayout.BoxLayout):
                         author=self.game_widget.player_name)
 
                 if draw_card.check():
-                    x = draw_card.apply()
+                    self.game_widget.send_actions(draw_card)
+
                 card_widget.origin = predef.CARD_FROM_HAND
-            else:
+            elif not self.game_widget.is_our_turn():
                 self.game_widget.notify("It's not your turn now")
 
         card_widget.size_hint_y = 1
