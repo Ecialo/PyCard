@@ -20,6 +20,14 @@ Builder.load_file('./client/game_ui/card_widget/card_widget.kv')
 class CardWidget(beh.DragBehavior, flayout.FloatLayout):
 
     card = prop.ObjectProperty()
+    hand = prop.ObjectProperty()
+
+    touch_pos = None
+    origin = None
+
+    game_widget = prop.ObjectProperty()
+    player_widget = prop.ObjectProperty()
+
 
     touch_pos = None
     origin = None
@@ -30,7 +38,6 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
     def __init__(self, card, **kwargs):
         super(CardWidget, self).__init__(**kwargs)
         self.card = card
-
 
     def on_touch_down(self, touch, *args):
         if self.collide_point(*touch.pos):

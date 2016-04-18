@@ -24,15 +24,18 @@ class HandWidget(blayout.BoxLayout):
 
     game_widget = prop.ObjectProperty()
 
+    game_widget = prop.ObjectProperty()
+    player_widget = prop.ObjectProperty()
+
     def __init__(self, hand, **kwargs):
         super(HandWidget, self).__init__(**kwargs)
+        #self.ids = kwargs.get('ids')
         self.hand = hand
 
         self.register_event_type('on_get_cards')
 
     def on_get_cards(self, *cards):
         for card in cards:
-            #print(card)
             card = self.game_widget.game.view_card(card)
 
             card_widget = card.make_widget(game_widget=self.game_widget)

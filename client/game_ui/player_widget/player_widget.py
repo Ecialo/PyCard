@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import kivy
 import kivy.uix.floatlayout as flayout
-import kivy.uix.boxlayout as blayout
 import kivy.properties as prop
 
 from kivy.lang import Builder
