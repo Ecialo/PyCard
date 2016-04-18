@@ -37,9 +37,6 @@ class DeckWidget(Label):
         return super(DeckWidget, self).on_touch_down(touch, *args)
 
 
-    def on_draw_card(self):
-        pass
-
     def on_remove_card(self, card):
         pass
 

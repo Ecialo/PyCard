@@ -12,7 +12,7 @@ class Deck(utility.Component):
     content = []        # TODO добавить возможность передавать как имена так и классы
     categories = [predef.DECK]
 
-    hooks = ['draw_card', 'remove_card']
+    hooks = ['remove_card']
 
     def __init__(self):
         super(Deck, self).__init__()
