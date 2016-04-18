@@ -25,26 +25,27 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
     origin = None
 
     game_widget = prop.ObjectProperty()
-    player_widget = prop.ObjectProperty()
 
 
     def __init__(self, card, **kwargs):
         super(CardWidget, self).__init__(**kwargs)
         self.card = card
 
+
     def on_touch_down(self, touch, *args):
         if self.collide_point(*touch.pos):
             touch.grab(self)
             self.size_hint_y = None
             self.touch_pos = touch.pos
-     
-            self.hackity_hack = self.parent.parent.parent
+
             if self.parent is not None:
                 self.parent.remove_widget(self)
                 self.game_widget.add_widget(self)
+
             return True
 
         return super(CardWidget, self).on_touch_down(touch, *args)
+
 
     def on_touch_move(self, touch, *args):
         if touch.grab_current == self:
@@ -56,30 +57,20 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
             self.touch_pos = touch.pos
         return super(CardWidget, self).on_touch_move(touch, *args)
 
-    
+
     def on_touch_up(self, touch, *args):
         if touch.grab_current == self:
 
-            # попытка вложить карту в руку: на самом деле нам нужна не рука, а scroll view, в котором она лежит
+            player_widget = self.game_widget.player_widgets[self.game_widget.player_name]
+            hand_widget = player_widget.widgets['hand']
+ 
             # карта вкладывается, если она либо лежит над рукой, либо её куда-то несли из руки, но не донесли
+            if hand_widget.collide_point(*touch.pos) or self.origin == predef.CARD_FROM_HAND:
+                self.parent.remove_widget(self)
+                hand_widget.try_to_get_card(self, touch.pos)
 
-            if self.player_widget is not None:
-                #hw = self.player_widget.widgets['hand'] # это не работает
-
-                hw = self.hackity_hack
-                if hw.collide_point(*touch.pos) or self.origin == predef.CARD_FROM_HAND:
-                    self.parent.remove_widget(self)
-                    hw.ui_add_card_widget(self, touch.pos)
-
-                    self.origin = predef.CARD_FROM_HAND
-                    self.size_hint_y = 1
-                    touch.ungrab(self)
-
-                    # если карта из руки, то, собственно, ничего не нужно делать
-                    # если карта из дека, нужно её оттуда убрать
-                    # TODO: убрать карту из дека
-
-                    return True
+                touch.ungrab(self)
+                return True
 
 
             # представим, что тут написана логика для выкладывания карты на стол
@@ -91,7 +82,6 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
             # на самом деле, удаляется только виджет, а карта лежит где лежала
 
             self.parent.remove_widget(self)
-           
-        return super(CardWidget, self).on_touch_up(touch, *args)
 
+        return super(CardWidget, self).on_touch_up(touch, *args)
 

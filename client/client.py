@@ -194,7 +194,7 @@ class TwistedClientApp(App):
         
         #STUB
         rg = retard_game.RetardGame(
-                [{'name': user} for user in ['abc', 'def']],#self.users],
+                [{'name': user} for user in ['asd', 'Tester']],#self.users],
                 mode=predef.CLIENT)
 
         rgw = rg.make_widget(name='game', app=self)

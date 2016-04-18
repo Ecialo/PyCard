@@ -23,7 +23,7 @@ class DeckWidget(Label):
     def on_touch_down(self, touch, *args):
         if self.deck.number_of_cards > 0:
             if self.collide_point(*touch.pos):
-                card = self.game_widget.game.view_card(self.deck._deck[-1])
+                card = self.game_widget.game.make_dummy_card()
                 cw = card.make_widget(game_widget=self.game_widget)
                 cw.size_hint_y = None
                 cw.size = self.size
@@ -38,10 +38,8 @@ class DeckWidget(Label):
 
 
     def on_draw_card(self):
-        print('Card taken from the deck, %d remain' % self.deck.number_of_cards)
         pass
 
     def on_remove_card(self, card):
         pass
-
 
