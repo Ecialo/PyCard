@@ -68,5 +68,5 @@ class GameWidget(Screen):
             pass
 
     def notify(self, text):
-        print(text) # TODO: короткие попапы?
+        self.app.notify(text)
 

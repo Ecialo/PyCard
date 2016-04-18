@@ -7,6 +7,7 @@ from kivy.clock import Clock
 from kivy.app import App
 from kivy.lang import Builder
 
+Builder.load_file("./client/notifications/notifications.kv")
 
 class Notification(Label):
     
@@ -19,11 +20,11 @@ class NotificationsManager(StackLayout):
     
     def __init__(self, **kwargs):
         super(NotificationsManager, self).__init__(**kwargs)
-
+    
     def notify(self, text):
         nw = Notification(text)
         self.add_widget(nw)
-        Clock.schedule_once(lambda dt: self.denotify(nw), 3)
+        Clock.schedule_once(lambda dt: self.denotify(nw), 5)
     
     def denotify(self, notification_widget):
         self.remove_widget(notification_widget)

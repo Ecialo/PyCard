@@ -11,6 +11,9 @@ from kivy.lang import Builder
 from kivy.factory import Factory
 from kivy.support import install_twisted_reactor
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.uix.floatlayout import FloatLayout
+
+from notifications.notifications import NotificationsManager
 
 install_twisted_reactor()
 
@@ -85,13 +88,21 @@ class TwistedClientApp(App):
 
     def build(self):
         self.set_message_handlers()
+        
+        root = FloatLayout()
 
         sm = ScreenManager(transition=FadeTransition())
         sm.add_widget(LobbyScreen(name='lobby'))
         self.lobby_scr = sm.get_screen('lobby')
         self.lobby_scr.ids.ready_checkbox.bind(state=self.on_ready_clicked)
-
-        return sm
+        root.add_widget(sm)
+        
+        nm = NotificationsManager()
+        root.add_widget(nm)
+        
+        self.sm = sm
+        self.nm = nm
+        return root
 
     def on_start(self):
         """
@@ -199,10 +210,10 @@ class TwistedClientApp(App):
                 mode=predef.CLIENT)
 
         rgw = rg.make_widget(name='game', app=self)
-        self.root.add_widget(rgw)
-        self.game_scr = self.root.get_screen('game')
+        self.sm.add_widget(rgw)
+        self.game_scr = self.sm.get_screen('game')
 
-        self.root.current = 'game'
+        self.sm.current = 'game'
 
     def handle_lobby_name_already_exists(self, params):
         """
@@ -295,6 +306,9 @@ class TwistedClientApp(App):
             self.send_lobby_ready()
         else:
             self.send_lobby_not_ready()
+    
+    def notify(self, text):
+        self.nm.notify(text)
 
 
 class StdoutHook():
