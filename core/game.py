@@ -103,7 +103,7 @@ class Game(util.Component):
 
     def run(self):
         try:
-            self.win_condition((self.current_flow, self))
+            # self.win_condition((self.current_flow, self))
             action = self._flow.run()
             if action:
                 try:
@@ -120,7 +120,7 @@ class Game(util.Component):
             else:
                 return None
         except EndOfGame:
-            self.win_condition((self.current_flow, self))
+            # self.win_condition((self.current_flow, self))
             raise GameOver()
 
     @property

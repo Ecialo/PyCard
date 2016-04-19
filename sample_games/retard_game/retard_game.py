@@ -109,7 +109,7 @@ class RetardTurns(flow.TurnCycle):
 
 
 class RetardFlow(flow.Flow):
-    flow = [RetardTurns, RetardScoreCalculation]
+    flow = [RetardTurns]
 # player1 = RetardPlayer('Eustace')
 # player2 = RetardPlayer('Spooky')
 # retard_deck = RetardDeck()

@@ -44,3 +44,6 @@ class Hand(utility.Component):
             return sorted(self._cards) == sorted(other)
         else:
             return self is other
+
+    def __repr__(self):
+        return "Hand: " + str(self._cards)

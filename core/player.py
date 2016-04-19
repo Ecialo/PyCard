@@ -40,4 +40,7 @@ class Player(utility.Component):
         self._components[predef.RESOURCE][resource.name] = player_resource
 
     def __eq__(self, other):
-        return self.name == other.name
+        if isinstance(other, basestring):
+            return self.name == other
+        else:
+            return self.name == other.name

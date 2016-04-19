@@ -25,6 +25,15 @@ NAME = 'name'
 AT = "@"
 
 
+def make_assertion_info_message(assertion_line, **context):
+    return "\n".join([
+        assertion_line,
+        "in context",
+        str(context),
+    ])
+
+
+
 def extract_predefs(log):
     """
     Извлекает предопределённые сценарием параметры.
@@ -105,7 +114,16 @@ class TestReactor(object):
                 raw_component_1, raw_component_2 = line.rstrip().split(" " + assertion + " ")
                 component_1 = self._parse_component(raw_component_1)
                 component_2 = self._parse_component(raw_component_2)
-                self.asserts[assertion](component_1, component_2, line)
+
+                self.asserts[assertion](
+                    component_1,
+                    component_2,
+                    make_assertion_info_message(
+                        line,
+                        component_1=component_1,
+                        component_2=component_2,
+                    )
+                )
 
     def _parse_component(self, raw_component):
         is_path = predef.SUBSTITUTION_SYMBOL in raw_component
@@ -212,7 +230,15 @@ def test(game):         # TODO переписать на argparse
         filename = sys.argv[1]
         # print filename
         # print "\n"
-        with open(filename) as f:
-            test_reactor.autotest(f)
+        # with open(filename) as f:
+        #     test_reactor.autotest(f)
+        with open(filename) as test_scenario:
+            try:
+                scenario = iter(test_scenario)
+                log, params = extract_predefs(scenario)
+                test_reactor.configure(params)
+                test_reactor.autotest(log)
+            except GameOver:
+                pass
     except IndexError:
         sys.exit(1)
