@@ -173,6 +173,7 @@ class MultiEcho(protocol.Protocol):
             self.handle_lobby_not_ready(event)
         elif event_type in [ACTION_JUST, ACTION_PIPE, ACTION_SEQUENCE]:
             self.game.receive_message(event)
+            self.send_game_flow(event)
 
 
     # Отправка сообщений клиентам
@@ -188,8 +189,6 @@ class MultiEcho(protocol.Protocol):
         params[MESSAGE_TYPE_KEY] = CHAT_JOIN
         # TODO: fix later
         params[MESSAGE_PARAMS_KEY][CHAT_NAMES_KEY] = [player.name for player in self.factory.players.values()]
-        h = open('hi.txt', 'a')
-        h.write(json.dumps(params))
 
         log.info('some {data} sent', data=str(params))
         self.send_global_message(json.dumps(params))
@@ -238,6 +237,10 @@ class MultiEcho(protocol.Protocol):
         self.send_global_message(json.dumps(params))
 
     # Здесь будет все что имеет отношение уже к сессии
+
+    def send_game_flow(self, params):
+        response = self.game.run()
+        self.send_global_message(json.dumps(response))
 
 
 class MultiEchoFactory(protocol.Factory):
