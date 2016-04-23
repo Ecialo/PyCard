@@ -1,28 +1,19 @@
 # -*- coding: utf-8 -*-
-import core.game as game
-import core.player as player
-import core.resource as resource
-
 import core.action.common_action_tables.game_action_table as game_action_table
-from core.action.common_action_tables import system_action_table
 import core.action.common_actions.draw_cards as draw_cards
-from core.action import common_system_actions
-
 import core.card.card as card
 import core.card.card_table as card_table
 import core.card.deck as deck
-
+import core.flow.condition as cond
 import core.flow.flow as flow
 import core.flow.turn as turn
-import core.flow.condition as cond
-
+import core.game as game
+import core.player as player
 import core.predef as predef
-from client.game_ui.bind_widget import bind_widget
-from client.game_ui.game_widget import GameWidget
-from client.game_ui.player_widget import PlayerWidget
-from client.game_ui.hand_widget import HandWidget
-from client.game_ui.card_widget import CardWidget
-from client.game_ui.deck_widget import DeckWidget
+import core.resource as resource
+from client.tools.bind_widget import bind_widget
+from core.action import common_system_actions
+from core.action.common_action_tables import system_action_table
 
 __author__ = 'ecialo'
 
@@ -41,29 +32,32 @@ class RetardSystemActionTable(system_action_table.SystemActionTable):
     ]
 
 
-@bind_widget(HandWidget)
+@bind_widget("HandWidget")
 class RetardHandResource(resource.HandResource):
     pass
 
 
-@bind_widget(PlayerWidget)
+@bind_widget("PlayerWidget")
 class RetardPlayer(player.Player):
 
     available_resources = [
         RetardHandResource
     ]
 
-@bind_widget(CardWidget)
+
+@bind_widget("CardWidget")
 class RetardBlackCard(card.Card):
 
     name = "black_card"
 
-@bind_widget(CardWidget)
+
+@bind_widget("CardWidget")
 class RetardWhiteCard(card.Card):
 
     name = "white_card"
 
-@bind_widget(CardWidget)
+
+@bind_widget("CardWidget")
 class RetardBack(card.Card):
 
     name = predef.CARD_BACK
@@ -77,7 +71,8 @@ class RetardCardTable(card_table.CardTable):
         RetardBack,
     ]
 
-@bind_widget(DeckWidget)
+
+@bind_widget("DeckWidget")
 class RetardDeck(deck.Deck):
 
     name = "retard_deck"
@@ -133,7 +128,7 @@ class RetardFlow(flow.TurnCycle):
 # )
 
 
-@bind_widget(GameWidget)
+@bind_widget("GameWidget")
 class RetardGame(game.Game):
 
     name = "retard_game"
