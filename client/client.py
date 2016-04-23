@@ -164,23 +164,22 @@ class TwistedClientApp(App):
         ev_type, params = ev[predef.MESSAGE_TYPE_KEY], ev[predef.MESSAGE_PARAMS_KEY]
 
         if ev_type in self.msg_handlers:
-            log.info("Calling handler {h}".format(h=ev_type))
+            log.info("Calling handler {h}", h=ev_type)
             self.msg_handlers[ev_type](params)
 
         elif ev_type in [predef.ACTION_JUST, predef.ACTION_SEQUENCE, predef.ACTION_PIPE]:
-            log.info("Trying to move game forward with message {msg}".format(msg=msg))
+            log.info("Trying to move game forward with message {msg}", msg=msg)
             self.handle_game_action(msg)
 
         else:
-            log.debug("Unknown event type {evt}".format(evt=ev_type))
-            print('Unknown event type: {evt}'.format(evt=ev_type))
+            log.debug("Unknown event type {evt}", evt=ev_type)
 
     def handle_chat_join(self, params):
         """
         Обработчик для появления на сервере нового игрока.
         """
         
-        log.info("Online changed: {l}".format(l=params[predef.CHAT_NAMES_KEY]))
+        log.info("Online changed: {l}", l=params[predef.CHAT_NAMES_KEY])
         self.users = params[predef.CHAT_NAMES_KEY]
 
     def handle_chat_part(self, params):
@@ -189,7 +188,7 @@ class TwistedClientApp(App):
         """
         
         name = params[predef.CHAT_NAME_KEY]
-        log.info("Someone has left: {u}".format(u=name))
+        log.info("Someone has left: {u}", u=name)
         self.print_message("%s has left" % name)
 
         for i, u in enumerate(self.users):
@@ -204,7 +203,7 @@ class TwistedClientApp(App):
 
         name = params[predef.CHAT_NAME_KEY]
         msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY]
-        log.info("Received message {m} from user {u}, type {t}".format(m=msg_type, u=name, t=msg_type))
+        log.info("Received message {m} from user {u}, type {t}", m=msg_type, u=name, t=msg_type)
         self.print_message("<%s> %s" % (name, text))
 
     def handle_lobby_start_game(self, params):
@@ -216,7 +215,7 @@ class TwistedClientApp(App):
                 [{'name': user} for user in self.users],
                 mode=predef.CLIENT)
         
-        log.info("Starting game, players are: {pl}".format(pl=self.users))
+        log.info("Starting game, players are: {pl}", pl=self.users)
         rgw = rg.make_widget(name='game', app=self)
         self.sm.add_widget(rgw)
         self.game_scr = self.sm.get_screen('game')
@@ -228,7 +227,7 @@ class TwistedClientApp(App):
         Когда имя занято. TODO: сообщать пользователю о том, что имя занято.
         """
         
-        log.debug("Name {n} already exists".format(n=self.player_name))
+        log.debug("Name {n} already exists", n=self.player_name)
         self.connection.loseConnection()
         Factory.ConnectionWidget().open()
 
@@ -280,7 +279,7 @@ class TwistedClientApp(App):
             }
         }
 
-        log.info("Sent chat message {msg}".format(msg=msg[predef.MESSAGE_TYPE_KEY][predef.CHAT_TEXT_KEY]))
+        log.info("Sent chat message {msg}", msg=msg[predef.MESSAGE_TYPE_KEY][predef.CHAT_TEXT_KEY])
         self.lobby_scr.ids.input_field.text = ""
         self.send_message(msg)
 
