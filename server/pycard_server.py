@@ -89,13 +89,13 @@ class MultiEcho(protocol.Protocol):
         """
 
         # Надо найти идентификатор игрока player
-        for identifier, person in self.factory.players:
+        for identifier, person in self.factory.players.iteritems():
             if person.name == player:
                 endpoint = identifier
 
         # TODO: доработать если попытка отправит несуществующему клиенту
         endpoint_index = self.factory.echoers.index(endpoint)
-        self.factory.echoers[endpoint_index].write(msg)
+        self.factory.echoers[endpoint_index].transport.write(msg)
 
     def check_playnum(self):
         """
@@ -165,7 +165,7 @@ class MultiEcho(protocol.Protocol):
         """
         Родной брат метода client.parse_message
         """
-
+        #vprint msg
         event = json.loads(msg)
         event_type, params = event[MESSAGE_TYPE_KEY], event[MESSAGE_PARAMS_KEY]
 
@@ -183,7 +183,8 @@ class MultiEcho(protocol.Protocol):
         elif event_type == LOBBY_NOT_READY:
             self.handle_lobby_not_ready(event)
         elif event_type in [ACTION_JUST, ACTION_PIPE, ACTION_SEQUENCE]:
-            self.game.receive_message(event)
+            # print event
+            self.game.receive_message(msg)
             self.send_game_flow()
 
 
