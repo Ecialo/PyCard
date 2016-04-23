@@ -167,7 +167,7 @@ class TwistedClientApp(App):
             log.info("Calling handler {h}".format(h=ev_type))
             self.msg_handlers[ev_type](params)
 
-        elif ev_type in [ACTION_JUST, ACTION_SEQUENCE, ACTION_PIPE]:
+        elif ev_type in [predef.ACTION_JUST, predef.ACTION_SEQUENCE, predef.ACTION_PIPE]:
             log.info("Trying to move game forward with message {msg}".format(msg=msg))
             self.handle_game_action(msg)
 
