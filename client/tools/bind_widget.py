@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import inspect
+import importlib
 __author__ = 'ecialo'
 
 
@@ -45,13 +46,47 @@ def property_hook(method):
     return hooked
 
 
-def bind_widget(widget):
+# def bind_widget(widget):
+#
+#     def bind(component_cls):
+#         # Всё что ниже конченная жесть.
+#         # Я очень надеюсь, что мы придумаем что-нибудь поумнее для связи с виджетами.
+#         def make_widget(self, **kwargs):
+#             if not hasattr(self, '_widget') or not self._widget:
+#                 self._widget = widget(self, **kwargs)
+#             return self._widget
+#
+#         component_cls.make_widget = make_widget
+#         for method_name in component_cls.hooks:
+#             setattr(
+#                 component_cls,
+#                 method_name,
+#                 property_hook(getattr(
+#                     component_cls,
+#                     method_name
+#                 ))
+#             )
+#
+#         # ComponentWithWidget.__name__ = component_cls.__name__ + "WithWidget"
+#
+#         return component_cls
+#
+#     return bind
+
+
+def bind_widget(widget_name):
 
     def bind(component_cls):
         # Всё что ниже конченная жесть.
         # Я очень надеюсь, что мы придумаем что-нибудь поумнее для связи с виджетами.
         def make_widget(self, **kwargs):
             if not hasattr(self, '_widget') or not self._widget:
+
+                try:
+                    widget = getattr(importlib.import_module('client.game_ui'), widget_name)
+                except AttributeError:
+                    raise AttributeError(msg="TAKOGO WIDGETA NEMA")    # TODO заменить на поиск по директории с игрой
+
                 self._widget = widget(self, **kwargs)
             return self._widget
 
@@ -71,3 +106,6 @@ def bind_widget(widget):
         return component_cls
 
     return bind
+
+
+
