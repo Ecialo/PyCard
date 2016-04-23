@@ -145,8 +145,8 @@ class MultiEcho(protocol.Protocol):
             MESSAGE_TYPE_KEY: LOBBY_START_GAME,
             MESSAGE_PARAMS_KEY: {}
         }
+        self.game = retard_game.RetardGame([{'name': str(x.name)} for x in self.factory.players.values()])
         self.send_global_message(json.dumps(msg))
-        self.game = retard_game.RetardGame([x.name for x in self.factory.players.values()])
         log.info('this is our game: {game}', game=self.game)
 
     def prepare_session(self):
