@@ -120,7 +120,7 @@ class Game(util.Component):
             else:
                 return None
         except EndOfGame:
-            # self.win_condition((self.current_flow, self))
+            self.win_condition((None, self))
             raise GameOver()
 
     @property
