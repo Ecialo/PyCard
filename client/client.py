@@ -279,7 +279,7 @@ class TwistedClientApp(App):
             }
         }
 
-        log.info("Sent chat message {msg}", msg=msg[predef.MESSAGE_TYPE_KEY][predef.CHAT_TEXT_KEY])
+        log.info("Sent chat message {msg}", msg=msg[predef.MESSAGE_PARAMS_KEY][predef.CHAT_TEXT_KEY])
         self.lobby_scr.ids.input_field.text = ""
         self.send_message(msg)
 
