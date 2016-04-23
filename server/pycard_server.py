@@ -83,6 +83,20 @@ class MultiEcho(protocol.Protocol):
         for player in self.factory.echoers:
             player.transport.write(msg)
 
+    def send_individual_message(self, player, msg):
+        """
+        Юзать этот метод для написания сообщений в приват
+        """
+
+        # Надо найти идентификатор игрока player
+        for identifier, person in self.factory.players.iteritems():
+            if person.name == player:
+                endpoint = identifier
+
+        # TODO: доработать если попытка отправит несуществующему клиенту
+        endpoint_index = self.factory.echoers.index(endpoint)
+        self.factory.echoers[endpoint_index].transport.write(msg)
+
     def check_playnum(self):
         """
         Проверяем достаточно ли клиентов (вызываем каждый раз после того как
@@ -131,12 +145,9 @@ class MultiEcho(protocol.Protocol):
             MESSAGE_TYPE_KEY: LOBBY_START_GAME,
             MESSAGE_PARAMS_KEY: {}
         }
+        self.game = retard_game.RetardGame([{'name': str(x.name)} for x in self.factory.players.values()])
         self.send_global_message(json.dumps(msg))
-        self.game = retard_game.RetardGame([x.name for x in self.factory.players.values()])
         log.info('this is our game: {game}', game=self.game)
-
-    def dummy_sender(self):
-        pass
 
     def prepare_session(self):
         """ Подготовить сессию игровую к запуску. Если кто-то
@@ -154,7 +165,7 @@ class MultiEcho(protocol.Protocol):
         """
         Родной брат метода client.parse_message
         """
-
+        #vprint msg
         event = json.loads(msg)
         event_type, params = event[MESSAGE_TYPE_KEY], event[MESSAGE_PARAMS_KEY]
 
@@ -172,7 +183,9 @@ class MultiEcho(protocol.Protocol):
         elif event_type == LOBBY_NOT_READY:
             self.handle_lobby_not_ready(event)
         elif event_type in [ACTION_JUST, ACTION_PIPE, ACTION_SEQUENCE]:
-            self.game.receive_message(event)
+            # print event
+            self.game.receive_message(msg)
+            self.send_game_flow()
 
 
     # Отправка сообщений клиентам
@@ -188,8 +201,6 @@ class MultiEcho(protocol.Protocol):
         params[MESSAGE_TYPE_KEY] = CHAT_JOIN
         # TODO: fix later
         params[MESSAGE_PARAMS_KEY][CHAT_NAMES_KEY] = [player.name for player in self.factory.players.values()]
-        h = open('hi.txt', 'a')
-        h.write(json.dumps(params))
 
         log.info('some {data} sent', data=str(params))
         self.send_global_message(json.dumps(params))
@@ -238,6 +249,13 @@ class MultiEcho(protocol.Protocol):
         self.send_global_message(json.dumps(params))
 
     # Здесь будет все что имеет отношение уже к сессии
+
+    def send_game_flow(self):
+        response = self.game.run()
+
+        # TODO: добавить обработку случая когда response будет None
+        for client_name in response:
+            self.send_individual_message(client_name, response[client_name])
 
 
 class MultiEchoFactory(protocol.Factory):

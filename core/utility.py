@@ -108,4 +108,12 @@ def make_sequence_message(author, *args):
         }
     }
     return json.dumps(message)
+
+
+def check_pycard_protocol(message_or_action_struct):
+    action_struct = message_or_action_struct if not isinstance(message_or_action_struct, basestring) else json.loads(message_or_action_struct)
+    valid_type = action_struct.get('type') in range(12)
+    params = action_struct.get('params')
+    params_valid_type = isinstance(params, dict)
+    return valid_type and params_valid_type
     # return "(" + "&".join(args) + ")"

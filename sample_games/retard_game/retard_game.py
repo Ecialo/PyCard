@@ -74,6 +74,7 @@ class RetardCardTable(card_table.CardTable):
     cards = [
         RetardBlackCard,
         RetardWhiteCard,
+        RetardBack,
     ]
 
 @bind_widget(DeckWidget)

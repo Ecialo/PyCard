@@ -61,7 +61,7 @@ class GameWidget(Screen):
     def send_actions(self, *actions):
         for action in actions:
             msg = action.make_message()
-            self.app.send_raw_message(msg)
+            self.app.send_action(msg)
 
     def push_game_forward(self, *actions):
         for action in actions:
