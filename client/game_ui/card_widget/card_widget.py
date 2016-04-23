@@ -40,6 +40,9 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
         self.card = card
 
     def on_touch_down(self, touch, *args):
+        if self.origin == predef.CARD_FROM_ANOTHER_HAND:
+            return False
+
         if self.collide_point(*touch.pos):
             touch.grab(self)
             self.size_hint_y = None
@@ -72,7 +75,7 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
             hand_widget = player_widget.widgets['hand']
  
             # карта вкладывается, если она либо лежит над рукой, либо её куда-то несли из руки, но не донесли
-            if hand_widget.collide_point(*touch.pos) or self.origin == predef.CARD_FROM_HAND:
+            if hand_widget.collide_point(*touch.pos) or self.origin == predef.CARD_FROM_OUR_HAND:
                 self.parent.remove_widget(self)
                 hand_widget.try_to_get_card(self, touch.pos)
 
