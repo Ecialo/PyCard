@@ -72,3 +72,6 @@ class HandResource(Resource, hand.Hand):
 
     categories = [predef.RESOURCE, predef.HAND]
     name = "hand"
+
+    # def __s__(self):
+    #     return hand.Hand.__str__(self)

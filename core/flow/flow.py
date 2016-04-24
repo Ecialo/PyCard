@@ -68,10 +68,7 @@ class Flow(object):
         if self._event:
             return self._event
         else:
-            if self._i >= self._l:
-                raise EndOfCurrentFlow()
-            else:
-                return self._flow[self._i].current_flow()
+            return self._flow[self._i].current_flow()
 
     def next_stage(self):
         if self._event:
@@ -81,6 +78,8 @@ class Flow(object):
                 self.current_flow().next_stage()
             except EndOfCurrentFlow:
                 self._i += 1
+                if self._i >= self._l:
+                    raise EndOfCurrentFlow()
 
     def run(self):
         try:
@@ -105,7 +104,7 @@ class Flow(object):
         )
 
     def receive_action(self, action):
-        pass
+        self.current_flow().receive_action(action)
 
 
 class Cycle(Flow):

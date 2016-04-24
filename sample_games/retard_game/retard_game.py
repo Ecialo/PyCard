@@ -6,6 +6,11 @@ import core.card.card_table as card_table
 import core.card.deck as deck
 import core.flow.condition as cond
 import core.flow.flow as flow
+import core.flow.common_flows.score_calculation_flow as score
+# import core.flow.turn as turn
+import core.flow.common_turns.personal_turn as personal_turn
+import core.flow.condition as cond
+
 import core.flow.turn as turn
 import core.game as game
 import core.player as player
@@ -83,8 +88,18 @@ class RetardDeck(deck.Deck):
     ]
 
 
-class RetardTurn(turn.Turn):
+class RetardTurn(personal_turn.PersonalTurn):
     pass
+
+
+class RetardScoreCalculation(score.ScoreCalculationFlow):
+    pass
+
+
+class RetardWinCondition(cond.WinCondition):
+
+    def __call__(self, (flow_, game_)):
+        pass
 
 
 class RetardCondition(cond.Condition):
@@ -98,10 +113,13 @@ class RetardCondition(cond.Condition):
         return deck_.is_empty()
 
 
-class RetardFlow(flow.TurnCycle):
+class RetardTurns(flow.TurnCycle):
     turn = RetardTurn
     condition = RetardCondition("retard_deck_0")
 
+
+class RetardFlow(flow.Flow):
+    flow = [RetardTurns]
 # player1 = RetardPlayer('Eustace')
 # player2 = RetardPlayer('Spooky')
 # retard_deck = RetardDeck()
@@ -151,7 +169,8 @@ class RetardGame(game.Game):
         super(RetardGame, self).__init__(
             components=retard_components + players,
             flow=RetardFlow,
-            mode=mode
+            mode=mode,
+            win_condition=RetardWinCondition()
         )
 
     def make_dummy_card(self):

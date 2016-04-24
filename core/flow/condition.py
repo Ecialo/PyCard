@@ -8,6 +8,12 @@ class Condition(object):
         return True
 
 
+class WinCondition(Condition):
+
+    def __call__(self, game):
+        pass
+
+
 class CyclesExceedCondition(Condition):
 
     def __init__(

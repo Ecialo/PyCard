@@ -16,6 +16,10 @@ class GameOver(Exception):
     pass
 
 
+class EndOfGame(Exception):
+    pass
+
+
 class Game(util.Component):
     """
     Агрегирует все компоненты необходимые для игры. Так же через этот класс
@@ -30,6 +34,7 @@ class Game(util.Component):
             self,
             components,
             flow,
+            win_condition,
             mode
     ):
         super(Game, self).__init__()
@@ -66,7 +71,9 @@ class Game(util.Component):
         # )
         for component in components:
             self.register_component(component)
+
         self._flow = flow(self)
+        self.win_condition = win_condition
 
     def __getitem__(self, item):
         if isinstance(item, tuple):
@@ -95,22 +102,26 @@ class Game(util.Component):
     #             return None
 
     def run(self):
-        action = self._flow.run()
-        if action:
-            try:
-                action.apply()
-            except EndOfCurrentFlow:
-                raise GameOver()
+        try:
+            # self.win_condition((self.current_flow, self))
+            action = self._flow.run()
+            if action:
+                try:
+                    action.apply()
+                except EndOfCurrentFlow:
+                    raise EndOfGame()
+                else:
+                    visibility = self.expand_visibility(action)
+                    response = self.response(action, visibility)
+                    return {
+                        receiver: response_action.make_message()
+                        for receiver, response_action in response.iteritems()
+                    }
             else:
-                visibility = self.expand_visibility(action)
-                response = self.response(action, visibility)
-                # print "\n\nresponse\n", response
-                return {
-                    receiver: response_action.make_message()
-                    for receiver, response_action in response.iteritems()
-                }
-        else:
-            return None
+                return None
+        except EndOfGame:
+            self.win_condition((None, self))
+            raise GameOver()
 
     @property
     def current_flow(self):
