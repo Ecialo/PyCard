@@ -17,7 +17,6 @@ Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", 
 >>>
 Player2: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", "number": 1, "target": "!resource_Spooky_hand_2"}}, "author": "Spooky"}, "type": 0}
 >>>
-!resource_Spooky_hand_2@system == []
-!resource_Spooky_hand_2@Eustace == []
 >>>
-
+!resource_Spooky_hand_2@system == ['white_card']
+!resource_Spooky_hand_2@Eustace == ['white_card']

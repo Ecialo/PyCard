@@ -33,3 +33,6 @@ class Turn(object):
             self.is_runned = False
             raise EndOfCurrentFlow()
 
+    def __repr__(self):
+        return "Turn of " + (str(self._author) if self._author else "")
+

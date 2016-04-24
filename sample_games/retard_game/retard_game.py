@@ -110,6 +110,7 @@ class RetardCondition(cond.Condition):
     def __call__(self, (flow_, game_)):
         # print game_._components
         deck_ = game_[(predef.DECK, self._deck)]
+        # print "\n\n\n", deck_.is_empty()
         return deck_.is_empty()
 
 

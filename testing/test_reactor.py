@@ -233,12 +233,12 @@ def test(game):         # TODO переписать на argparse
         # with open(filename) as f:
         #     test_reactor.autotest(f)
         with open(filename) as test_scenario:
-            try:
+            # try:
                 scenario = iter(test_scenario)
                 log, params = extract_predefs(scenario)
                 test_reactor.configure(params)
                 test_reactor.autotest(log)
-            except GameOver:
-                pass
+            # except GameOver:
+            #     pass
     except IndexError:
         sys.exit(1)

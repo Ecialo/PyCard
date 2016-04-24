@@ -12,4 +12,4 @@ class AppendCards(action.Action):
         super(AppendCards, self).__init__(author, **kwargs)
 
     def apply(self):
-        self.target.get_cards(self.cards)
+        self.target.get_cards(*self.cards)

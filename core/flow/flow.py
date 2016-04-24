@@ -68,18 +68,14 @@ class Flow(object):
         if self._event:
             return self._event
         else:
-            return self._flow[self._i].current_flow()
+            return self._flow[self.stage].current_flow()
 
     def next_stage(self):
         if self._event:
             self._event = None
         else:
-            try:
-                self.current_flow().next_stage()
-            except EndOfCurrentFlow:
-                self._i += 1
-                if self._i >= self._l:
-                    raise EndOfCurrentFlow()
+            # try:
+            self._flow[self.stage].next_stage()
 
     def run(self):
         try:
@@ -107,6 +103,20 @@ class Flow(object):
         self.current_flow().receive_action(action)
 
 
+class Line(Flow):
+
+    def next_stage(self):
+        if self._event:
+            self._event = None
+        else:
+            try:
+                self.current_flow().next_stage()
+            except EndOfCurrentFlow:
+                self._i += 1
+                if self._i >= self._l:
+                    raise EndOfCurrentFlow()
+
+
 class Cycle(Flow):
     """
     Повторяет последовательность flow, до выполнения условий
@@ -121,12 +131,19 @@ class Cycle(Flow):
         self._cycles = 0
 
     def next_stage(self):
-        super(Cycle, self).next_stage()
-        if self._i >= self._l:
-            self._i %= self._l
-            self._cycles += 1
-        if self.condition((self, self._game)):
-            raise EndOfCurrentFlow()
+        # print "i:", self._i
+        if self._event:
+            self._event = None
+        else:
+            try:
+                self.current_flow().next_stage()
+            except EndOfCurrentFlow:
+                self._i += 1
+                if self._i >= self._l:
+                    self._i %= self._l
+                    self._cycles += 1
+                if self.condition((self, self._game)):
+                    raise EndOfCurrentFlow()
 
     # def run(self):
     #     if self._i >= self._l:
