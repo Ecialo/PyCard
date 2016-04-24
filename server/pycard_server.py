@@ -111,6 +111,7 @@ class MultiEcho(protocol.Protocol):
                 counter += 1
 
         if counter == self.playernum:
+            self.factory.instantiate_game()
             self.prepare_session()
 
     def warning(self):
@@ -145,9 +146,8 @@ class MultiEcho(protocol.Protocol):
             MESSAGE_TYPE_KEY: LOBBY_START_GAME,
             MESSAGE_PARAMS_KEY: {}
         }
-        self.game = retard_game.RetardGame([{'name': str(x.name)} for x in self.factory.players.values()])
         self.send_global_message(json.dumps(msg))
-        log.info('this is our game: {game}', game=self.game)
+        log.info('this is our game: {game}', game=self.factory.game)
 
     def prepare_session(self):
         """ Подготовить сессию игровую к запуску. Если кто-то
@@ -183,8 +183,8 @@ class MultiEcho(protocol.Protocol):
         elif event_type == LOBBY_NOT_READY:
             self.handle_lobby_not_ready(event)
         elif event_type in [ACTION_JUST, ACTION_PIPE, ACTION_SEQUENCE]:
-            # print event
-            self.game.receive_message(msg)
+            # print self.game
+            self.factory.game.receive_message(msg)
             self.send_game_flow()
 
 
@@ -239,6 +239,9 @@ class MultiEcho(protocol.Protocol):
             self.run_game_launcher.cancel()
             self.run_warning.stop()
             self.anncounter = 0
+            # TODO: make smth with this hack
+            if hasattr(self.factory, 'game'):
+                del self.factory.game
 
         log.info('This {player} now is not ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY]))
 
@@ -251,7 +254,7 @@ class MultiEcho(protocol.Protocol):
     # Здесь будет все что имеет отношение уже к сессии
 
     def send_game_flow(self):
-        response = self.game.run()
+        response = self.factory.game.run()
 
         # TODO: добавить обработку случая когда response будет None
         for client_name in response:
@@ -265,10 +268,14 @@ class MultiEchoFactory(protocol.Factory):
         self.player_num = playnum
         self.players = {}
         self.announcment_counter = 0
+        self.game = ''
         log.info('Instantiated server for {playernum} players', playernum=self.player_num)
 
     def buildProtocol(self, addr):
         return MultiEcho(self, self.player_num, self.announcment_counter)
+
+    def instantiate_game(self):
+        self.game = retard_game.RetardGame([{'name': str(x.name)} for x in self.players.values()])
 
 
 if __name__ == '__main__':
