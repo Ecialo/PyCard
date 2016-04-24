@@ -21,6 +21,7 @@ class DrawCards(action.Action):
     default_args = {
         'number': 1
     }
+    visibility = predef.ALL
 
     def __init__(self, author, **kwargs):
         self.source = None
