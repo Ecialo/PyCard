@@ -2,7 +2,7 @@
 """ Test client """
 
 from uuid import getnode as get_mac
-from hashlib import md5
+from os import getpid
 import io, sys
 import json
 
@@ -26,7 +26,7 @@ from game_ui.game_widget import game_widget as gw
 from sample_games.retard_game import retard_game
 
 
-log = Logger(observer=jsonFileLogObserver(io.open("client.json", "a")),
+log = Logger(observer=jsonFileLogObserver(io.open("client_{pid}.json".format(pid=getpid()), "a")),
                  namespace="client")
 
 __author__ = 'Anton Korobkov'
@@ -38,7 +38,7 @@ class EchoClient(protocol.Protocol):
         self.factory.app.on_connection(self.transport)
 
     def dataReceived(self, data):
-        log.info('Message recieved {message}', message=data)
+        log.info('Message from server: {message}', message=data)
         self.factory.app.parse_message(data)
 
 
@@ -88,7 +88,7 @@ class TwistedClientApp(App):
 
     def build(self):
         self.set_message_handlers()
-        
+
         root = FloatLayout()
 
         sm = ScreenManager(transition=FadeTransition())
@@ -96,10 +96,10 @@ class TwistedClientApp(App):
         self.lobby_scr = sm.get_screen('lobby')
         self.lobby_scr.ids.ready_checkbox.bind(state=self.on_ready_clicked)
         root.add_widget(sm)
-        
+
         nm = NotificationsManager()
         root.add_widget(nm)
-        
+
         self.sm = sm
         self.nm = nm
         return root
@@ -108,6 +108,7 @@ class TwistedClientApp(App):
         """
         Вызывается автоматически после создания интерфейса.
         """
+
         self.stdout_hook = StdoutHook(self.lobby_scr.ids.chatlog)
         Factory.ConnectionWidget().open()
 
@@ -118,6 +119,11 @@ class TwistedClientApp(App):
                 server=host, port=port)
 
         else:
+            if not host:
+                log.debug("Not connecting because host is not set")
+            if not port:
+                log.debug("Not connecting because port is not set")
+
             self.print_message("One or more fields are empty.") # TODO: make a proper error message
             Factory.ConnectionWidget().open()
 
@@ -164,31 +170,32 @@ class TwistedClientApp(App):
         ev_type, params = ev[predef.MESSAGE_TYPE_KEY], ev[predef.MESSAGE_PARAMS_KEY]
 
         if ev_type in self.msg_handlers:
-            log.info("Calling handler {h}", h=ev_type)
+            log.info("Calling handler for message of type {h}", h=ev_type)
             self.msg_handlers[ev_type](params)
 
         elif ev_type in [predef.ACTION_JUST, predef.ACTION_SEQUENCE, predef.ACTION_PIPE]:
-            log.info("Trying to move game forward with message {msg}", msg=msg)
+            log.info("Trying to move game forward")
             self.handle_game_action(msg)
 
         else:
-            log.debug("Unknown event type {evt}", evt=ev_type)
+            log.debug("Unknown event type: {evt}", evt=ev_type)
 
     def handle_chat_join(self, params):
         """
         Обработчик для появления на сервере нового игрока.
         """
-        
-        log.info("Online changed: {l}", l=params[predef.CHAT_NAMES_KEY])
-        self.users = params[predef.CHAT_NAMES_KEY]
+
+        users = params[predef.CHAT_NAMES_KEY]
+        log.info("Online changed: {users}", users=users)
+        self.users = users
 
     def handle_chat_part(self, params):
         """
         Обработчик для ухода игрока с сервера.
         """
-        
+
         name = params[predef.CHAT_NAME_KEY]
-        log.info("Someone has left: {u}", u=name)
+        log.info("Someone has left: {user}", user=name)
         self.print_message("%s has left" % name)
 
         for i, u in enumerate(self.users):
@@ -204,17 +211,17 @@ class TwistedClientApp(App):
         name = params[predef.CHAT_NAME_KEY]
         msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY]
         log.info("Received message {m} from user {u}, type {t}", m=msg_type, u=name, t=msg_type)
-        self.print_message("<%s> %s" % (name, text))
+        self.print_message("<{name}> {msg}".format(name=name, msg=text))
 
     def handle_lobby_start_game(self, params):
         """
         Обработчик для сообщения «все готовы, пора играть».
         """
-        
+
         rg = retard_game.RetardGame(
                 [{'name': user} for user in self.users],
                 mode=predef.CLIENT)
-        
+
         log.info("Starting game, players are: {pl}", pl=self.users)
         rgw = rg.make_widget(name='game', app=self)
         self.sm.add_widget(rgw)
@@ -226,19 +233,20 @@ class TwistedClientApp(App):
         """
         Когда имя занято. TODO: сообщать пользователю о том, что имя занято.
         """
-        
-        log.debug("Name {n} already exists", n=self.player_name)
+
+        log.debug("Name {n} already exists on server", n=self.player_name)
         self.connection.loseConnection()
-        Factory.ConnectionWidget().open()
+        Factory.ConnectionWidget().open() # TODO: сделать отдельным экраном
+
 
     # Генерация сообщений для сервера
 
     def send_raw_message(self, raw_msg):
+        log.info("Sending message: {m}", m=raw_msg)
         if raw_msg and self.connection:
             self.connection.write(raw_msg)
-    
+
     def send_action(self, action_msg):
-        log.debug("Sending action message: {m}", m=action_msg)
         self.send_raw_message(action_msg)
 
     def send_message(self, msg):
@@ -246,7 +254,7 @@ class TwistedClientApp(App):
         Отправляет сообщение на сервер.
         Сообщение должно иметь формат, указанный в описании протокола, и являться словарём.
         """
-        
+
         dump = json.dumps(msg)
         self.send_raw_message(dump)
 
@@ -262,7 +270,6 @@ class TwistedClientApp(App):
             }
         }
 
-        log.info("Sent register request")
         self.send_message(msg)
 
     def send_chat_message(self):
@@ -279,7 +286,6 @@ class TwistedClientApp(App):
             }
         }
 
-        log.info("Sent chat message {msg}", msg=msg[predef.MESSAGE_PARAMS_KEY][predef.CHAT_TEXT_KEY])
         self.lobby_scr.ids.input_field.text = ""
         self.send_message(msg)
 
@@ -294,7 +300,7 @@ class TwistedClientApp(App):
                 predef.CHAT_NAME_KEY: self.player_name
             }
         }
-        log.info("Sent ready message")
+
         self.send_message(msg)
 
     def send_lobby_not_ready(self):
@@ -309,13 +315,16 @@ class TwistedClientApp(App):
             }
         }
 
-        log.info("Sent not ready message")
         self.send_message(msg)
 
 
-    # Обработка игровых событий (простая передача их по цепочке)
+    #
 
     def handle_game_action(self, action_msg):
+        """
+        Обработка игровых событий (простая передача их по цепочке).
+        """
+
         self.game_scr.game.receive_message(action_msg)
 
 
@@ -326,8 +335,12 @@ class TwistedClientApp(App):
             self.send_lobby_ready()
         else:
             self.send_lobby_not_ready()
-    
+
     def notify(self, text):
+        """
+        Показывает уведомление вверху экрана.
+        """
+
         self.nm.notify(text)
 
 
