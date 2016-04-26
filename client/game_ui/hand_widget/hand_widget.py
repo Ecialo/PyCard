@@ -29,7 +29,6 @@ class HandWidget(blayout.BoxLayout):
 
     def __init__(self, hand, **kwargs):
         super(HandWidget, self).__init__(**kwargs)
-        #self.ids = kwargs.get('ids')
         self.hand = hand
 
         self.register_event_type('on_get_cards')
@@ -39,11 +38,12 @@ class HandWidget(blayout.BoxLayout):
             card = self.game_widget.game.view_card(card)
 
             card_widget = card.make_widget(game_widget=self.game_widget)
-            card_widget.origin = predef.CARD_FROM_HAND
+            is_our_hand = (self.game_widget.player_name == self.player_widget.player.name)
+            card_widget.origin = predef.CARD_FROM_OUR_HAND if is_our_hand else predef.CARD_FROM_ANOTHER_HAND
             self.ui_add_card_widget(card_widget)
 
     def try_to_get_card(self, card_widget, touch_pos):
-        if card_widget.origin == predef.CARD_FROM_HAND:
+        if card_widget.origin == predef.CARD_FROM_OUR_HAND:
             self.ui_add_card_widget(card_widget, touch_pos)
 
         # пытаемся взять карту из колоды, если можно
@@ -62,7 +62,7 @@ class HandWidget(blayout.BoxLayout):
                 if draw_card.check():
                     self.game_widget.send_actions(draw_card)
 
-                card_widget.origin = predef.CARD_FROM_HAND
+                card_widget.origin = predef.CARD_FROM_OUR_HAND
             elif not self.game_widget.is_our_turn():
                 self.game_widget.notify("It's not your turn now")
 
