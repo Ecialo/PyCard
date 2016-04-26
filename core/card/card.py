@@ -45,5 +45,5 @@ class Card(utility.Component):
         self._current_context = context
 
     def __eq__(self, other):
-        return self.name == other.name
+        return other is not None and self.name == other.name
 
