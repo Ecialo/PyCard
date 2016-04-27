@@ -8,6 +8,7 @@ import core.flow.condition as cond
 import core.flow.flow as flow
 import core.flow.common_flows.score_calculation_flow as score
 # import core.flow.turn as turn
+from core.game import GameOver
 import core.flow.common_turns.personal_turn as personal_turn
 import core.flow.condition as cond
 
@@ -98,8 +99,16 @@ class RetardScoreCalculation(score.ScoreCalculationFlow):
 
 class RetardWinCondition(cond.WinCondition):
 
-    def __call__(self, (flow_, game_)):
-        pass
+    def __call__(self, flow_game):
+        flow_, game_ = flow_game
+        if flow_ is None:
+            players = game_.get_category(predef.PLAYER).values()
+            players_black_cards = [player_.resources["hand"].cards().count("white_card") for player_ in players]
+            players_names = [player_.name for player_ in players]
+            leaders = enumerate(sorted(zip(players_black_cards, players_names), reverse=True))
+            # print "b_cards", list(players_names)
+            players_stats = {pos_struct[1][1]: (pos_struct[0], pos_struct[1][0]) for pos_struct in leaders}
+            raise GameOver(players_stats)
 
 
 class RetardCondition(cond.Condition):

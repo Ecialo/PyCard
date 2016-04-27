@@ -10,7 +10,7 @@ class Condition(object):
 
 class WinCondition(Condition):
 
-    def __call__(self, game):
+    def __call__(self, flow_game):
         pass
 
 

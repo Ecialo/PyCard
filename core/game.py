@@ -13,7 +13,18 @@ class WTFError(Exception):
 
 
 class GameOver(Exception):
-    pass
+    """
+    Обозначает конец игры.
+    На вход {имя_игрока: (позиция_в_зачете, статы)}
+    Шаблон сообщения.
+    """
+
+    def __init__(self, players_stats, message_template=None):
+        self.players_stats = players_stats
+        self.message_template = message_template
+
+    def __str__(self):
+        return str(self.players_stats)      # TODO сделать номальное сообщение
 
 
 class EndOfGame(Exception):
@@ -74,6 +85,7 @@ class Game(util.Component):
 
         self._flow = flow(self)
         self.win_condition = win_condition
+        self.game_result = None
 
     def __getitem__(self, item):
         if isinstance(item, tuple):
@@ -103,7 +115,7 @@ class Game(util.Component):
 
     def run(self):
         try:
-            # self.win_condition((self.current_flow, self))
+            self.check_win_condition((self.current_flow, self))
             action = self._flow.run()
             if action:
                 try:
@@ -120,8 +132,8 @@ class Game(util.Component):
             else:
                 return None
         except EndOfGame:
-            self.win_condition((None, self))
-            raise GameOver()
+            self.check_win_condition((None, self))
+            # raise GameOver()
 
     @property
     def current_flow(self):
@@ -229,3 +241,11 @@ class Game(util.Component):
             action.apply()
         else:
             raise WTFError()
+
+    def check_win_condition(self, state):
+        # print state
+        try:
+            self.win_condition(state)
+        except GameOver as game_over:
+            self.game_result = game_over.players_stats
+            raise game_over

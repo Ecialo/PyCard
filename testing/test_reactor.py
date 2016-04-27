@@ -82,6 +82,7 @@ class TestReactor(object):
 
     def _autotest(self, log):
         for line in log:
+            # print line
             if line.startswith(">>>"):   # TODO remove hardcode
                 self._run_game()
             elif line.startswith(predef.SUBSTITUTION_SYMBOL):
