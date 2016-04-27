@@ -42,14 +42,6 @@ class Component(object):
     def path(self):
         return self.categories[0] + "_" + self.fullname
 
-    # def make_get_action(self):
-    #     componet_action = action.Get()
-    #     componet_action.setup(
-    #         category=self.categories[0],
-    #         name=self.fullname,
-    #     )
-    #     return componet_action
-
 
 class Singleton(object):
 
@@ -83,7 +75,6 @@ def make_message(author, message_struct):        # TODO нужно немног�
             predef.MESSAGE_AUTHOR_KEY: author,
         }
     }
-    # return "(" + action_name + " " + json.dumps(kwargs) + ")"
     return json.dumps(message)
 
 
@@ -95,7 +86,6 @@ def make_pipe_message(author, *args):
             predef.MESSAGE_AUTHOR_KEY: author
         }
     }
-    # return "(" + "|".join(args) + ")"
     return json.dumps(message)
 
 
@@ -116,4 +106,3 @@ def check_pycard_protocol(message_or_action_struct):
     params = action_struct.get('params')
     params_valid_type = isinstance(params, dict)
     return valid_type and params_valid_type
-    # return "(" + "&".join(args) + ")"
