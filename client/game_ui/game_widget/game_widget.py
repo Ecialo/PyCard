@@ -6,7 +6,7 @@ import kivy.properties as prop
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 
-from core import predef
+from core.predef import game_component_types
 
 __author__ = 'ecialo'
 Builder.load_file('./client/game_ui/game_widget/game_widget.kv')
@@ -27,7 +27,8 @@ class GameWidget(Screen):
         self.game = game
         self.player_name = self.app.player_name
 
-        self.player_widgets = {player.name: player.make_widget(game_widget=self) for player in self.game.get_category(predef.PLAYER).itervalues()}
+        self.player_widgets = {player.name: player.make_widget(game_widget=self) \
+            for player in self.game.get_category(game_component_types.PLAYER).itervalues()}
         player_zone = self.ids.player_zone
 
         idx = None
@@ -43,7 +44,7 @@ class GameWidget(Screen):
         player_zone.switch_to(tl[0]) # почему это не работает.
 
         deck_zone = self.ids.deck_zone
-        self.deck_widget = self.game.get_category(predef.DECK).values()[0].make_widget(game_widget=self)
+        self.deck_widget = self.game.get_category(game_component_types.DECK).values()[0].make_widget(game_widget=self)
         deck_zone.add_widget(self.deck_widget)
 
     def is_our_turn(self):

@@ -14,7 +14,7 @@ import kivy.properties as prop
 
 from kivy.lang import Builder
 
-from core import predef
+from core.predef import game_component_types, ui_namespace
 
 Builder.load_file('./client/game_ui/hand_widget/hand_widget.kv')
 
@@ -39,19 +39,19 @@ class HandWidget(blayout.BoxLayout):
 
             card_widget = card.make_widget(game_widget=self.game_widget)
             is_our_hand = (self.game_widget.player_name == self.player_widget.player.name)
-            card_widget.origin = predef.CARD_FROM_OUR_HAND if is_our_hand else predef.CARD_FROM_ANOTHER_HAND
+            card_widget.origin = ui_namespace.card_types.FROM_OUR_HAND if is_our_hand else ui_namespace.card_types.FROM_ANOTHER_HAND
             self.ui_add_card_widget(card_widget)
 
     def try_to_get_card(self, card_widget, touch_pos):
-        if card_widget.origin == predef.CARD_FROM_OUR_HAND:
+        if card_widget.origin == ui_namespace.card_types.FROM_OUR_HAND:
             self.ui_add_card_widget(card_widget, touch_pos)
 
         # пытаемся взять карту из колоды, если можно
-        elif card_widget.origin == predef.CARD_FROM_DECK:
+        elif card_widget.origin == ui_namespace.card_types.FROM_DECK:
             if self.game_widget.is_our_turn() and self.game_widget.is_our_tab_active():
                 #TODO: это выглядит неправильно.
                 g = self.game_widget.game
-                atable = g.get_category(predef.TABLE)['game_action_table']
+                atable = g.get_category(game_component_types.TABLE)['game_action_table']
                 dca_class = filter(lambda x: x.name == 'draw_cards', atable.actions)[0]
                 draw_card = dca_class(
                         source=self.game_widget.deck_widget.deck,
@@ -62,7 +62,7 @@ class HandWidget(blayout.BoxLayout):
                 if draw_card.check():
                     self.game_widget.send_actions(draw_card)
 
-                card_widget.origin = predef.CARD_FROM_OUR_HAND
+                card_widget.origin = ui_namespace.card_types.FROM_OUR_HAND
             elif not self.game_widget.is_our_turn():
                 self.game_widget.notify("It's not your turn now")
 

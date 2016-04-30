@@ -7,8 +7,6 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 import kivy.properties as prop
 
-import core.predef as predef
-
 
 Builder.load_file('./client/client_ui/connection_screen.kv')
 

@@ -5,7 +5,7 @@ import kivy.properties as prop
 from kivy.uix.label import Label
 from kivy.lang import Builder
 
-from core import predef
+from core.predef import ui_namespace
 
 Builder.load_file('./client/game_ui/deck_widget/deck_widget.kv')
 
@@ -27,7 +27,7 @@ class DeckWidget(Label):
                 cw.size_hint_y = None
                 cw.size = self.size
                 cw.center = self.center
-                cw.origin = predef.CARD_FROM_DECK
+                cw.origin = ui_namespace.card_types.FROM_DECK
                 self.game_widget.add_widget(cw)
                 touch.grab(cw)
 

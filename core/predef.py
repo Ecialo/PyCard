@@ -99,10 +99,22 @@ pycard_protocol = Namespace(
         "LOBBY_NAME_ALREADY_EXISTS",
     ),
     message_struct=Namespace(
-        MESSAGE_TYPE_KEY="type",
-        MESSAGE_PARAMS_KEY="params",
-        MESSAGE_ACTION_KEY="action",
-        MESSAGE_AUTHOR_KEY="author",
+        TYPE_KEY="type",
+        PARAMS_KEY="params",
+        ACTION_KEY="action",
+        AUTHOR_KEY="author",
+    ),
+    chat=Namespace(
+        NAME_KEY='name',
+        NAMES_KEY='names',
+        MESSAGE_TYPE_KEY='message_type',
+        message_type=Enum(
+            "PRIVATE",
+            "BROADCAST"
+        ),
+        TEXT_KEY='text',
+        RECEIVER_KEY='receiver',
+        PLAYER_ID_KEY='player_id',
     ),
 )
 
@@ -137,11 +149,13 @@ CHAT_PLAYER_ID_KEY = (
 # UI
 CARD_FROM_OUR_HAND, CARD_FROM_ANOTHER_HAND, CARD_FROM_DECK, CARD_FROM_DESK = xrange(4)
 
-ui = Enum(
-    "CARD_FROM_OUR_HAND",
-    "CARD_FROM_ANOTHER_HAND",
-    "CARD_FROM_DECK",
-    "CARD_FROM_DESK",
+ui_namespace = Namespace(
+    card_types=Enum(
+        "FROM_OUR_HAND",
+        "FROM_ANOTHER_HAND",
+        "FROM_DECK",
+        "FROM_DESK",
+    ),
 )
 
 if __name__ == '__main__':

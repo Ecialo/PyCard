@@ -12,7 +12,7 @@ import kivy.uix.behaviors as beh
 
 from kivy.lang import Builder
 
-from core import predef
+from core.predef import ui_namespace
 
 __author__ = 'ecialo'
 Builder.load_file('./client/game_ui/card_widget/card_widget.kv')
@@ -40,7 +40,7 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
         self.card = card
 
     def on_touch_down(self, touch, *args):
-        if self.origin == predef.CARD_FROM_ANOTHER_HAND:
+        if self.origin == ui_namespace.card_types.FROM_ANOTHER_HAND:
             return False
 
         if self.collide_point(*touch.pos):
@@ -73,9 +73,9 @@ class CardWidget(beh.DragBehavior, flayout.FloatLayout):
 
             player_widget = self.game_widget.player_widgets[self.game_widget.player_name]
             hand_widget = player_widget.widgets['hand']
- 
+
             # карта вкладывается, если она либо лежит над рукой, либо её куда-то несли из руки, но не донесли
-            if hand_widget.collide_point(*touch.pos) or self.origin == predef.CARD_FROM_OUR_HAND:
+            if hand_widget.collide_point(*touch.pos) or self.origin == ui_namespace.card_types.FROM_OUR_HAND:
                 self.parent.remove_widget(self)
                 hand_widget.try_to_get_card(self, touch.pos)
 

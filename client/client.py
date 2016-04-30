@@ -21,6 +21,7 @@ from client_ui.connection_screen import ConnectionScreen
 from client_ui.lobby_screen import LobbyScreen
 
 import core.predef as predef
+from core.predef import pycard_protocol as pp
 from sample_games.retard_game import retard_game
 
 
@@ -71,11 +72,11 @@ class TwistedClientApp(App):
 
     def set_message_handlers(self):
         self.msg_handlers = {
-            predef.CHAT_JOIN:                   self.handle_chat_join,
-            predef.CHAT_PART:                   self.handle_chat_part,
-            predef.CHAT_MESSAGE:                self.handle_chat_message,
-            predef.LOBBY_START_GAME:            self.handle_lobby_start_game,
-            predef.LOBBY_NAME_ALREADY_EXISTS:   self.handle_lobby_name_already_exists
+            pp.event_types.CHAT_JOIN:                   self.handle_chat_join,
+            pp.event_types.CHAT_PART:                   self.handle_chat_part,
+            pp.event_types.CHAT_MESSAGE:                self.handle_chat_message,
+            pp.event_types.LOBBY_START_GAME:            self.handle_lobby_start_game,
+            pp.event_types.LOBBY_NAME_ALREADY_EXISTS:   self.handle_lobby_name_already_exists
         }
 
     def build(self):
@@ -126,13 +127,15 @@ class TwistedClientApp(App):
         """
 
         ev = json.loads(msg)
-        ev_type, params = ev[predef.MESSAGE_TYPE_KEY], ev[predef.MESSAGE_PARAMS_KEY]
+        ev_type, params = ev[pp.message_struct.TYPE_KEY], ev[pp.message_struct.PARAMS_KEY]
 
         if ev_type in self.msg_handlers:
             log.info("Calling handler for message of type {h}", h=ev_type)
             self.msg_handlers[ev_type](params)
 
-        elif ev_type in [predef.ACTION_JUST, predef.ACTION_SEQUENCE, predef.ACTION_PIPE]:
+        elif ev_type in [pp.event_types.ACTION_JUST, \
+                         pp.event_types.ACTION_SEQUENCE, \
+                         pp.event_types.ACTION_PIPE]:
             log.info("Trying to move game forward")
             self.handle_game_action(msg)
 
@@ -144,7 +147,7 @@ class TwistedClientApp(App):
         Обработчик для появления на сервере нового игрока.
         """
 
-        users = params[predef.CHAT_NAMES_KEY]
+        users = params[pp.chat.NAMES_KEY]
         log.info("Online changed: {users}", users=users)
         self.users = users
 
@@ -153,7 +156,7 @@ class TwistedClientApp(App):
         Обработчик для ухода игрока с сервера.
         """
 
-        name = params[predef.CHAT_NAME_KEY]
+        name = params[pp.chat.NAME_KEY]
         log.info("Someone has left: {user}", user=name)
         self.screen_mgr.get_screen('lobby').print_message("{user} has left".format(user=name))
 
@@ -167,8 +170,8 @@ class TwistedClientApp(App):
         Обработчик для приходящих сообщений чата.
         """
 
-        name = params[predef.CHAT_NAME_KEY]
-        msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY].encode('utf-8')
+        name = params[pp.chat.NAME_KEY]
+        msg_type, text = params[pp.chat.MESSAGE_TYPE_KEY], params[pp.chat.TEXT_KEY].encode('utf-8')
         log.info("Received message {m} from user {u}, type {t}", m=msg_type, u=name, t=msg_type)
         self.screen_mgr.get_screen('lobby').print_message("<{name}> {msg}".format(name=name, msg=text))
 
@@ -231,9 +234,9 @@ class TwistedClientApp(App):
         """
 
         msg = {
-            predef.MESSAGE_TYPE_KEY: predef.CHAT_REGISTER,
-            predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_NAME_KEY: self.player_name,
+            pp.message_struct.TYPE_KEY: pp.event_types.CHAT_REGISTER,
+            pp.message_struct.PARAMS_KEY: {
+                pp.chat.NAME_KEY: self.player_name,
             }
         }
 
@@ -245,11 +248,11 @@ class TwistedClientApp(App):
         """
 
         msg = {
-            predef.MESSAGE_TYPE_KEY: predef.CHAT_MESSAGE,
-            predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_NAME_KEY: self.player_name,
-                predef.CHAT_MESSAGE_TYPE_KEY: predef.CHAT_MESSAGE_BROADCAST, # TODO: implement private messages
-                predef.CHAT_TEXT_KEY: text,
+            pp.message_struct.TYPE_KEY: pp.event_types.CHAT_MESSAGE,
+            pp.message_struct.PARAMS_KEY: {
+                pp.chat.NAME_KEY: self.player_name,
+                pp.chat.MESSAGE_TYPE_KEY: pp.chat.message_type.BROADCAST, # TODO: implement private messages
+                pp.chat.TEXT_KEY: text,
             }
         }
 
@@ -261,9 +264,9 @@ class TwistedClientApp(App):
         """
 
         msg = {
-            predef.MESSAGE_TYPE_KEY: predef.LOBBY_READY,
-            predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_NAME_KEY: self.player_name
+            pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_READY,
+            pp.message_struct.PARAMS_KEY: {
+                pp.chat.NAME_KEY: self.player_name
             }
         }
 
@@ -275,9 +278,9 @@ class TwistedClientApp(App):
         """
 
         msg = {
-            predef.MESSAGE_TYPE_KEY: predef.LOBBY_NOT_READY,
-            predef.MESSAGE_PARAMS_KEY: {
-                predef.CHAT_NAME_KEY: self.player_name
+            pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_NOT_READY,
+            pp.message_struct.PARAMS_KEY: {
+                pp.chat.NAME_KEY: self.player_name
             }
         }
 
