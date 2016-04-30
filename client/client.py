@@ -51,7 +51,7 @@ class EchoFactory(protocol.ClientFactory):
     def clientConnectionLost(self, conn, reason):
         log.debug('Connection {connection} lost because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.notify("Connection lost!")
+        self.app.sm.get_screen('lobby').print_message("Connection lost!")
 
     def clientConnectionFailed(self, conn, reason):
         log.debug('Failed to connect to {connection} because of {fail_reason}',
@@ -117,7 +117,7 @@ class TwistedClientApp(App):
         Вызывается автоматически при успешном подключении к серверу.
         """
 
-        self.notify("Connected succesfully!")
+        self.sm.get_screen('lobby').print_message("Connected succesfully!")
         log.info("Connected!")
         self.connection = connection
         self.send_chat_register()
