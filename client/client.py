@@ -64,8 +64,6 @@ Builder.load_file('./client.kv')
 # пустые экраны, разметка для которых содержится в client.kv
 class LobbyScreen(Screen):
     pass
-class GameScreen(Screen):
-    pass
 
 
 class TwistedClientApp(App):
