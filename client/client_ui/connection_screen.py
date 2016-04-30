@@ -5,7 +5,6 @@ import json
 
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
-from kivy.uix.floatlayout import FloatLayout
 import kivy.properties as prop
 
 import core.predef as predef

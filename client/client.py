@@ -1,33 +1,33 @@
 # -*- coding: utf-8 -*-
-""" Test client """
+"""
+PyCard client application
+"""
 
 from os import getpid
 import io, sys
 import json
 
+from kivy.support import install_twisted_reactor
+install_twisted_reactor()
+from twisted.internet import reactor, protocol
+from twisted.logger import Logger, jsonFileLogObserver
+
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.support import install_twisted_reactor
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.uix.floatlayout import FloatLayout
-
 from notifications.notifications import NotificationsManager
 from client_ui.connection_screen import ConnectionScreen
 from client_ui.lobby_screen import LobbyScreen
 
-install_twisted_reactor()
-
-from twisted.internet import reactor, protocol
-from twisted.logger import Logger, jsonFileLogObserver
-
 import core.predef as predef
-
-from game_ui.game_widget import game_widget as gw
 from sample_games.retard_game import retard_game
 
 
-log = Logger(observer=jsonFileLogObserver(io.open("client_{pid}.json".format(pid=getpid()), "a")),
-                 namespace="client")
+log = Logger(
+    observer=jsonFileLogObserver(io.open("client_{pid}.json".format(pid=getpid()), "a")),
+    namespace="client"
+)
 
 __author__ = 'Anton Korobkov'
 
@@ -51,13 +51,13 @@ class EchoFactory(protocol.ClientFactory):
     def clientConnectionLost(self, conn, reason):
         log.debug('Connection {connection} lost because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.sm.get_screen('lobby').print_message("Connection lost!")
+        self.app.screen_mgr.get_screen('lobby').print_message("Connection lost!")
 
     def clientConnectionFailed(self, conn, reason):
         log.debug('Failed to connect to {connection} because of {fail_reason}',
                   connection=conn, fail_reason=reason)
         self.app.notify("Connection failed!")
-        self.app.sm.current = 'connection'
+        self.app.screen_mgr.current = 'connection'
 
 
 class TwistedClientApp(App):
@@ -82,21 +82,16 @@ class TwistedClientApp(App):
         self.set_message_handlers()
 
         root = FloatLayout()
-
         sm = ScreenManager(transition=FadeTransition())
         sm.add_widget(ConnectionScreen(app=self, name='connection'))
         sm.add_widget(LobbyScreen(app=self, name='lobby'))
-
-        self.lobby_scr = sm.get_screen('lobby')
-
-
         root.add_widget(sm)
 
         nm = NotificationsManager()
         root.add_widget(nm)
 
-        self.sm = sm
-        self.nm = nm
+        self.screen_mgr = sm
+        self.notifications_mgr = nm
         return root
 
     def on_start(self):
@@ -104,10 +99,10 @@ class TwistedClientApp(App):
         Вызывается автоматически после создания интерфейса.
         """
 
-        self.stdout_hook = StdoutHook(self.sm.get_screen('lobby').ids.chatlog)
+        self.stdout_hook = StdoutHook(self.screen_mgr.get_screen('lobby').ids.chatlog)
 
     def connect_to_server(self, host, port):
-        self.sm.current = 'lobby'
+        self.screen_mgr.current = 'lobby'
         reactor.connectTCP(host, port, EchoFactory(self))
         log.info('Connecting to server {server} on port {port}',
             server=host, port=port)
@@ -117,7 +112,7 @@ class TwistedClientApp(App):
         Вызывается автоматически при успешном подключении к серверу.
         """
 
-        self.sm.get_screen('lobby').print_message("Connected succesfully!")
+        self.screen_mgr.get_screen('lobby').print_message("Connected succesfully!")
         log.info("Connected!")
         self.connection = connection
         self.send_chat_register()
@@ -160,7 +155,7 @@ class TwistedClientApp(App):
 
         name = params[predef.CHAT_NAME_KEY]
         log.info("Someone has left: {user}", user=name)
-        self.sm.get_screen('lobby').print_message("%s has left" % name)
+        self.screen_mgr.get_screen('lobby').print_message("%s has left" % name)
 
         for i, u in enumerate(self.users):
             if u == name:
@@ -175,7 +170,7 @@ class TwistedClientApp(App):
         name = params[predef.CHAT_NAME_KEY]
         msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY]
         log.info("Received message {m} from user {u}, type {t}", m=msg_type, u=name, t=msg_type)
-        self.sm.get_screen('lobby').print_message("<{name}> {msg}".format(name=name, msg=text))
+        self.screen_mgr.get_screen('lobby').print_message("<{name}> {msg}".format(name=name, msg=text))
 
     def handle_lobby_start_game(self, params):
         """
@@ -188,10 +183,10 @@ class TwistedClientApp(App):
 
         log.info("Starting game, players are: {pl}", pl=self.users)
         rgw = rg.make_widget(name='game', app=self)
-        self.sm.add_widget(rgw)
-        self.game_scr = self.sm.get_screen('game')
+        self.screen_mgr.add_widget(rgw)
+        self.game_scr = self.screen_mgr.get_screen('game')
 
-        self.sm.current = 'game'
+        self.screen_mgr.current = 'game'
 
     def handle_lobby_name_already_exists(self, params):
         """
@@ -200,9 +195,8 @@ class TwistedClientApp(App):
 
         log.debug("Name {n} already exists on server", n=self.player_name)
         self.connection.loseConnection()
-
         self.notify('Name {n} is already taken, please pick another one.'.format(n=self.player_name))
-        self.sm.current = 'connection'
+        self.screen_mgr.current = 'connection'
 
     def handle_game_action(self, action_msg):
         """
@@ -298,7 +292,7 @@ class TwistedClientApp(App):
         Показывает уведомление вверху экрана.
         """
 
-        self.nm.notify(text)
+        self.notifications_mgr.notify(text)
 
 
 class StdoutHook():
