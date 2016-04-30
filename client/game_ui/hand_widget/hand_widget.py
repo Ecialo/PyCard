@@ -33,7 +33,7 @@ class HandWidget(blayout.BoxLayout):
 
         self.register_event_type('on_get_cards')
 
-    def on_get_cards(self, cards):
+    def on_get_cards(self, *cards):
         for card in cards:
             card = self.game_widget.game.view_card(card)
 
