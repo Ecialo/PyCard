@@ -7,7 +7,6 @@ import json
 
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.factory import Factory
 from kivy.support import install_twisted_reactor
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.uix.floatlayout import FloatLayout
@@ -51,12 +50,12 @@ class EchoFactory(protocol.ClientFactory):
     def clientConnectionLost(self, conn, reason):
         log.debug('Connection {connection} lost because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.print_message("Connection lost!")
+        self.app.notify("Connection lost!")
 
     def clientConnectionFailed(self, conn, reason):
         log.debug('Failed to connect to {connection} because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.print_message("Connection failed!")
+        self.app.notify("Connection failed!")
         self.app.sm.current = 'connection'
 
 
@@ -116,26 +115,16 @@ class TwistedClientApp(App):
 
     def connect_to_server(self, host, port):
         self.sm.current = 'lobby'
-        if self.player_name and host and port:
-            reactor.connectTCP(host, port, EchoFactory(self))
-            log.info('Connecting to server {server} on port {port}',
-                server=host, port=port)
-
-        else:
-            if not host:
-                log.debug("Not connecting because host is not set")
-            if not port:
-                log.debug("Not connecting because port is not set")
-
-            self.print_message("One or more fields are empty.") # TODO: make a proper error message
-            self.sm.current = 'connection'
+        reactor.connectTCP(host, port, EchoFactory(self))
+        log.info('Connecting to server {server} on port {port}',
+            server=host, port=port)
 
     def on_connection(self, connection):
         """
         Вызывается автоматически при успешном подключении к серверу.
         """
 
-        self.print_message("Connected succesfully!")
+        self.notify("Connected succesfully!")
         log.info("Connected!")
         self.connection = connection
         self.send_chat_register()
@@ -234,11 +223,13 @@ class TwistedClientApp(App):
 
     def handle_lobby_name_already_exists(self, params):
         """
-        Когда имя занято. TODO: сообщать пользователю о том, что имя занято.
+        Когда игрок с таким именем уже есть на сервере.
         """
 
         log.debug("Name {n} already exists on server", n=self.player_name)
         self.connection.loseConnection()
+
+        self.notify('Name {n} is already taken, please pick another one.'.format(n=self.player_name))
         self.sm.current = 'connection'
 
 
@@ -320,8 +311,6 @@ class TwistedClientApp(App):
 
         self.send_message(msg)
 
-
-    #
 
     def handle_game_action(self, action_msg):
         """

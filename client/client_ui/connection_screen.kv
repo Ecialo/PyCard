@@ -21,10 +21,10 @@
 
             Label:
                 size_hint_x: 0.4
-                text: 'Server:'
+                text: 'Host:'
 
             TextInput:
-                id: server
+                id: host
                 multiline: False
                 write_tab: False
                 text: 'localhost'
@@ -56,7 +56,7 @@
 
             Button:
                 text: 'Connect'
-                on_press: root.connect(server.text, int(port.text), name.text)
+                on_press: root.connect(host.text, port.text, name.text)
 
             Button:
                 text: 'Cancel'
