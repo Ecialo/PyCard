@@ -45,7 +45,8 @@ class LobbyScreen(Screen):
 
         text = self.ids.input_field.text
         self.ids.input_field.text = ""
-        self.app.send_chat_message(text)
+        if text:
+            self.app.send_chat_message(text)
 
 
     # Обработка событий с виджетов
