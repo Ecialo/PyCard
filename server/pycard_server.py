@@ -6,9 +6,11 @@
 
 import io
 import json
+from zope.interface import implements
 from twisted.internet import (
     reactor,
     defer,
+    interfaces
 )
 from twisted.internet import (
     protocol,
@@ -88,6 +90,7 @@ class MultiEcho(protocol.Protocol):
         Юзать этот метод для написания сообщений в приват
         """
 
+        # Deprecated
         # Надо найти идентификатор игрока player
         for identifier, person in self.factory.players.iteritems():
             if person.name == player:
@@ -254,12 +257,9 @@ class MultiEcho(protocol.Protocol):
     # Здесь будет все что имеет отношение уже к сессии
 
     def send_game_flow(self):
-        response = self.factory.game.run()
-
-        # TODO: добавить обработку случая когда response будет None
-        for client_name in response:
-            self.send_individual_message(client_name, response[client_name])
-
+        # Передаем продюсеру инфу о порождающем классе
+        message_producer = Producer(self.factory)
+        message_producer.resumeProducing()
 
 class MultiEchoFactory(protocol.Factory):
 
@@ -277,6 +277,45 @@ class MultiEchoFactory(protocol.Factory):
     def instantiate_game(self):
         self.game = retard_game.RetardGame([{'name': str(x.name)} for x in self.players.values()])
 
+    # Рассылка индивидуальных сообщений перенесена в класс-фабрику, т.к.
+    # 1. её реализация в MultiEcho использовала только фабричные аттрибуты
+    # 2. этот метод скорее всего пригодится для класса Producer
+    def send_individual_message(self, player, msg):
+        for identifier, person in self.players.iteritems():
+            if person.name == player:
+                endpoint = identifier
+
+        # TODO: доработать если попытка отправит несуществующему клиенту
+        endpoint_index = self.echoers.index(endpoint)
+        self.echoers[endpoint_index].transport.write(msg)
+
+class Producer:
+    """Apply .run() until the responce is None """
+    implements(interfaces.IPushProducer)
+
+    def __init__(self, factory):
+        self._paused = False
+        self.factory = factory
+
+    def pauseProducing(self):
+        self._paused = True
+
+    def resumeProducing(self):
+        self._paused = False
+        responce = self.factory.game.run()
+        # принтим респонс для дебагинга
+
+        print responce
+        while responce:
+            print responce
+            for client_name in responce:
+                self.factory.send_individual_message(client_name, responce[client_name])
+            responce = self.factory.game.run()
+
+        self.pauseProducing()
+
+    def stopProducing(self):
+        pass
 
 if __name__ == '__main__':
     reactor.listenTCP(8000, MultiEchoFactory(2))
