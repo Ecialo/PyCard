@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Test client """
 
-from uuid import getnode as get_mac
 from os import getpid
 import io, sys
 import json
@@ -14,6 +13,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.uix.floatlayout import FloatLayout
 
 from notifications.notifications import NotificationsManager
+from client_ui.connection_screen import ConnectionScreen
 
 install_twisted_reactor()
 
@@ -57,6 +57,7 @@ class EchoFactory(protocol.ClientFactory):
         log.debug('Failed to connect to {connection} because of {fail_reason}',
                   connection=conn, fail_reason=reason)
         self.app.print_message("Connection failed!")
+        self.app.sm.current = 'connection'
 
 
 Builder.load_file('./client.kv')
@@ -90,9 +91,13 @@ class TwistedClientApp(App):
         root = FloatLayout()
 
         sm = ScreenManager(transition=FadeTransition())
+        sm.add_widget(ConnectionScreen(app=self, name='connection'))
         sm.add_widget(LobbyScreen(name='lobby'))
+
         self.lobby_scr = sm.get_screen('lobby')
         self.lobby_scr.ids.ready_checkbox.bind(state=self.on_ready_clicked)
+
+
         root.add_widget(sm)
 
         nm = NotificationsManager()
@@ -108,9 +113,9 @@ class TwistedClientApp(App):
         """
 
         self.stdout_hook = StdoutHook(self.lobby_scr.ids.chatlog)
-        Factory.ConnectionWidget().open()
 
     def connect_to_server(self, host, port):
+        self.sm.current = 'lobby'
         if self.player_name and host and port:
             reactor.connectTCP(host, port, EchoFactory(self))
             log.info('Connecting to server {server} on port {port}',
@@ -123,7 +128,7 @@ class TwistedClientApp(App):
                 log.debug("Not connecting because port is not set")
 
             self.print_message("One or more fields are empty.") # TODO: make a proper error message
-            Factory.ConnectionWidget().open()
+            self.sm.current = 'connection'
 
     def on_connection(self, connection):
         """
@@ -234,7 +239,7 @@ class TwistedClientApp(App):
 
         log.debug("Name {n} already exists on server", n=self.player_name)
         self.connection.loseConnection()
-        Factory.ConnectionWidget().open() # TODO: сделать отдельным экраном
+        self.sm.current = 'connection'
 
 
     # Генерация сообщений для сервера
