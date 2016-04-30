@@ -43,7 +43,7 @@ class LobbyScreen(Screen):
         Отправляет сообщение в чат.
         """
 
-        text = self.ids.input_field.text
+        text = self.ids.input_field.text.encode('utf-8')
         self.ids.input_field.text = ""
         if text:
             self.app.send_chat_message(text)

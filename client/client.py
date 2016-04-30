@@ -155,7 +155,7 @@ class TwistedClientApp(App):
 
         name = params[predef.CHAT_NAME_KEY]
         log.info("Someone has left: {user}", user=name)
-        self.screen_mgr.get_screen('lobby').print_message("%s has left" % name)
+        self.screen_mgr.get_screen('lobby').print_message("{user} has left".format(user=name))
 
         for i, u in enumerate(self.users):
             if u == name:
@@ -168,7 +168,7 @@ class TwistedClientApp(App):
         """
 
         name = params[predef.CHAT_NAME_KEY]
-        msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY]
+        msg_type, text = params[predef.CHAT_MESSAGE_TYPE_KEY], params[predef.CHAT_TEXT_KEY].encode('utf-8')
         log.info("Received message {m} from user {u}, type {t}", m=msg_type, u=name, t=msg_type)
         self.screen_mgr.get_screen('lobby').print_message("<{name}> {msg}".format(name=name, msg=text))
 
