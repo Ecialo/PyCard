@@ -1,12 +1,3 @@
-#: import Label kivy.uix.label
-#: import TextInput kivy.uix.textinput
-#: import BoxLayout kivy.uix.boxlayout
-#: import Button kivy.uix.button
-#: import Popup kivy.uix.popup
-#: import ScrollView kivy.uix.scrollview
-#: import sla kivy.adapters.simplelistadapter
-
-
 <ControlButton@Widget>:
     size_hint_y: None
     height: dp(30)
@@ -94,63 +85,4 @@
 
             height: dp(self.font_size * 2)
             multiline: False
-            on_text_validate: app.send_chat_message()
-
-
-<ConnectionWidget@Popup>:
-    title: 'Connection settings'
-    size: (350, 200)
-    size_hint: (None, None)
-    auto_dismiss: False
-
-    BoxLayout:
-        orientation: 'vertical'
-        spacing: 4
-
-        GridLayout:
-            size_hint_y: 0.7
-            cols: 2
-            rows: 3
-
-            Label:
-                size_hint_x: 0.4
-                text: 'Server:'
-
-            TextInput:
-                id: server
-                multiline: False
-                write_tab: False
-                text: 'localhost'
-
-            Label:
-                size_hint_x: 0.4
-                text: 'Port:'
-
-            TextInput:
-                id: port
-                multiline: False
-                write_tab: False
-                input_filter: 'int'
-                text: '8000'
-
-            Label:
-                size_hint_x: 0.4
-                text: 'Your name:'
-
-            TextInput:
-                id: name
-                multiline: False
-                write_tab: False
-                text: 'Tester'
-
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: 0.3
-
-            Button:
-                text: 'Connect'
-                on_press: root.dismiss(); app.player_name = name.text; app.connect_to_server(host=server.text, port=int(port.text))
-
-            Button:
-                text: 'Cancel'
-                on_press: root.dismiss()
+            on_text_validate: root.send_chat_message()

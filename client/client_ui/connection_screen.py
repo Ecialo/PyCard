@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-""" Test client """
 
 import io, sys
 import json
