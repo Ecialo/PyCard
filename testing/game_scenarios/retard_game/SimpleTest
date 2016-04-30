@@ -42,3 +42,5 @@ Player1: {"params": {"action": {"draw_cards": {"source": "!deck_retard_deck_0", 
 !resource_Spooky_hand_2@Spooky == ['white_card', 'white_card', 'white_card', 'black_card', 'black_card']
 >>>
 >>>
+---
+result.Eustace.pos == 1

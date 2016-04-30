@@ -20,7 +20,7 @@ import collections as col
 from core.game import GameOver
 from core import predef
 
-PREDEFS_SCENAIO_SEPARATOR = "---"
+PREDEFS_SCENARIO_SEPARATOR = "---"
 NAME = 'name'
 AT = "@"
 
@@ -33,7 +33,6 @@ def make_assertion_info_message(assertion_line, **context):
     ])
 
 
-
 def extract_predefs(log):
     """
     Извлекает предопределённые сценарием параметры.
@@ -44,7 +43,7 @@ def extract_predefs(log):
     """
     params = col.defaultdict(list)
     for line in log:
-        if line.startswith(PREDEFS_SCENAIO_SEPARATOR):
+        if line.startswith(PREDEFS_SCENARIO_SEPARATOR):
             return log, params
         else:
             param = json.loads(line)
@@ -78,7 +77,7 @@ class TestReactor(object):
         * Если видит точку остановки - переходит в интерактивный режим. Не реализовано.
         :return:
         """
-        self._autotest(log)
+        return self._autotest(log)
 
     def _autotest(self, log):
         for line in log:
@@ -87,6 +86,8 @@ class TestReactor(object):
                 self._run_game()
             elif line.startswith(predef.SUBSTITUTION_SYMBOL):
                 self._test_components(line)
+            elif "---" in line:
+                return log
             else:
                 author, message = line.rstrip().split(" ", 1)
                 self._send_message(message)
@@ -109,22 +110,31 @@ class TestReactor(object):
     def _interactive(self, log=None):
         pass
 
-    def _test_components(self, line):
-        for assertion in self.asserts:
+    def _find_assertion(self, line):
+        # print self.asserts.keys()
+        for assertion in self.asserts.iterkeys():
+            # print assertion, line
             if assertion in line:
-                raw_component_1, raw_component_2 = line.rstrip().split(" " + assertion + " ")
-                component_1 = self._parse_component(raw_component_1)
-                component_2 = self._parse_component(raw_component_2)
+                return assertion
+        else:
+            return None
 
-                self.asserts[assertion](
-                    component_1,
-                    component_2,
-                    make_assertion_info_message(
-                        line,
-                        component_1=component_1,
-                        component_2=component_2,
-                    )
+    def _test_components(self, line):
+        assertion = self._find_assertion(line)
+        if assertion:
+            raw_component_1, raw_component_2 = line.rstrip().split(" " + assertion + " ")
+            component_1 = self._parse_component(raw_component_1)
+            component_2 = self._parse_component(raw_component_2)
+
+            self.asserts[assertion](
+                component_1,
+                component_2,
+                make_assertion_info_message(
+                    line,
+                    component_1=component_1,
+                    component_2=component_2,
                 )
+            )
 
     def _parse_component(self, raw_component):
         is_path = predef.SUBSTITUTION_SYMBOL in raw_component
@@ -138,6 +148,48 @@ class TestReactor(object):
         else:
             return eval(raw_component)
 
+    def post_check(self, log):
+        for line in log:
+            # print line
+            if line.startswith(predef.SUBSTITUTION_SYMBOL):
+                self._test_components(line)
+            elif line.startswith('result'):
+                self._test_result(line)
+
+    def skip_to_post_check(self, log):
+        for line in log:
+            # print "line:", line
+            if line == '---':
+                return log
+
+    def _test_result(self, line):
+        # print "OHOJO"
+        assertion = self._find_assertion(line)
+        # print self.game
+        if assertion:
+            result_expr, value = line.rstrip().split(" " + assertion + " ")
+            result_val = self._parse_result_expression(result_expr)
+            value = eval(value)
+            self.asserts[assertion](
+                result_val,
+                value,
+                make_assertion_info_message(
+                    line,
+                    result=result_val,
+                    value=value,
+                )
+            )
+
+    def _parse_result_expression(self, result_expression):
+        _, name, goal = result_expression.split(".")
+        result = self.game.game_result
+        if goal == "pos":
+            return result.players_stats[name][0]
+        elif goal == "additional_data":
+            return result.players_stats[name][1]
+        else:
+            raise KeyError("Incorrect goal {}".format(goal))
+
 
 class FullTestReactor(TestReactor):
     """
@@ -148,6 +200,7 @@ class FullTestReactor(TestReactor):
         self.clients = {}
 
     def configure(self, params):
+        # print "COMPLETED"
         players = params['players']
         for player in players:
             self.clients[player['name']] = self.game(
@@ -178,18 +231,31 @@ class FullTestReactor(TestReactor):
         else:
             return eval(raw_component)
 
+    def _parse_result_expression(self, result_expression):
+        _, name, goal = result_expression.split(".")
+        result = self.clients[predef.SYSTEM].game_result
+        if goal == "pos":
+            return result[name][0]
+        elif goal == "additional_data":
+            return result[name][1]
+        else:
+            raise KeyError("Incorrect goal {}".format(goal))
+
 
 def make_test_method(path_to_test_scenario):
 
     def test_method(self):
         with open(path_to_test_scenario) as test_scenario:
+            scenario = iter(test_scenario)
+            log, params = extract_predefs(scenario)
+            self.reactor.configure(params)
             try:
-                scenario = iter(test_scenario)
-                log, params = extract_predefs(scenario)
-                self.reactor.configure(params)
                 self.reactor.autotest(log)
             except GameOver:
-                pass
+                self.reactor.post_check(log)
+            else:
+                # log = self.reactor.skip_to_post_check(log)
+                self.reactor.post_check(log)
 
     return test_method
 
@@ -225,8 +291,14 @@ class TestGame(unittest.TestCase):
         self.reactor = None
 
 
+def assert_equal(a, b, msg):
+    assert a == b, msg
+
+
 def test(game):         # TODO переписать на argparse
     test_reactor = FullTestReactor(game)
+    test_reactor.asserts["=="] = assert_equal
+
     try:
         filename = sys.argv[1]
         # print filename
@@ -234,12 +306,15 @@ def test(game):         # TODO переписать на argparse
         # with open(filename) as f:
         #     test_reactor.autotest(f)
         with open(filename) as test_scenario:
-            # try:
-                scenario = iter(test_scenario)
-                log, params = extract_predefs(scenario)
-                test_reactor.configure(params)
-                test_reactor.autotest(log)
-            # except GameOver:
-            #     pass
+            scenario = iter(test_scenario)
+            log, params = extract_predefs(scenario)
+            test_reactor.configure(params)
+            try:
+                log = test_reactor.autotest(log)
+            except GameOver:
+                test_reactor.post_check(log)
+            else:
+                # log = test_reactor.skip_to_post_check(log)
+                test_reactor.post_check(log)
     except IndexError:
         sys.exit(1)
