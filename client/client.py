@@ -39,8 +39,11 @@ class EchoClient(protocol.Protocol):
         self.factory.app.on_connection(self.transport)
 
     def dataReceived(self, data):
-        log.info('Message from server: {message}', message=data)
-        self.factory.app.parse_message(data)
+        messages = data.split('\n')
+        for m in messages:
+            if m:
+                log.info('Message from server: {message}', message=m)
+                self.factory.app.parse_message(m)
 
 
 class EchoFactory(protocol.ClientFactory):

@@ -303,13 +303,10 @@ class Producer:
     def resumeProducing(self):
         self._paused = False
         responce = self.factory.game.run()
-        # принтим респонс для дебагинга
 
-        print responce
         while responce:
-            print responce
             for client_name in responce:
-                self.factory.send_individual_message(client_name, responce[client_name])
+                self.factory.send_individual_message(client_name, responce[client_name] + "\n")
             responce = self.factory.game.run()
 
         self.pauseProducing()
