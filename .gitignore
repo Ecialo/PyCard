@@ -1,5 +1,6 @@
 **/*.json
 **/*.pyc
+**/*.swp
 /server/server_application/twistd.log
 /server/server_application/twistd.pid
 /.idea/**
