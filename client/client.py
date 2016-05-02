@@ -210,17 +210,21 @@ class TwistedClientApp(App):
         Обработчик для сообщения о конце игры.
         """
         
+        self.screen_mgr.remove_widget(self.screen_mgr.get_screen('game'))
         data = params[pp.lobby.GAME_RESULT_KEY]
         
-        column_width = 20
         self.screen_mgr.current = 'lobby'
         ls = self.screen_mgr.get_screen('lobby')
-        ls.print_message('Game is over!')
-        ls.print_message('| {:<{cw}} | {:<{cw}} |'.format('Place', 'Name', cw=column_width))
+
+        column_width = 20
+        line_template = '| {:<{cw}} | {:<{cw}} |'
+
+        ls.print_message('* Game is over!')
+        ls.print_message(line_template.format('Place', 'Name', cw=column_width))
         ls.print_message('-' * (2 * column_width + 7))
 
         for entry in sorted(data.items(), key=lambda x: x[1]):
-            ls.print_message('| {:<{cw}} | {:<{cw}} |'.format(entry[1][0], entry[0], cw=column_width))
+            ls.print_message(line_template.format(entry[1][0], entry[0], cw=column_width))
 
     def handle_game_action(self, action_msg):
         """
