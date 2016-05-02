@@ -107,7 +107,7 @@ class RetardWinCondition(cond.WinCondition):
             players_names = [player_.name for player_ in players]
             leaders = enumerate(sorted(zip(players_black_cards, players_names), reverse=True))
             # print "b_cards", list(players_names)
-            players_stats = {pos_struct[1][1]: (pos_struct[0], pos_struct[1][0]) for pos_struct in leaders}
+            players_stats = {pos_struct[1][1]: (pos_struct[0], {'score': pos_struct[1][0]}) for pos_struct in leaders}
             raise GameOver(players_stats)
 
 
