@@ -39,7 +39,7 @@ class EchoClient(protocol.Protocol):
         self.factory.app.on_connection(self.transport)
 
     def dataReceived(self, data):
-        messages = data.split('\n')
+        messages = data.split(pp.message_delimiter)
         for m in messages:
             if m:
                 log.info('Message from server: {message}', message=m)

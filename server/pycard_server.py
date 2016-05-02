@@ -41,7 +41,7 @@ from core.predef import (
     CHAT_NAME_KEY,
 
 )
-
+from core.predef import pycard_protocol as pp
 from player.player_class import LobbyPerson
 from sample_games.retard_game import retard_game
 
@@ -306,7 +306,10 @@ class Producer:
 
         while responce:
             for client_name in responce:
-                self.factory.send_individual_message(client_name, responce[client_name] + "\n")
+                self.factory.send_individual_message(
+                    client_name,
+                    responce[client_name] + pp.message_delimiter
+                )
             responce = self.factory.game.run()
 
         self.pauseProducing()

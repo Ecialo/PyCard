@@ -84,6 +84,7 @@ MESSAGE_ACTION_KEY = "action"
 MESSAGE_AUTHOR_KEY = "author"
 
 pycard_protocol = Namespace(
+    message_delimiter='|||',
     event_types=Enum(
         "ACTION_JUST",
         "ACTION_SEQUENCE",
