@@ -259,7 +259,13 @@ class MultiEcho(protocol.Protocol):
         try:
             message_producer.resumeProducing()
         except GameOver as game_over:
-            self.send_global_message(json.dumps(game_over.players_stats))
+            msg = {
+                pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_GAME_OVER,
+                pp.message_struct.PARAMS_KEY: {
+                    pp.lobby.GAME_RESULT_KEY: game_over.players_stats,
+                }
+            }
+            self.send_global_message(json.dumps(msg))
 
 class MultiEchoFactory(protocol.Factory):
 

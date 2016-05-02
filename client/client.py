@@ -79,7 +79,8 @@ class TwistedClientApp(App):
             pp.event_types.CHAT_PART:                   self.handle_chat_part,
             pp.event_types.CHAT_MESSAGE:                self.handle_chat_message,
             pp.event_types.LOBBY_START_GAME:            self.handle_lobby_start_game,
-            pp.event_types.LOBBY_NAME_ALREADY_EXISTS:   self.handle_lobby_name_already_exists
+            pp.event_types.LOBBY_NAME_ALREADY_EXISTS:   self.handle_lobby_name_already_exists,
+            pp.event_types.LOBBY_GAME_OVER:             self.handle_lobby_game_over,
         }
 
     def build(self):
@@ -203,6 +204,23 @@ class TwistedClientApp(App):
         self.connection.loseConnection()
         self.notify('Name {n} is already taken, please pick another one.'.format(n=self.player_name))
         self.screen_mgr.current = 'connection'
+
+    def handle_lobby_game_over(self, params):
+        """
+        Обработчик для сообщения о конце игры.
+        """
+        
+        data = params[pp.lobby.GAME_RESULT_KEY]
+        
+        column_width = 20
+        self.screen_mgr.current = 'lobby'
+        ls = self.screen_mgr.get_screen('lobby')
+        ls.print_message('Game is over!')
+        ls.print_message('| {:<{cw}} | {:<{cw}} |'.format('Place', 'Name', cw=column_width))
+        ls.print_message('-' * (2 * column_width + 7))
+
+        for entry in sorted(data.items(), key=lambda x: x[1]):
+            ls.print_message('| {:<{cw}} | {:<{cw}} |'.format(entry[1][0], entry[0], cw=column_width))
 
     def handle_game_action(self, action_msg):
         """

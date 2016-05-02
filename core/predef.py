@@ -98,13 +98,16 @@ pycard_protocol = Namespace(
         "LOBBY_ALL_READY",
         "LOBBY_START_GAME",
         "LOBBY_NAME_ALREADY_EXISTS",
+        "LOBBY_GAME_OVER",
     ),
+
     message_struct=Namespace(
         TYPE_KEY="type",
         PARAMS_KEY="params",
         ACTION_KEY="action",
         AUTHOR_KEY="author",
     ),
+
     chat=Namespace(
         NAME_KEY='name',
         NAMES_KEY='names',
@@ -117,6 +120,10 @@ pycard_protocol = Namespace(
         RECEIVER_KEY='receiver',
         PLAYER_ID_KEY='player_id',
     ),
+
+    lobby=Namespace(
+        GAME_RESULT_KEY='game_result'
+    )
 )
 
 
