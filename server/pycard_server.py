@@ -266,7 +266,6 @@ class MultiEcho(protocol.Protocol):
                 }
             }
             self.send_global_message(json.dumps(msg))
-            self.send_global_message(json.dumps(game_over.players_stats))
             self.anncounter = 0
             del self.factory.game
 
