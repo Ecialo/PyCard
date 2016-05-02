@@ -260,6 +260,8 @@ class MultiEcho(protocol.Protocol):
             message_producer.resumeProducing()
         except GameOver as game_over:
             self.send_global_message(json.dumps(game_over.players_stats))
+            self.anncounter = 0
+            del self.factory.game
 
 class MultiEchoFactory(protocol.Factory):
 
