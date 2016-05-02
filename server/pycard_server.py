@@ -267,8 +267,13 @@ class MultiEcho(protocol.Protocol):
                 }
             }
             self.send_global_message(json.dumps(msg))
-            self.anncounter = 0
-            del self.factory.game
+            self.finish_game()
+
+    def finish_game(self):
+        self.anncounter = 0
+        self.factory.game = None
+        self.run_game_launcher = None
+        self.run_warning = None
 
 class MultiEchoFactory(protocol.Factory):
 
