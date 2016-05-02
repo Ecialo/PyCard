@@ -44,6 +44,7 @@ from core.predef import (
 from core.predef import pycard_protocol as pp
 from player.player_class import LobbyPerson
 from sample_games.retard_game import retard_game
+from core.game import GameOver
 
 __author__ = 'Anton Korobkov'
 
@@ -269,7 +270,10 @@ class MultiEcho(protocol.Protocol):
     def send_game_flow(self):
         # Передаем продюсеру инфу о порождающем классе
         message_producer = Producer(self.factory)
-        message_producer.resumeProducing()
+        try:
+            message_producer.resumeProducing()
+        except GameOver as game_over:
+            self.send_global_message(json.dumps(game_over.players_stats))
 
 class MultiEchoFactory(protocol.Factory):
 
@@ -312,15 +316,17 @@ class Producer:
 
     def resumeProducing(self):
         self._paused = False
-        responce = True
+        response = True
 
-        while responce:
-            responce = self.factory.game.run()
-            for client_name in responce:
-                self.factory.send_individual_message(
-                    client_name,
-                    responce[client_name] + pp.message_delimiter
-                )
+        while response:
+            response = self.factory.game.run()
+            if response is not None:
+                for client_name in response:
+
+                    self.factory.send_individual_message(
+                        client_name,
+                        response[client_name] + pp.message_delimiter
+                    )
 
         self.pauseProducing()
 
