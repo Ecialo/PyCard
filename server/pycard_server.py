@@ -236,8 +236,9 @@ class MultiEcho(protocol.Protocol):
 
         if hasattr(self, 'run_game_launcher'):
             # Кина не будет, все вырубаем
-            self.run_game_launcher.cancel()
-            self.run_warning.stop()
+            if hasattr(self, 'run_game_launcher') and hasattr(self, 'run_warning'):
+                self.run_game_launcher.cancel()
+                self.run_warning.stop()
             self.anncounter = 0
             # TODO: make smth with this hack
             if hasattr(self.factory, 'game'):
