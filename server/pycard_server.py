@@ -312,15 +312,15 @@ class Producer:
 
     def resumeProducing(self):
         self._paused = False
-        responce = self.factory.game.run()
+        responce = True
 
         while responce:
+            responce = self.factory.game.run()
             for client_name in responce:
                 self.factory.send_individual_message(
                     client_name,
                     responce[client_name] + pp.message_delimiter
                 )
-            responce = self.factory.game.run()
 
         self.pauseProducing()
 
