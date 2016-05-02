@@ -41,7 +41,9 @@ from core.predef import (
     CHAT_NAME_KEY,
     LOBBY_NAME_ALREADY_EXISTS
 )
-from core.predef import pycard_protocol as pp
+from core.predef import (pycard_protocol as pp,
+    table_type as tt
+)
 from player.player_class import LobbyPerson
 from sample_games.retard_game import retard_game
 from core.game import GameOver
@@ -85,21 +87,6 @@ class MultiEcho(protocol.Protocol):
 
         for player in self.factory.echoers:
             player.transport.write(msg)
-
-    def send_individual_message(self, player, msg):
-        """
-        Юзать этот метод для написания сообщений в приват
-        """
-
-        # Deprecated
-        # Надо найти идентификатор игрока player
-        for identifier, person in self.factory.players.iteritems():
-            if person.name == player:
-                endpoint = identifier
-
-        # TODO: доработать если попытка отправит несуществующему клиенту
-        endpoint_index = self.factory.echoers.index(endpoint)
-        self.factory.echoers[endpoint_index].transport.write(msg)
 
     def check_playnum(self):
         """
@@ -169,22 +156,21 @@ class MultiEcho(protocol.Protocol):
         """
         Родной брат метода client.parse_message
         """
-        #vprint msg
         event = json.loads(msg)
-        event_type, params = event[MESSAGE_TYPE_KEY], event[MESSAGE_PARAMS_KEY]
+        event_type, params = event[pp.message_struct.TYPE_KEY], event[pp.message_struct.PARAMS_KEY]
 
         # Не будем лепить костылей по отсылке приватных сообщений до тех пор пока это не будет
         # запилено на стороне клиента
 
         log.info('{signal} caught', signal=msg)
 
-        if event_type == CHAT_REGISTER:
+        if event_type == pp.event_types.CHAT_REGISTER:
             self.handle_chat_join(event)
-        elif event_type == CHAT_MESSAGE:
+        elif event_type == pp.event_types.CHAT_MESSAGE:
             self.handle_chat_message(event)
-        elif event_type == LOBBY_READY:
+        elif event_type == pp.event_types.LOBBY_READY:
             self.handle_lobby_ready(event)
-        elif event_type == LOBBY_NOT_READY:
+        elif event_type == pp.event_types.LOBBY_NOT_READY:
             self.handle_lobby_not_ready(event)
         elif event_type in [ACTION_JUST, ACTION_PIPE, ACTION_SEQUENCE]:
             # print self.game
