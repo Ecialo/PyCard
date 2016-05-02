@@ -234,15 +234,14 @@ class MultiEcho(protocol.Protocol):
 
         self.factory.players[self].get_unready()
 
-        if hasattr(self, 'run_game_launcher'):
-            # Кина не будет, все вырубаем
-            if hasattr(self, 'run_game_launcher') and hasattr(self, 'run_warning'):
-                self.run_game_launcher.cancel()
-                self.run_warning.stop()
-            self.anncounter = 0
-            # TODO: make smth with this hack
-            if hasattr(self.factory, 'game'):
-                del self.factory.game
+
+        if self.run_game_launcher is not None and self.run_warning is not None:
+            self.run_game_launcher.cancel()
+            self.run_warning.stop()
+        self.anncounter = 0
+        # TODO: make smth with this hack
+        if hasattr(self.factory, 'game'):
+            del self.factory.game
 
         log.info('This {player} now is not ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY]))
 
