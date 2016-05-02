@@ -39,7 +39,7 @@ from core.predef import (
     ACTION_PIPE,
     ACTION_SEQUENCE,
     CHAT_NAME_KEY,
-
+    LOBBY_NAME_ALREADY_EXISTS
 )
 from core.predef import pycard_protocol as pp
 from player.player_class import LobbyPerson
@@ -198,15 +198,25 @@ class MultiEcho(protocol.Protocol):
         Посылаем всем клиентам сообщения о том кто зашел и сохраняем адрес и ник
         """
 
-        self.factory.players[self] = LobbyPerson(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY])
+        # TODO: this is hacky
         self.factory.echoers.append(self)
 
-        params[MESSAGE_TYPE_KEY] = CHAT_JOIN
-        # TODO: fix later
-        params[MESSAGE_PARAMS_KEY][CHAT_NAMES_KEY] = [player.name for player in self.factory.players.values()]
+        if params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY] in [player.name for player in self.factory.players.values()]:
+            msg = {
+            MESSAGE_TYPE_KEY: LOBBY_NAME_ALREADY_EXISTS,
+            MESSAGE_PARAMS_KEY: {}
+            }
+            self.factory.echoers[-1].transport.write(json.dumps(msg))
+            del self.factory.echoers[-1]
 
-        log.info('some {data} sent', data=str(params))
-        self.send_global_message(json.dumps(params))
+        else:
+            self.factory.players[self] = LobbyPerson(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY])
+            params[MESSAGE_TYPE_KEY] = CHAT_JOIN
+            # TODO: fix later
+            params[MESSAGE_PARAMS_KEY][CHAT_NAMES_KEY] = [player.name for player in self.factory.players.values()]
+
+            log.info('some {data} sent', data=str(params))
+            self.send_global_message(json.dumps(params))
 
     def handle_chat_disconnection(self):
         """
