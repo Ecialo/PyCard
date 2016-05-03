@@ -41,7 +41,7 @@ class GameWidget(Screen):
 
         tl = player_zone.tab_list
         tl[0], tl[idx] = tl[idx], tl[0]
-        player_zone.switch_to(tl[0]) # почему это не работает.
+        player_zone.switch_to(tl[0])
 
         deck_zone = self.ids.deck_zone
         self.deck_widget = self.game.get_category(game_component_types.DECK).values()[0].make_widget(game_widget=self)

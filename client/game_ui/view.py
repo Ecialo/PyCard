@@ -21,7 +21,7 @@ class TestApp(App):
         )
         players = retard_game_.get_category(predef.PLAYER).itervalues()
         hands = [player.associated_components[0] for player in players]
-        
+
         retard_game_widget = retard_game_.make_widget(app=self)
         # retard_game_widget.add_widget(
         #     Button(
@@ -41,6 +41,9 @@ class TestApp(App):
         # )
 
         return retard_game_widget
+
+    def send_action(self, action):
+        pass
 
 if __name__ == '__main__':
     TestApp().run()

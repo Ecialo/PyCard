@@ -23,8 +23,6 @@ class HandWidget(blayout.BoxLayout):
     hand = prop.ObjectProperty()
 
     game_widget = prop.ObjectProperty()
-
-    game_widget = prop.ObjectProperty()
     player_widget = prop.ObjectProperty()
 
     def __init__(self, hand, **kwargs):
