@@ -21,6 +21,12 @@ FloatLayout:
             size_hint: 1, None
             height: 0 # for now
 
+    FloatLayout:
+        id: chat_container
+        size_hint: 1, None
+        pos_hint: {'bottom': 0}
+        size: 0, 0
+
     Button:
         # ideally, there should be a row with controls docked somewhere on the right,
         # but since all we have is a lonely chat button...

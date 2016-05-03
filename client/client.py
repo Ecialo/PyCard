@@ -17,6 +17,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from notifications.notifications import NotificationsManager
 from client_ui.connection_screen import ConnectionScreen
 from client_ui.lobby_screen import LobbyScreen
+from client_ui.chat_widget import ChatWidget
 
 import core.predef as predef
 from core.predef import pycard_protocol as pp
@@ -52,7 +53,7 @@ class EchoFactory(protocol.ClientFactory):
     def clientConnectionLost(self, conn, reason):
         log.error('Connection {connection} lost because of {fail_reason}',
                   connection=conn, fail_reason=reason)
-        self.app.screen_mgr.get_screen('lobby').print_message("Connection lost!")
+        self.app.chat.print_message("Connection lost!")
 
     def clientConnectionFailed(self, conn, reason):
         log.error('Failed to connect to {connection} because of {fail_reason}',
@@ -88,6 +89,9 @@ class TwistedClientApp(App):
         nm = NotificationsManager()
         root.ids.notifications_container.add_widget(nm)
 
+        cw = ChatWidget(app=self)
+        root.ids.chat_container.add_widget(cw)
+
         sm = root.ids.screen_mgr
         sm.transition = FadeTransition()
 
@@ -96,6 +100,9 @@ class TwistedClientApp(App):
 
         self.screen_mgr = sm
         self.notifications_mgr = nm
+        self.chat = cw
+
+        root.ids.chat_button.bind(on_press=self.toggle_chat)
         return root
 
     def on_start(self):
@@ -103,7 +110,7 @@ class TwistedClientApp(App):
         Вызывается автоматически после создания интерфейса.
         """
 
-        self.stdout_hook = StdoutHook(self.screen_mgr.get_screen('lobby').ids.chatlog)
+        self.stdout_hook = StdoutHook(self.chat.ids.chatlog)
 
     def connect_to_server(self, host, port):
         self.screen_mgr.current = 'lobby'
@@ -116,7 +123,7 @@ class TwistedClientApp(App):
         Вызывается автоматически при успешном подключении к серверу.
         """
 
-        self.screen_mgr.get_screen('lobby').print_message("Connected succesfully!")
+        self.chat.print_message("Connected succesfully!")
         log.info("Connected!", player_name=self.player_name)
         self.connection = connection
         self.send_chat_register()
@@ -162,7 +169,7 @@ class TwistedClientApp(App):
 
         name = params[pp.chat.NAME_KEY]
         log.debug("Someone has left: {user}", user=name, player_name=self.player_name)
-        self.screen_mgr.get_screen('lobby').print_message("{user} has left".format(user=name))
+        self.chat.print_message("{user} has left".format(user=name))
 
         for i, u in enumerate(self.users):
             if u == name:
@@ -177,7 +184,7 @@ class TwistedClientApp(App):
         name = params[pp.chat.NAME_KEY]
         msg_type, text = params[pp.chat.MESSAGE_TYPE_KEY], params[pp.chat.TEXT_KEY].encode('utf-8')
         log.debug("Received message {m} from user {u}, type {t}", m=msg_type, u=name, t=msg_type, player_name=self.player_name)
-        self.screen_mgr.get_screen('lobby').print_message("<{name}> {msg}".format(name=name, msg=text))
+        self.chat.print_message("<{name}> {msg}".format(name=name, msg=text))
 
     def handle_lobby_start_game(self, params):
         """
@@ -214,17 +221,16 @@ class TwistedClientApp(App):
         data = params[pp.lobby.GAME_RESULT_KEY]
 
         self.screen_mgr.current = 'lobby'
-        ls = self.screen_mgr.get_screen('lobby')
 
         column_width = 20
         line_template = '| {:<{cw}} | {:<{cw}} |'
 
-        ls.print_message('* Game is over!')
-        ls.print_message(line_template.format('Place', 'Name', cw=column_width))
-        ls.print_message('-' * (2 * column_width + 7))
+        self.chat.print_message('* Game is over!')
+        self.chat.print_message(line_template.format('Place', 'Name', cw=column_width))
+        self.chat.print_message('-' * (2 * column_width + 7))
 
         for entry in sorted(data.items(), key=lambda x: x[1]):
-            ls.print_message(line_template.format(entry[1][0], entry[0], cw=column_width))
+            self.chat.print_message(line_template.format(entry[1][0], entry[0], cw=column_width))
 
     def handle_game_action(self, action_msg):
         """
@@ -321,6 +327,9 @@ class TwistedClientApp(App):
         """
 
         self.notifications_mgr.notify(text)
+
+    def toggle_chat(self, button):
+        self.chat.toggle()
 
 
 class StdoutHook():
