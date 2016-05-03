@@ -14,7 +14,6 @@ from twisted.logger import Logger, jsonFileLogObserver
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
-from kivy.uix.floatlayout import FloatLayout
 from notifications.notifications import NotificationsManager
 from client_ui.connection_screen import ConnectionScreen
 from client_ui.lobby_screen import LobbyScreen
@@ -84,14 +83,16 @@ class TwistedClientApp(App):
     def build(self):
         self.set_message_handlers()
 
-        root = FloatLayout()
-        sm = ScreenManager(transition=FadeTransition())
-        sm.add_widget(ConnectionScreen(app=self, name='connection'))
-        sm.add_widget(LobbyScreen(app=self, name='lobby'))
-        root.add_widget(sm)
+        root = Builder.load_file('./client/client_ui/client.kv')
 
         nm = NotificationsManager()
-        root.add_widget(nm)
+        root.ids.notifications_container.add_widget(nm)
+
+        sm = root.ids.screen_mgr
+        sm.transition = FadeTransition()
+
+        sm.add_widget(ConnectionScreen(app=self, name='connection'))
+        sm.add_widget(LobbyScreen(app=self, name='lobby'))
 
         self.screen_mgr = sm
         self.notifications_mgr = nm

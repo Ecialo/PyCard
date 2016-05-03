@@ -70,4 +70,3 @@ class GameWidget(Screen):
 
     def notify(self, text):
         self.app.notify(text)
-

@@ -27,6 +27,7 @@
 
 <LobbyScreen@Screen>:
     BoxLayout:
+        id: container
         orientation: 'vertical'
 
         BoxLayout:
@@ -55,34 +56,38 @@
             BoxLayout:
                 size_hint_y: 1
 
-        ScrollView:
-            id: chatlog_view
-            size_hint_y: None
-            height: min(0.3 * root.height, dp(160))
+        BoxLayout:
+            id: chat_container
+            orientation: 'vertical'
 
-            canvas.before:
-                Color:
-                    rgb: 0.15, 0.15, 0.15
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-
-            Label:
-                id: chatlog
-                halign: 'left'
-                valign: 'top'
-
-                # add a 5px margin around the texture
-                text_size: self.width - dp(10), None
-
-                # make label scrollable
+            ScrollView:
+                id: chatlog_view
                 size_hint_y: None
-                height: self.texture_size[1]
+                height: min(0.3 * root.height, dp(160))
 
-        TextInput:
-            id: input_field
-            size_hint_y: None
+                canvas.before:
+                    Color:
+                        rgb: 0.15, 0.15, 0.15
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
-            height: dp(self.font_size * 2)
-            multiline: False
-            on_text_validate: root.send_chat_message()
+                Label:
+                    id: chatlog
+                    halign: 'left'
+                    valign: 'top'
+
+                    # add a 5px margin around the texture
+                    text_size: self.width - dp(10), None
+
+                    # make label scrollable
+                    size_hint_y: None
+                    height: self.texture_size[1]
+
+            TextInput:
+                id: input_field
+                size_hint_y: None
+
+                height: dp(self.font_size * 2)
+                multiline: False
+                on_text_validate: root.send_chat_message()

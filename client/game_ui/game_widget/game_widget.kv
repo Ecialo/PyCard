@@ -1,17 +1,20 @@
 <-GameWidget>:
     name: 'game'
 
-    MainZone:
-        id: main_zone
+    BoxLayout:
+        orientation: 'vertical'
 
-        DeskZone:
-            id: desk_zone
+        MainZone:
+            id: main_zone
 
-        DeckZone:
-            id: deck_zone
+            DeskZone:
+                id: desk_zone
 
-    PlayerZone:
-        id: player_zone
+            DeckZone:
+                id: deck_zone
+
+        PlayerZone:
+            id: player_zone
 
 
 <MainZone@BoxLayout>:

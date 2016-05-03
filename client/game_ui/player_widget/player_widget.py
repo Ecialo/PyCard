@@ -25,4 +25,3 @@ class PlayerWidget(BoxLayout):
             self.add_widget(widget=widget)
             if widget.name:
                 self.widgets[widget.name] = widget
-

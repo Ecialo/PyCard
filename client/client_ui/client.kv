@@ -1,0 +1,32 @@
+FloatLayout:
+    id: top_overlay
+
+    BoxLayout:
+        id: ui_container
+        orientation: 'vertical'
+
+        StackLayout:
+            id: menu_bar
+            pos_hint: {'center_x': 0.5, 'top': 1}
+
+            size_hint: 1, None
+            height: 0 # for now
+
+        FloatLayout:
+            id: notifications_container
+            pos_hint: {'center_x': 0.5, 'top': 1}
+            size_hint: None, None
+            size: 0, 0
+
+        ScreenManager:
+            id: screen_mgr
+
+    Button:
+        # ideally, there should be a row with controls docked somewhere on the right,
+        # but since all we have is a lonely chat button...
+
+        id: chat_button
+        size_hint: None, None
+        pos_hint: {'right': 1, 'bottom': 0}
+        size: (90, 30)
+        text: 'Toggle chat'
