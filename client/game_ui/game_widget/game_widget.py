@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import kivy
-import kivy.uix.floatlayout as flayout
+
 from kivy.uix import tabbedpanel
-import kivy.properties as prop
-from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
+from kivy.graphics import Color, Rectangle
+from kivy.lang import Builder
+import kivy.properties as prop
 
 from core.predef import game_component_types
 
@@ -21,6 +21,7 @@ class GameWidget(Screen):
     deck_widget = prop.ObjectProperty()
 
     pending_actions = []
+    player_tab_title = '* You *'
 
     def __init__(self, game, **kwargs):
         super(GameWidget, self).__init__(**kwargs)
@@ -29,19 +30,11 @@ class GameWidget(Screen):
 
         self.player_widgets = {player.name: player.make_widget(game_widget=self) \
             for player in self.game.get_category(game_component_types.PLAYER).itervalues()}
-        player_zone = self.ids.player_zone
 
-        idx = None
-        for i, widget in enumerate(self.player_widgets.itervalues()):
-            tab = tabbedpanel.TabbedPanelItem(text=widget.player.name)
-            tab.add_widget(widget=widget)
-            player_zone.add_widget(tab)
-            if widget.player.name == self.player_name:
-                idx = i
-
-        tl = player_zone.tab_list
-        tl[0], tl[idx] = tl[idx], tl[0]
-        player_zone.switch_to(tl[0])
+        self.add_player_widget(self.player_widgets[self.player_name])
+        for widget in self.player_widgets.itervalues():
+            if widget.player.name != self.player_name:
+                self.add_player_widget(widget)
 
         deck_zone = self.ids.deck_zone
         self.deck_widget = self.game.get_category(game_component_types.DECK).values()[0].make_widget(game_widget=self)
@@ -53,7 +46,13 @@ class GameWidget(Screen):
 
     def is_our_tab_active(self):
         #print("Active tab: {0}".format(self.ids.player_zone.current_tab.text))
-        return self.player_name == self.ids.player_zone.current_tab.text
+        return self.ids.player_zone.current_tab.text == self.player_tab_title
+
+    def add_player_widget(self, widget):
+        caption = self.player_tab_title if widget.player.name == self.player_name else widget.player.name
+        tab = tabbedpanel.TabbedPanelItem(text=caption)
+        tab.add_widget(widget=widget)
+        self.ids.player_zone.add_widget(tab)
 
     def queue_action(self, action):
         self.pending_actions.append(action)
