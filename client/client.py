@@ -200,6 +200,8 @@ class TwistedClientApp(App):
         self.screen_mgr.add_widget(rgw)
         self.game_scr = self.screen_mgr.get_screen('game')
 
+        self.chat.print_message('The game has started!')
+        self.chat.fold()
         self.screen_mgr.current = 'game'
 
     def handle_lobby_name_already_exists(self, params):
