@@ -17,6 +17,7 @@ class GameWidget(Screen):
     game = prop.ObjectProperty()
 
     player_name = prop.StringProperty()
+    current_turn_author = prop.StringProperty()
     player_widgets = prop.DictProperty()
     deck_widget = prop.ObjectProperty()
 
@@ -40,9 +41,14 @@ class GameWidget(Screen):
         self.deck_widget = self.game.get_category(game_component_types.DECK).values()[0].make_widget(game_widget=self)
         deck_zone.add_widget(self.deck_widget)
 
+        self.update_current_turn_author()
+
+    def update_current_turn_author(self):
+        self.current_turn_author = self.game.current_flow._author
+
     def is_our_turn(self):
         #print("Current player: {0}".format(self.game.current_flow._author))
-        return self.player_name == self.game.current_flow._author
+        return self.player_name == self.current_turn_author
 
     def is_our_tab_active(self):
         #print("Active tab: {0}".format(self.ids.player_zone.current_tab.text))
@@ -63,9 +69,9 @@ class GameWidget(Screen):
             msg = action.make_message()
             self.app.send_action(msg)
 
-    def push_game_forward(self, *actions):
-        for action in actions:
-            pass
+    def push_game_forward(self, action):
+        self.game.receive_message(action)
+        self.update_current_turn_author()
 
     def notify(self, text):
         self.app.notify(text)

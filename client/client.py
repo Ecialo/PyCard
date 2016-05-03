@@ -239,7 +239,7 @@ class TwistedClientApp(App):
         Обработка игровых событий (простая передача их по цепочке).
         """
 
-        self.game_scr.game.receive_message(action_msg)
+        self.game_scr.push_game_forward(action_msg)
 
 
     # Генерация сообщений для сервера

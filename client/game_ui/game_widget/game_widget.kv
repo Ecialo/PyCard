@@ -1,7 +1,7 @@
 <-GameWidget>:
     name: 'game'
 
-    BoxLayout:
+    FloatLayout:
         orientation: 'vertical'
 
         MainZone:
@@ -15,6 +15,29 @@
 
         PlayerZone:
             id: player_zone
+
+        StackLayout:
+            id: status_widget
+            orientation: 'lr-tb'
+            size_hint: None, None
+            size: 180, 0
+            pos_hint: {'top': 1, 'right': 1}
+            margin: 5
+
+            canvas.before:
+                Color:
+                    rgba: 0.2, 0.2, 0.2, 0.5
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            StatusLabel:
+                id: player_name
+                text: '[b]You are:[/b] {}'.format(root.player_name)
+
+            StatusLabel:
+                id: current_turn
+                text: '[b]Current turn:[/b] {}'.format('you' if root.is_our_turn() else root.current_turn_author)
 
 
 <MainZone@BoxLayout>:
@@ -43,3 +66,10 @@
 <DeckZone@StackLayout>:
     size_hint: 0.2, 0.7
     orientation: 'bt-rl'
+
+<StatusLabel@Label>:
+    size_hint: 1, None
+    markup: True
+    text_size: self.size
+    halign: 'left'
+    height: 20
