@@ -1,9 +1,18 @@
 FloatLayout:
     id: top_overlay
 
-    BoxLayout:
+    FloatLayout:
         id: ui_container
         orientation: 'vertical'
+
+        ScreenManager:
+            id: screen_mgr
+
+        FloatLayout:
+            id: notifications_container
+            pos_hint: {'center_x': 0.5, 'top': 1}
+            size_hint: 1, None
+            size: 0, 0
 
         StackLayout:
             id: menu_bar
@@ -11,15 +20,6 @@ FloatLayout:
 
             size_hint: 1, None
             height: 0 # for now
-
-        FloatLayout:
-            id: notifications_container
-            pos_hint: {'center_x': 0.5, 'top': 1}
-            size_hint: None, None
-            size: 0, 0
-
-        ScreenManager:
-            id: screen_mgr
 
     Button:
         # ideally, there should be a row with controls docked somewhere on the right,
