@@ -2,9 +2,11 @@
 
 import io, sys
 import json
+import re
 
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
+from kivy.uix.textinput import TextInput
 import kivy.properties as prop
 
 
@@ -38,3 +40,15 @@ class ConnectionScreen(Screen):
 
     def cancel(self):
         self.app.stop()
+
+
+class PlayerNameInput(TextInput):
+	pattern = re.compile('[^a-zA-Z0-9_\-\.\()[]{}<>]')
+
+	def __init__(self, **kwargs):
+		super(PlayerNameInput, self).__init__(**kwargs)
+
+	def insert_text(self, substring, from_undo=False):
+		pattern = self.pattern
+		s = re.sub(pattern, '', substring)
+		return super(PlayerNameInput, self).insert_text(s, from_undo=from_undo)

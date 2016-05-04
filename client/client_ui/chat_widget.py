@@ -1,9 +1,10 @@
 # coding: utf-8
 
-from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
 import kivy.properties as prop
+
+from core.predef import pycard_protocol as pp
 
 Builder.load_file("./client/client_ui/chat_widget.kv")
 
@@ -43,8 +44,9 @@ class ChatWidget(BoxLayout):
         """
         Отправляет сообщение в чат.
         """
-
         text = self.ids.input_field.text.encode('utf-8')
+        if pp.message_delimiter in text:
+            text = text.replace(pp.message_delimiter, '')
         self.ids.input_field.text = ""
         if text:
             self.app.send_chat_message(text)
@@ -54,10 +56,14 @@ class ChatWidget(BoxLayout):
         return len(self.children) > 0
 
     def fold(self):
+        if not self.is_visible:
+            return
         self.hidden_widgets = reversed(list(self.children))
         self.clear_widgets()
 
     def unfold(self):
+        if self.is_visible:
+            return
         for w in self.hidden_widgets:
             self.add_widget(w)
         self.hidden_widgets = []
@@ -67,3 +73,4 @@ class ChatWidget(BoxLayout):
             self.fold()
         else:
             self.unfold()
+
