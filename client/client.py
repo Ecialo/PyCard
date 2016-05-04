@@ -162,6 +162,7 @@ class TwistedClientApp(App):
         user = params[pp.chat.NAME_KEY]
         log.debug("{user} has joined", user=user, player_name=self.player_name)
         self.users.append(user)
+        self.screen_mgr.get_screen('lobby').update_users(self.users)
 
     def handle_chat_users_online(self, params):
         """
@@ -171,6 +172,7 @@ class TwistedClientApp(App):
         users = params[pp.chat.NAMES_KEY]
         log.debug("Current online: {users}", users=users, player_name=self.player_name)
         self.users = users
+        self.screen_mgr.get_screen('lobby').update_users(self.users)
 
     def handle_chat_part(self, params):
         """
@@ -185,6 +187,7 @@ class TwistedClientApp(App):
             if u == name:
                 self.users.pop(i)
                 break
+        self.screen_mgr.get_screen('lobby').update_users(self.users)
 
     def handle_chat_message(self, params):
         """

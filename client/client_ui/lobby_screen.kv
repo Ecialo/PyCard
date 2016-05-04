@@ -1,5 +1,9 @@
+#:import sla kivy.adapters.simplelistadapter
+#:import CompositeListItem kivy.uix.listview.CompositeListItem
+#:import label kivy.uix.label
+
 <ControlButton@Widget>:
-    size_hint_y: None
+    size_hint: None, None
     height: dp(30)
 
 <ClickableLabel@ButtonBehavior+Label>
@@ -31,27 +35,25 @@
         orientation: 'vertical'
 
         BoxLayout:
-            id: top_view
-            size_hint_y: 1
+            id: buttons_view
             orientation: 'horizontal'
+            size_hint: 1, None
 
-            GridLayout:
-                id: buttons_view
-                cols: 3
-                rows: 1
+            # I honestly, genuinely, sincerely have no idea why layout's height is about thrice as much without this line.
+            # It looks like a hack, but I joke you not, the layout overstretches otherwise.
+            height: exit_button.height
 
-                MyCheckBox:
-                    id: ready_checkbox
-                    text: "I am ready"
+            MyCheckBox:
+                id: ready_checkbox
+                text: "I am ready"
 
-                MyButton:
-                    text: "Options"
-                    disabled: True
+            MyButton:
+                id: exit_button
+                text: "Exit"
+                on_press: app.stop()
 
-                MyButton:
-                    text: "Exit"
-                    on_press: app.stop()
-
-            # Филлер для того, чтобы кнопки прижимались влево
             BoxLayout:
-                size_hint_y: 1
+                size_hint: 1, None
+
+        ListView:
+            id: online_users
