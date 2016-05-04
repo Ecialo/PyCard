@@ -20,27 +20,6 @@ from twisted.logger import (
     Logger,
     jsonFileLogObserver,
 )
-from core.predef import (
-    CHAT_REGISTER,
-    CHAT_MESSAGE,
-    LOBBY_READY,
-    LOBBY_NOT_READY,
-    MESSAGE_PARAMS_KEY,
-    LOBBY_START_GAME,
-    CHAT_NAMES_KEY,
-    CHAT_JOIN,
-    CHAT_PART,
-    CHAT_MESSAGE_BROADCAST,
-    MESSAGE_TYPE_KEY,
-    CHAT_MESSAGE_TYPE_KEY,
-    CHAT_TEXT_KEY,
-    LOBBY_ALL_READY,
-    ACTION_JUST,
-    ACTION_PIPE,
-    ACTION_SEQUENCE,
-    CHAT_NAME_KEY,
-    LOBBY_NAME_ALREADY_EXISTS
-)
 from core.predef import (pycard_protocol as pp,
     table_type as tt
 )
@@ -113,11 +92,11 @@ class MultiEcho(protocol.Protocol):
         # и сделать так чтобы снятие флага "ready" отменяло запуск
 
         msg = {
-            MESSAGE_TYPE_KEY: CHAT_MESSAGE,
-            MESSAGE_PARAMS_KEY: {
-                CHAT_NAME_KEY: 'Server message',
-                CHAT_MESSAGE_TYPE_KEY: CHAT_MESSAGE_BROADCAST,
-                CHAT_TEXT_KEY: ' '.join(['game is going to start in', str(5 - self.anncounter), 'seconds'])
+            pp.message_struct.TYPE_KEY: pp.event_types.CHAT_MESSAGE,
+            pp.message_struct.PARAMS_KEY: {
+                pp.chat.NAME_KEY: 'Server message',
+                pp.chat.MESSAGE_TYPE_KEY: pp.chat.message_type.BROADCAST,
+                pp.chat.TEXT_KEY: ' '.join(['game is going to start in', str(5 - self.anncounter), 'seconds'])
             }
         }
 
@@ -134,8 +113,8 @@ class MultiEcho(protocol.Protocol):
         Запустить игру
         """
         msg = {
-            MESSAGE_TYPE_KEY: LOBBY_START_GAME,
-            MESSAGE_PARAMS_KEY: {}
+            pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_START_GAME,
+            pp.message_struct.PARAMS_KEY: {}
         }
         self.send_global_message(json.dumps(msg))
         log.info('this is our game: {game}', game=self.factory.game)
@@ -172,7 +151,9 @@ class MultiEcho(protocol.Protocol):
             self.handle_lobby_ready(event)
         elif event_type == pp.event_types.LOBBY_NOT_READY:
             self.handle_lobby_not_ready(event)
-        elif event_type in [ACTION_JUST, ACTION_PIPE, ACTION_SEQUENCE]:
+        elif event_type in [pp.event_types.ACTION_JUST, \
+                            pp.event_types.ACTION_PIPE, \
+                            pp.event_types.ACTION_SEQUENCE]:
             # print self.game
             self.factory.game.receive_message(msg)
             self.send_game_flow()
@@ -187,20 +168,21 @@ class MultiEcho(protocol.Protocol):
 
         # TODO: this is hacky
         self.factory.echoers.append(self)
-
-        if params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY] in [player.name for player in self.factory.players.values()]:
+        new_user_name = params[pp.message_struct.PARAMS_KEY][pp.chat.NAME_KEY]
+        current_online = [player.name for player in self.factory.players.values()]
+        if new_user_name in current_online:
             msg = {
-            MESSAGE_TYPE_KEY: LOBBY_NAME_ALREADY_EXISTS,
-            MESSAGE_PARAMS_KEY: {}
+                pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_NAME_ALREADY_EXISTS,
+                pp.message_struct.PARAMS_KEY: {}
             }
             self.factory.echoers[-1].transport.write(json.dumps(msg))
             del self.factory.echoers[-1]
 
         else:
-            self.factory.players[self] = LobbyPerson(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY])
-            params[MESSAGE_TYPE_KEY] = CHAT_JOIN
+            self.factory.players[self] = LobbyPerson(new_user_name)
+            params[pp.message_struct.TYPE_KEY] = pp.event_types.CHAT_JOIN
             # TODO: fix later
-            params[MESSAGE_PARAMS_KEY][CHAT_NAMES_KEY] = [player.name for player in self.factory.players.values()]
+            params[pp.message_struct.PARAMS_KEY][pp.chat.NAMES_KEY] = current_online
 
             log.info('some {data} sent', data=str(params))
             self.send_global_message(json.dumps(params))
@@ -213,11 +195,12 @@ class MultiEcho(protocol.Protocol):
         # TODO: понять почему это работает, сделать нормально
         parted = self.factory.players.pop(self, 'not found')
 
-        part_message = {MESSAGE_TYPE_KEY: CHAT_PART,
-                        MESSAGE_PARAMS_KEY: {
-                            CHAT_NAME_KEY: getattr(parted, 'name')
-                        }
-                        }
+        part_message = {
+            pp.message_struct.TYPE_KEY: pp.event_types.CHAT_PART,
+            pp.message_struct.PARAMS_KEY: {
+                pp.chat.NAME_KEY: getattr(parted, 'name')
+            }
+        }
 
         log.info('some {data} sent', data=str(part_message))
         self.send_global_message(json.dumps(part_message))
@@ -226,7 +209,7 @@ class MultiEcho(protocol.Protocol):
         """ Вызывать если клиент жмет чекбокс "ready" """
 
         self.factory.players[self].get_ready()
-        log.info('This {player} now is ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY]))
+        log.info('This {player} now is ready: ', player=str(params[pp.message_struct.PARAMS_KEY][pp.chat.NAME_KEY]))
         self.check_playnum()
 
     def handle_lobby_not_ready(self, params):
@@ -243,7 +226,7 @@ class MultiEcho(protocol.Protocol):
         if hasattr(self.factory, 'game'):
             del self.factory.game
 
-        log.info('This {player} now is not ready: ', player=str(params[MESSAGE_PARAMS_KEY][CHAT_NAME_KEY]))
+        log.info('This {player} now is not ready: ', player=str(params[pp.message_struct.PARAMS_KEY][pp.chat.NAME_KEY]))
 
     def handle_chat_message(self, params):
         """
