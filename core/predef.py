@@ -90,6 +90,7 @@ pycard_protocol = Namespace(
         "ACTION_SEQUENCE",
         "ACTION_PIPE",
         "CHAT_REGISTER",
+        "CHAT_USERS_ONLINE",
         "CHAT_JOIN",
         "CHAT_PART",
         "CHAT_MESSAGE",

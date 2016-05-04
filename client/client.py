@@ -74,6 +74,7 @@ class TwistedClientApp(App):
     def set_message_handlers(self):
         self.msg_handlers = {
             pp.event_types.CHAT_JOIN:                   self.handle_chat_join,
+            pp.event_types.CHAT_USERS_ONLINE:           self.handle_chat_users_online,
             pp.event_types.CHAT_PART:                   self.handle_chat_part,
             pp.event_types.CHAT_MESSAGE:                self.handle_chat_message,
             pp.event_types.LOBBY_START_GAME:            self.handle_lobby_start_game,
@@ -158,8 +159,17 @@ class TwistedClientApp(App):
         Обработчик для появления на сервере нового игрока.
         """
 
+        user = params[pp.chat.NAME_KEY]
+        log.debug("{user} has joined", user=user, player_name=self.player_name)
+        self.users.append(user)
+
+    def handle_chat_users_online(self, params):
+        """
+        Обработчик для получения с сервера списка игроков.
+        """
+
         users = params[pp.chat.NAMES_KEY]
-        log.debug("Online changed: {users}", users=users, player_name=self.player_name)
+        log.debug("Current online: {users}", users=users, player_name=self.player_name)
         self.users = users
 
     def handle_chat_part(self, params):
