@@ -144,7 +144,7 @@ class MultiEcho(protocol.Protocol):
         log.info('{signal} caught', signal=msg)
 
         if event_type == pp.event_types.CHAT_REGISTER:
-            self.handle_chat_join(event)
+            self.handle_chat_register(event)
         elif event_type == pp.event_types.CHAT_MESSAGE:
             self.handle_chat_message(event)
         elif event_type == pp.event_types.LOBBY_READY:
@@ -161,16 +161,16 @@ class MultiEcho(protocol.Protocol):
 
     # Отправка сообщений клиентам
 
-    def handle_chat_join(self, params):
+    def handle_chat_register(self, params):
         """
-        Посылаем всем клиентам сообщения о том кто зашел и сохраняем адрес и ник
+        Посылаем всем клиентам сообщения о том, кто подключился, и сохраняем адрес и ник
         """
 
         # TODO: this is hacky
         self.factory.echoers.append(self)
+
         new_user_name = params[pp.message_struct.PARAMS_KEY][pp.chat.NAME_KEY]
-        current_online = [player.name for player in self.factory.players.values()]
-        if new_user_name in current_online:
+        if new_user_name in [player.name for player in self.factory.players.values()]:
             msg = {
                 pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_NAME_ALREADY_EXISTS,
                 pp.message_struct.PARAMS_KEY: {}
@@ -180,12 +180,24 @@ class MultiEcho(protocol.Protocol):
 
         else:
             self.factory.players[self] = LobbyPerson(new_user_name)
+
+            # first, tell about users online to a newly joined person (they're already on the list)
+            online_msg = {
+                pp.message_struct.TYPE_KEY: pp.event_types.CHAT_USERS_ONLINE,
+                pp.message_struct.PARAMS_KEY: {
+                    pp.chat.NAMES_KEY: [player.name for player in self.factory.players.values()]
+                }
+            }
+            self.factory.send_individual_message(new_user_name, json.dumps(online_msg))
+
+            # after that, tell everyone else someone's just joined
             params[pp.message_struct.TYPE_KEY] = pp.event_types.CHAT_JOIN
             # TODO: fix later
-            params[pp.message_struct.PARAMS_KEY][pp.chat.NAMES_KEY] = current_online
-
+            params[pp.message_struct.PARAMS_KEY][pp.chat.NAME_KEY] = new_user_name
             log.info('some {data} sent', data=str(params))
-            self.send_global_message(json.dumps(params))
+            for player in self.factory.players.itervalues():
+                if player.name != new_user_name:
+                    self.factory.send_individual_message(player.name, json.dumps(params))
 
     def handle_chat_disconnection(self):
         """
