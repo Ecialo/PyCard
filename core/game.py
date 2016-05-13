@@ -5,6 +5,7 @@ import inspect
 from predef import *
 from . import utility as util
 from flow.flow import EndOfCurrentFlow
+from collections import deque
 __author__ = 'Ecialo'
 
 
@@ -64,6 +65,7 @@ class Game(util.Component):
         }
         self._next_id = 0
         self._components_by_id = {}
+        self._action_queue = deque()
         # self._components_factories = {}
         #
         # for component in components:
@@ -116,7 +118,10 @@ class Game(util.Component):
     def run(self):
         try:
             self.check_win_condition((self.current_flow, self))
-            action = self._flow.run()
+            if self._action_queue:
+                action = self._action_queue.popleft()
+            else:
+                action = self._flow.run()
             if action:
                 try:
                     action.apply()
@@ -141,6 +146,9 @@ class Game(util.Component):
 
     def next_stage(self):
         self._flow.next_stage()
+
+    def enqueue_action(self, action):
+        self._action_queue.append(action)
 
     def expand_visibility(self, action):
         players = self.get_category(PLAYER).keys()
