@@ -1,0 +1,27 @@
+<-HexCellWidget>:
+    id: hexcell
+    canvas:
+        PushMatrix:
+        Color:
+            rgba: 1, 1, 1, 1
+        Translate:
+            xy: self.pos
+        Mesh:
+            vertices: self.mesh_vertices
+            texture: self.mesh_texture
+            mode: 'triangle_fan'
+            indices: range(6)
+        Color:
+            rgba: 0, 0, 0, 0.5*self.is_selected
+        Mesh:
+            vertices: self.mesh_vertices
+            mode: 'triangle_fan'
+            indices: range(6)
+        PopMatrix:
+#        Translate:
+#            xy: (0, 0)
+
+#    Button:
+#        pos: -200, 0
+#        text: "Select"
+#        on_press: hexcell.is_selected = not hexcell.is_selected
