@@ -65,6 +65,7 @@ class User(object):
         """
         Родной брат метода client.parse_message
         """
+        print "PARSED", msg
         event = json.loads(msg)
         event_type, params = event[pp.message_struct.TYPE_KEY], event[pp.message_struct.PARAMS_KEY]
 
@@ -84,7 +85,7 @@ class User(object):
         elif event_type in [pp.event_types.ACTION_JUST,
                             pp.event_types.ACTION_PIPE,
                             pp.event_types.ACTION_SEQUENCE]:
-            print "POPIACHSIA"
+            # print "POPIACHSIA"
             yield self.handle_game_message(msg)
         #     # print self.game
         #     self.factory.game.receive_message(msg)
@@ -134,6 +135,7 @@ class User(object):
     def send_message(self):
         while self.is_alive:
             message = yield self.message_queue.get()
+            print self.name, message
             # print message, isinstance(message, bytes), type(message)
             yield self.stream.write(message)
             self.message_queue.task_done()
@@ -160,8 +162,10 @@ class GameNode(object):
             self.game.receive_message(message)
             while True:
                 response = self.game.run()
-                print response
-                if not response:
+                # print "response", response
+                if response:
+                    yield self.server.enqueue_messages(response)
+                else:
                     break
             self.action_queue.task_done()
 
@@ -292,9 +296,10 @@ class PyCardServer(tcpserver.TCPServer):
     @gen.coroutine
     def launch_game(self):
         self.game = GameNode(
-            retard_game.RetardGame([{'name': user for user in self.users}]),
+            retard_game.RetardGame([{'name': user} for user in self.users]),
             self,
         )
+        print self.game.game._components
         msg = {
             pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_START_GAME,
             pp.message_struct.PARAMS_KEY: {}
