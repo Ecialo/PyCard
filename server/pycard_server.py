@@ -298,6 +298,7 @@ class MultiEchoFactory(protocol.Factory):
         endpoint_index = self.echoers.index(endpoint)
         self.echoers[endpoint_index].transport.write(msg)
 
+
 class Producer:
     """Apply .run() until the responce is None """
     implements(interfaces.IPushProducer)
