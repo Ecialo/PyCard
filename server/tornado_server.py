@@ -161,7 +161,22 @@ class GameNode(object):
             message = yield self.action_queue.get()
             self.game.receive_message(message)
             while True:
-                response = self.game.run()
+                try:
+                    response = self.game.run()
+                except GameOver as game_over:
+                    msg = {
+                        pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_GAME_OVER,
+                        pp.message_struct.PARAMS_KEY: {
+                            pp.lobby.GAME_RESULT_KEY: game_over.players_stats,
+                        }
+                    }
+                    msg = {
+                        ALL: json.dumps(msg)
+                    }
+                    yield self.server.enqueue_messages(msg)
+
+                    self.is_alive = False
+                    break
                 # print "response", response
                 if response:
                     yield self.server.enqueue_messages(response)
