@@ -163,6 +163,7 @@ class RetardGame(game.Game):
 
     def __init__(self, players, mode=predef.SERVER):
         players = [player if isinstance(player, RetardPlayer) else RetardPlayer(**player) for player in players]
+        players = sorted(players, key=lambda x: x.name)
         retard_deck = RetardDeck()
         retard_card_table = RetardCardTable()
         retard_action_table = RetardActionTable()

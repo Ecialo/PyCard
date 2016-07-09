@@ -269,6 +269,7 @@ class MultiEcho(protocol.Protocol):
         self.run_game_launcher = None
         self.run_warning = None
 
+
 class MultiEchoFactory(protocol.Factory):
 
     def __init__(self, playnum):
@@ -296,6 +297,7 @@ class MultiEchoFactory(protocol.Factory):
         # TODO: доработать если попытка отправит несуществующему клиенту
         endpoint_index = self.echoers.index(endpoint)
         self.echoers[endpoint_index].transport.write(msg)
+
 
 class Producer:
     """Apply .run() until the responce is None """
