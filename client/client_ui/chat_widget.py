@@ -3,10 +3,11 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
 import kivy.properties as prop
+from core.utility import kivy_doc_hack
 
 from core.predef import pycard_protocol as pp
 
-Builder.load_file("./client/client_ui/chat_widget.kv")
+kivy_doc_hack(Builder, 'chat_widget.kv', __file__)
 
 class ChatWidget(BoxLayout):
 

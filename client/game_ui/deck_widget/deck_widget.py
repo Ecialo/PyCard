@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import kivy
 import kivy.properties as prop
 from kivy.uix.label import Label
 from kivy.lang import Builder
 
 from core.predef import ui_namespace
+from core.utility import kivy_doc_hack
 
-Builder.load_file('./client/game_ui/deck_widget/deck_widget.kv')
+kivy_doc_hack(Builder, 'deck_widget.kv', __file__)
+
 
 class DeckWidget(Label):
     deck = prop.ObjectProperty()

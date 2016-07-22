@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.server package &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="index.html" />
+    <link rel="up" title="PyCard package" href="PyCard.html" />
+    <link rel="next" title="PyCard.server.player package" href="PyCard.server.player.html" />
+    <link rel="prev" title="PyCard.sample_games.retard_game package" href="PyCard.sample_games.retard_game.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pycard-server-package">
+<h1>PyCard.server package<a class="headerlink" href="#pycard-server-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PyCard.server.player.html">PyCard.server.player package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.server.player.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.server.player.html#module-PyCard.server.player.player_class">PyCard.server.player.player_class module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.server.player.html#module-PyCard.server.player">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PyCard.server.server_application.html">PyCard.server.server_application package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.server.server_application.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.server.server_application.html#module-PyCard.server.server_application.server_application">PyCard.server.server_application.server_application module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.server.server_application.html#module-PyCard.server.server_application">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-PyCard.server.pycard_server">
+<span id="pycard-server-pycard-server-module"></span><h2>PyCard.server.pycard_server module<a class="headerlink" href="#module-PyCard.server.pycard_server" title="Permalink to this headline">¶</a></h2>
+<p>Попытка запилить асинхронный сервер, который общается с клиентами
+с помощью текстовых сообщений</p>
+<dl class="class">
+<dt id="PyCard.server.pycard_server.MultiEcho">
+<em class="property">class </em><code class="descclassname">PyCard.server.pycard_server.</code><code class="descname">MultiEcho</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">twisted.internet.protocol.Protocol</span></code></p>
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.check_playnum">
+<code class="descname">check_playnum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.check_playnum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.check_playnum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Проверяем достаточно ли клиентов (вызываем каждый раз после того как
+произошло нажатие ready); если достаточно - запускаем игровую сессию
+Надо этот метод переписать, т.к. быдлокод</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.connectionLost">
+<code class="descname">connectionLost</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.connectionLost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.connectionMade">
+<code class="descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.connectionMade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.connectionMade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.dataReceived">
+<code class="descname">dataReceived</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.dataReceived" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.finish_game">
+<code class="descname">finish_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.finish_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.finish_game" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.handle_chat_disconnection">
+<code class="descname">handle_chat_disconnection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.handle_chat_disconnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.handle_chat_disconnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Говорим всем о том кто ушел</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.handle_chat_message">
+<code class="descname">handle_chat_message</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.handle_chat_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.handle_chat_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Просто отсылаем всем то, что нам пришло</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.handle_chat_register">
+<code class="descname">handle_chat_register</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.handle_chat_register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.handle_chat_register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Посылаем всем клиентам сообщения о том, кто подключился, и сохраняем адрес и ник</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.handle_lobby_not_ready">
+<code class="descname">handle_lobby_not_ready</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.handle_lobby_not_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.handle_lobby_not_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Вызывать если клиент отжимает чекбокс &#8220;ready&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.handle_lobby_ready">
+<code class="descname">handle_lobby_ready</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.handle_lobby_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.handle_lobby_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Вызывать если клиент жмет чекбокс &#8220;ready&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.launch_game">
+<code class="descname">launch_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.launch_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.launch_game" title="Permalink to this definition">¶</a></dt>
+<dd><p>Запустить игру</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.parse_incoming_message">
+<code class="descname">parse_incoming_message</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.parse_incoming_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.parse_incoming_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Родной брат метода client.parse_message</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.prepare_session">
+<code class="descname">prepare_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.prepare_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.prepare_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Подготовить сессию игровую к запуску. Если кто-то
+из клиентов в течении n секунд отожмет чекбокс &#8220;готов&#8221; -
+сессию не запускать</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.send_game_flow">
+<code class="descname">send_game_flow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.send_game_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.send_game_flow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.send_global_message">
+<code class="descname">send_global_message</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.send_global_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.send_global_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Юзать этот метод когда нужно что-то одинаковое написать всем клиентам</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEcho.warning">
+<code class="descname">warning</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEcho.warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEcho.warning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Оповещает всех о скором запуске</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.server.pycard_server.MultiEchoFactory">
+<em class="property">class </em><code class="descclassname">PyCard.server.pycard_server.</code><code class="descname">MultiEchoFactory</code><span class="sig-paren">(</span><em>playnum</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEchoFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEchoFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">twisted.internet.protocol.Factory</span></code></p>
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEchoFactory.buildProtocol">
+<code class="descname">buildProtocol</code><span class="sig-paren">(</span><em>addr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEchoFactory.buildProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEchoFactory.buildProtocol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEchoFactory.instantiate_game">
+<code class="descname">instantiate_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEchoFactory.instantiate_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEchoFactory.instantiate_game" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.MultiEchoFactory.send_individual_message">
+<code class="descname">send_individual_message</code><span class="sig-paren">(</span><em>player</em>, <em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#MultiEchoFactory.send_individual_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.MultiEchoFactory.send_individual_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.server.pycard_server.Producer">
+<em class="property">class </em><code class="descclassname">PyCard.server.pycard_server.</code><code class="descname">Producer</code><span class="sig-paren">(</span><em>factory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#Producer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.Producer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply .run() until the responce is None</p>
+<dl class="method">
+<dt id="PyCard.server.pycard_server.Producer.pauseProducing">
+<code class="descname">pauseProducing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#Producer.pauseProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.Producer.pauseProducing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.Producer.resumeProducing">
+<code class="descname">resumeProducing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#Producer.resumeProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.Producer.resumeProducing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.server.pycard_server.Producer.stopProducing">
+<code class="descname">stopProducing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/server/pycard_server.html#Producer.stopProducing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.server.pycard_server.Producer.stopProducing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.server">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyCard.server" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyCard.server package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-PyCard.server.pycard_server">PyCard.server.pycard_server module</a></li>
+<li><a class="reference internal" href="#module-PyCard.server">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="PyCard.html">PyCard package</a><ul>
+      <li>Previous: <a href="PyCard.sample_games.retard_game.html" title="previous chapter">PyCard.sample_games.retard_game package</a></li>
+      <li>Next: <a href="PyCard.server.player.html" title="next chapter">PyCard.server.player package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/PyCard.server.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/PyCard.server.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

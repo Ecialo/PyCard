@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.testing package &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="index.html" />
+    <link rel="up" title="PyCard package" href="PyCard.html" />
+    <link rel="next" title="PyCard.testing.tests package" href="PyCard.testing.tests.html" />
+    <link rel="prev" title="PyCard.server.server_application package" href="PyCard.server.server_application.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pycard-testing-package">
+<h1>PyCard.testing package<a class="headerlink" href="#pycard-testing-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PyCard.testing.tests.html">PyCard.testing.tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.testing.tests.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.testing.tests.html#module-PyCard.testing.tests.protocol_checker">PyCard.testing.tests.protocol_checker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.testing.tests.html#module-PyCard.testing.tests.retard_game">PyCard.testing.tests.retard_game module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.testing.tests.html#module-PyCard.testing.tests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-PyCard.testing.test_reactor">
+<span id="pycard-testing-test-reactor-module"></span><h2>PyCard.testing.test_reactor module<a class="headerlink" href="#module-PyCard.testing.test_reactor" title="Permalink to this headline">¶</a></h2>
+<p>Считывает сообщения из лога или ручного ввода, и пропускает их через экземпляр игры.
+Служит для упрощения и автоматизации функционального тестирования.</p>
+<p>Формат лога/тестового сценария</p>
+<p>Предустановки
+&#8212;
+Автор: сообщение | Проверка | Точка остановки</p>
+<dl class="class">
+<dt id="PyCard.testing.test_reactor.FullTestReactor">
+<em class="property">class </em><code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">FullTestReactor</code><span class="sig-paren">(</span><em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#FullTestReactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.FullTestReactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.testing.test_reactor.TestReactor" title="PyCard.testing.test_reactor.TestReactor"><code class="xref py py-class docutils literal"><span class="pre">PyCard.testing.test_reactor.TestReactor</span></code></a></p>
+<p>Прогоняет тестовый сценарий на серверной копии игры, но так же отслеживает состояние клиентских частей.</p>
+<dl class="method">
+<dt id="PyCard.testing.test_reactor.FullTestReactor.configure">
+<code class="descname">configure</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#FullTestReactor.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.FullTestReactor.configure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.testing.test_reactor.TestGame">
+<em class="property">class </em><code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">TestGame</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestGame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestGame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="attribute">
+<dt id="PyCard.testing.test_reactor.TestGame.game">
+<code class="descname">game</code><em class="property"> = None</em><a class="headerlink" href="#PyCard.testing.test_reactor.TestGame.game" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.testing.test_reactor.TestGame.path_to_scenarios">
+<code class="descname">path_to_scenarios</code><em class="property"> = None</em><a class="headerlink" href="#PyCard.testing.test_reactor.TestGame.path_to_scenarios" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.testing.test_reactor.TestGame.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestGame.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestGame.setUp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.testing.test_reactor.TestGame.tearDown">
+<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestGame.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestGame.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.testing.test_reactor.TestGameMeta">
+<em class="property">class </em><code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">TestGameMeta</code><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestGameMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestGameMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">type</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.testing.test_reactor.TestReactor">
+<em class="property">class </em><code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">TestReactor</code><span class="sig-paren">(</span><em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestReactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestReactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Прогоняет тестовый сценарий на серверной копии игры.</p>
+<dl class="method">
+<dt id="PyCard.testing.test_reactor.TestReactor.autotest">
+<code class="descname">autotest</code><span class="sig-paren">(</span><em>log</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestReactor.autotest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestReactor.autotest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Читает лог.
+* Если видит Сообщение, то принимает и исполняет его.
+* Если видит Проверку выполняет её. В случае неуспеха завершается с ошибкой,</p>
+<blockquote>
+<div>а в случае успеха продолжает выполнение.  Не реализовано.</div></blockquote>
+<ul class="simple">
+<li>Если видит точку остановки - переходит в интерактивный режим. Не реализовано.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.testing.test_reactor.TestReactor.configure">
+<code class="descname">configure</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestReactor.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestReactor.configure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Завершает предварительную конфигурацию
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.testing.test_reactor.TestReactor.interactive">
+<code class="descname">interactive</code><span class="sig-paren">(</span><em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestReactor.interactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestReactor.interactive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Работа с реактором и игрой в интерактивном режиме.
+В случае если указан лог можно исполнять записи построчно или перейти в автоматический режим.
+:param log:
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.testing.test_reactor.TestReactor.post_check">
+<code class="descname">post_check</code><span class="sig-paren">(</span><em>log</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestReactor.post_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestReactor.post_check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.testing.test_reactor.TestReactor.skip_to_post_check">
+<code class="descname">skip_to_post_check</code><span class="sig-paren">(</span><em>log</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#TestReactor.skip_to_post_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.TestReactor.skip_to_post_check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="PyCard.testing.test_reactor.assert_equal">
+<code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">assert_equal</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#assert_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.assert_equal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PyCard.testing.test_reactor.extract_predefs">
+<code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">extract_predefs</code><span class="sig-paren">(</span><em>log</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#extract_predefs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.extract_predefs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Извлекает предопределённые сценарием параметры.
+:param log:
+:type log:
+:return: Параметры
+:rtype: dict</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PyCard.testing.test_reactor.make_assertion_info_message">
+<code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">make_assertion_info_message</code><span class="sig-paren">(</span><em>assertion_line</em>, <em>**context</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#make_assertion_info_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.make_assertion_info_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PyCard.testing.test_reactor.make_test_method">
+<code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">make_test_method</code><span class="sig-paren">(</span><em>path_to_test_scenario</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#make_test_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.make_test_method" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PyCard.testing.test_reactor.test">
+<code class="descclassname">PyCard.testing.test_reactor.</code><code class="descname">test</code><span class="sig-paren">(</span><em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/testing/test_reactor.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.testing.test_reactor.test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.testing">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyCard.testing" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyCard.testing package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-PyCard.testing.test_reactor">PyCard.testing.test_reactor module</a></li>
+<li><a class="reference internal" href="#module-PyCard.testing">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="PyCard.html">PyCard package</a><ul>
+      <li>Previous: <a href="PyCard.server.server_application.html" title="previous chapter">PyCard.server.server_application package</a></li>
+      <li>Next: <a href="PyCard.testing.tests.html" title="next chapter">PyCard.testing.tests package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/PyCard.testing.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/PyCard.testing.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

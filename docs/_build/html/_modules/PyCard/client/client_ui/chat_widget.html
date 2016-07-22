@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.client.client_ui.chat_widget &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.client.client_ui.chat_widget</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="kn">from</span> <span class="nn">kivy.uix.boxlayout</span> <span class="k">import</span> <span class="n">BoxLayout</span>
+<span class="kn">from</span> <span class="nn">kivy.lang</span> <span class="k">import</span> <span class="n">Builder</span>
+<span class="kn">import</span> <span class="nn">kivy.properties</span> <span class="k">as</span> <span class="nn">prop</span>
+<span class="kn">from</span> <span class="nn">core.utility</span> <span class="k">import</span> <span class="n">kivy_doc_hack</span>
+
+<span class="kn">from</span> <span class="nn">core.predef</span> <span class="k">import</span> <span class="n">pycard_protocol</span> <span class="k">as</span> <span class="n">pp</span>
+
+<span class="n">kivy_doc_hack</span><span class="p">(</span><span class="n">Builder</span><span class="p">,</span> <span class="s1">&#39;chat_widget.kv&#39;</span><span class="p">,</span> <span class="n">__file__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ChatWidget"><a class="viewcode-back" href="../../../../PyCard.client.client_ui.html#PyCard.client.client_ui.chat_widget.ChatWidget">[docs]</a><span class="k">class</span> <span class="nc">ChatWidget</span><span class="p">(</span><span class="n">BoxLayout</span><span class="p">):</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+    <span class="n">hidden_widgets</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ChatWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">input_field</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">on_text_validate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">send_chat_message</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ChatWidget.print_message"><a class="viewcode-back" href="../../../../PyCard.client.client_ui.html#PyCard.client.client_ui.chat_widget.ChatWidget.print_message">[docs]</a>    <span class="k">def</span> <span class="nf">print_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Выводит текст в чат.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">chatlog</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">msg</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_if_necessary</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">input_field</span><span class="o">.</span><span class="n">focus</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ChatWidget.scroll_if_necessary"><a class="viewcode-back" href="../../../../PyCard.client.client_ui.html#PyCard.client.client_ui.chat_widget.ChatWidget.scroll_if_necessary">[docs]</a>    <span class="k">def</span> <span class="nf">scroll_if_necessary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Прокручивает чат, если в нижней части скрыто более 2 строк текста.</span>
+<span class="sd">        Судя по наблюдениям за интерфейсом, каждая строка имеет высоту 1.5 * font_h.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">hidden_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">chatlog</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">chatlog_view</span><span class="o">.</span><span class="n">height</span>
+        <span class="n">font_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">chatlog</span><span class="o">.</span><span class="n">font_size</span>
+        <span class="n">near_the_bottom</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">chatlog_view</span><span class="o">.</span><span class="n">scroll_y</span> <span class="o">*</span> <span class="n">hidden_h</span> <span class="o">&lt;</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">font_h</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">near_the_bottom</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">chatlog_view</span><span class="o">.</span><span class="n">scroll_y</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="ChatWidget.send_chat_message"><a class="viewcode-back" href="../../../../PyCard.client.client_ui.html#PyCard.client.client_ui.chat_widget.ChatWidget.send_chat_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_chat_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">textinput</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Отправляет сообщение в чат.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">input_field</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pp</span><span class="o">.</span><span class="n">message_delimiter</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">message_delimiter</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">input_field</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">send_chat_message</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="ChatWidget.fold"><a class="viewcode-back" href="../../../../PyCard.client.client_ui.html#PyCard.client.client_ui.chat_widget.ChatWidget.fold">[docs]</a>    <span class="k">def</span> <span class="nf">fold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_widgets</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_widgets</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ChatWidget.unfold"><a class="viewcode-back" href="../../../../PyCard.client.client_ui.html#PyCard.client.client_ui.chat_widget.ChatWidget.unfold">[docs]</a>    <span class="k">def</span> <span class="nf">unfold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_widgets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_widgets</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="ChatWidget.toggle"><a class="viewcode-back" href="../../../../PyCard.client.client_ui.html#PyCard.client.client_ui.chat_widget.ChatWidget.toggle">[docs]</a>    <span class="k">def</span> <span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_visible</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fold</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unfold</span><span class="p">()</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

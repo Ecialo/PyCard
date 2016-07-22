@@ -2,14 +2,14 @@
 
 from kivy.uix import tabbedpanel
 from kivy.uix.screenmanager import Screen
-from kivy.graphics import Color, Rectangle
 from kivy.lang import Builder
 import kivy.properties as prop
 
 from core.predef import game_component_types
+from core.utility import kivy_doc_hack
 
 __author__ = 'ecialo'
-Builder.load_file('./client/game_ui/game_widget/game_widget.kv')
+kivy_doc_hack(Builder, 'game_widget.kv', __file__)
 
 class GameWidget(Screen):
 

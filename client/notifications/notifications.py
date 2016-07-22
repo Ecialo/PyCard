@@ -7,8 +7,9 @@ from kivy.uix.label import Label
 from kivy.clock import Clock
 from kivy.app import App
 from kivy.lang import Builder
+from core.utility import kivy_doc_hack
 
-Builder.load_file("./client/notifications/notifications.kv")
+kivy_doc_hack(Builder, 'notifications.kv', __file__)
 
 class Notification(ButtonBehavior, Label):
 

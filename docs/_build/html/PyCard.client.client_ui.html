@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.client.client_ui package &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="index.html" />
+    <link rel="up" title="PyCard.client package" href="PyCard.client.html" />
+    <link rel="next" title="PyCard.client.game_ui package" href="PyCard.client.game_ui.html" />
+    <link rel="prev" title="PyCard.client package" href="PyCard.client.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pycard-client-client-ui-package">
+<h1>PyCard.client.client_ui package<a class="headerlink" href="#pycard-client-client-ui-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-PyCard.client.client_ui.chat_widget">
+<span id="pycard-client-client-ui-chat-widget-module"></span><h2>PyCard.client.client_ui.chat_widget module<a class="headerlink" href="#module-PyCard.client.client_ui.chat_widget" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget">
+<em class="property">class </em><code class="descclassname">PyCard.client.client_ui.chat_widget.</code><code class="descname">ChatWidget</code><span class="sig-paren">(</span><em>app</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/chat_widget.html#ChatWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">kivy.uix.boxlayout.BoxLayout</span></code></p>
+<dl class="attribute">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.app">
+<code class="descname">app</code><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property that represents a Python object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>defaultvalue</cite>: object type</dt>
+<dd><p class="first last">Specifies the default value of the property.</p>
+</dd>
+<dt><cite>rebind</cite>: bool, defaults to False</dt>
+<dd><p class="first">Whether kv rules using this object as an intermediate attribute
+in a kv rule, will update the bound property when this object
+changes.</p>
+<p>That is the standard behavior is that if there&#8217;s a kv rule
+<code class="docutils literal"><span class="pre">text:</span> <span class="pre">self.a.b.c.d</span></code>, where <code class="docutils literal"><span class="pre">a</span></code>, <code class="docutils literal"><span class="pre">b</span></code>, and <code class="docutils literal"><span class="pre">c</span></code> are
+properties with <code class="docutils literal"><span class="pre">rebind</span></code> <code class="docutils literal"><span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">d</span></code> is a
+<code class="xref py py-class docutils literal"><span class="pre">StringProperty</span></code>. Then when the rule is applied, <code class="docutils literal"><span class="pre">text</span></code>
+becomes bound only to <code class="docutils literal"><span class="pre">d</span></code>. If <code class="docutils literal"><span class="pre">a</span></code>, <code class="docutils literal"><span class="pre">b</span></code>, or <code class="docutils literal"><span class="pre">c</span></code> change,
+<code class="docutils literal"><span class="pre">text</span></code> still remains bound to <code class="docutils literal"><span class="pre">d</span></code>. Furthermore, if any of them
+were <code class="docutils literal"><span class="pre">None</span></code> when the rule was initially evaluated, e.g. <code class="docutils literal"><span class="pre">b</span></code> was
+<code class="docutils literal"><span class="pre">None</span></code>; then <code class="docutils literal"><span class="pre">text</span></code> is bound to <code class="docutils literal"><span class="pre">b</span></code> and will not become bound
+to <code class="docutils literal"><span class="pre">d</span></code> even when <code class="docutils literal"><span class="pre">b</span></code> is changed to not be <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<p class="last">By setting <code class="docutils literal"><span class="pre">rebind</span></code> to <code class="docutils literal"><span class="pre">True</span></code>, however, the rule will be
+re-evaluated and all the properties rebound when that intermediate
+property changes. E.g. in the example above, whenever <code class="docutils literal"><span class="pre">b</span></code> changes
+or becomes not <code class="docutils literal"><span class="pre">None</span></code> if it was <code class="docutils literal"><span class="pre">None</span></code> before, <code class="docutils literal"><span class="pre">text</span></code> is
+evaluated again and becomes rebound to <code class="docutils literal"><span class="pre">d</span></code>. The overall result is
+that <code class="docutils literal"><span class="pre">text</span></code> is now bound to all the properties among <code class="docutils literal"><span class="pre">a</span></code>,
+<code class="docutils literal"><span class="pre">b</span></code>, or <code class="docutils literal"><span class="pre">c</span></code> that have <code class="docutils literal"><span class="pre">rebind</span></code> set to <code class="docutils literal"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><cite>**kwargs</cite>: a list of keyword arguments</dt>
+<dd><dl class="first last docutils">
+<dt><cite>baseclass</cite></dt>
+<dd><p class="first last">If kwargs includes a <cite>baseclass</cite> argument, this value will be
+used for validation: <cite>isinstance(value, kwargs[&#8216;baseclass&#8217;])</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">To mark the property as changed, you must reassign a new python object.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.9.0: </span><cite>rebind</cite> has been introduced.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.7.0: </span><cite>baseclass</cite> parameter added.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.fold">
+<code class="descname">fold</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/chat_widget.html#ChatWidget.fold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.fold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.hidden_widgets">
+<code class="descname">hidden_widgets</code><em class="property"> = []</em><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.hidden_widgets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.is_visible">
+<code class="descname">is_visible</code><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.is_visible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.print_message">
+<code class="descname">print_message</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/chat_widget.html#ChatWidget.print_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.print_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Выводит текст в чат.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.scroll_if_necessary">
+<code class="descname">scroll_if_necessary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/chat_widget.html#ChatWidget.scroll_if_necessary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.scroll_if_necessary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Прокручивает чат, если в нижней части скрыто более 2 строк текста.
+Судя по наблюдениям за интерфейсом, каждая строка имеет высоту 1.5 * font_h.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.send_chat_message">
+<code class="descname">send_chat_message</code><span class="sig-paren">(</span><em>textinput</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/chat_widget.html#ChatWidget.send_chat_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.send_chat_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Отправляет сообщение в чат.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.toggle">
+<code class="descname">toggle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/chat_widget.html#ChatWidget.toggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.toggle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.chat_widget.ChatWidget.unfold">
+<code class="descname">unfold</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/chat_widget.html#ChatWidget.unfold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.chat_widget.ChatWidget.unfold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.client.client_ui.connection_screen">
+<span id="pycard-client-client-ui-connection-screen-module"></span><h2>PyCard.client.client_ui.connection_screen module<a class="headerlink" href="#module-PyCard.client.client_ui.connection_screen" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyCard.client.client_ui.connection_screen.ConnectionScreen">
+<em class="property">class </em><code class="descclassname">PyCard.client.client_ui.connection_screen.</code><code class="descname">ConnectionScreen</code><span class="sig-paren">(</span><em>app</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/connection_screen.html#ConnectionScreen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.connection_screen.ConnectionScreen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">kivy.uix.screenmanager.Screen</span></code></p>
+<dl class="attribute">
+<dt id="PyCard.client.client_ui.connection_screen.ConnectionScreen.app">
+<code class="descname">app</code><a class="headerlink" href="#PyCard.client.client_ui.connection_screen.ConnectionScreen.app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property that represents a Python object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>defaultvalue</cite>: object type</dt>
+<dd><p class="first last">Specifies the default value of the property.</p>
+</dd>
+<dt><cite>rebind</cite>: bool, defaults to False</dt>
+<dd><p class="first">Whether kv rules using this object as an intermediate attribute
+in a kv rule, will update the bound property when this object
+changes.</p>
+<p>That is the standard behavior is that if there&#8217;s a kv rule
+<code class="docutils literal"><span class="pre">text:</span> <span class="pre">self.a.b.c.d</span></code>, where <code class="docutils literal"><span class="pre">a</span></code>, <code class="docutils literal"><span class="pre">b</span></code>, and <code class="docutils literal"><span class="pre">c</span></code> are
+properties with <code class="docutils literal"><span class="pre">rebind</span></code> <code class="docutils literal"><span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">d</span></code> is a
+<code class="xref py py-class docutils literal"><span class="pre">StringProperty</span></code>. Then when the rule is applied, <code class="docutils literal"><span class="pre">text</span></code>
+becomes bound only to <code class="docutils literal"><span class="pre">d</span></code>. If <code class="docutils literal"><span class="pre">a</span></code>, <code class="docutils literal"><span class="pre">b</span></code>, or <code class="docutils literal"><span class="pre">c</span></code> change,
+<code class="docutils literal"><span class="pre">text</span></code> still remains bound to <code class="docutils literal"><span class="pre">d</span></code>. Furthermore, if any of them
+were <code class="docutils literal"><span class="pre">None</span></code> when the rule was initially evaluated, e.g. <code class="docutils literal"><span class="pre">b</span></code> was
+<code class="docutils literal"><span class="pre">None</span></code>; then <code class="docutils literal"><span class="pre">text</span></code> is bound to <code class="docutils literal"><span class="pre">b</span></code> and will not become bound
+to <code class="docutils literal"><span class="pre">d</span></code> even when <code class="docutils literal"><span class="pre">b</span></code> is changed to not be <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<p class="last">By setting <code class="docutils literal"><span class="pre">rebind</span></code> to <code class="docutils literal"><span class="pre">True</span></code>, however, the rule will be
+re-evaluated and all the properties rebound when that intermediate
+property changes. E.g. in the example above, whenever <code class="docutils literal"><span class="pre">b</span></code> changes
+or becomes not <code class="docutils literal"><span class="pre">None</span></code> if it was <code class="docutils literal"><span class="pre">None</span></code> before, <code class="docutils literal"><span class="pre">text</span></code> is
+evaluated again and becomes rebound to <code class="docutils literal"><span class="pre">d</span></code>. The overall result is
+that <code class="docutils literal"><span class="pre">text</span></code> is now bound to all the properties among <code class="docutils literal"><span class="pre">a</span></code>,
+<code class="docutils literal"><span class="pre">b</span></code>, or <code class="docutils literal"><span class="pre">c</span></code> that have <code class="docutils literal"><span class="pre">rebind</span></code> set to <code class="docutils literal"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><cite>**kwargs</cite>: a list of keyword arguments</dt>
+<dd><dl class="first last docutils">
+<dt><cite>baseclass</cite></dt>
+<dd><p class="first last">If kwargs includes a <cite>baseclass</cite> argument, this value will be
+used for validation: <cite>isinstance(value, kwargs[&#8216;baseclass&#8217;])</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">To mark the property as changed, you must reassign a new python object.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.9.0: </span><cite>rebind</cite> has been introduced.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.7.0: </span><cite>baseclass</cite> parameter added.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.connection_screen.ConnectionScreen.cancel">
+<code class="descname">cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/connection_screen.html#ConnectionScreen.cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.connection_screen.ConnectionScreen.cancel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.connection_screen.ConnectionScreen.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>host</em>, <em>port</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/connection_screen.html#ConnectionScreen.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.connection_screen.ConnectionScreen.connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.client.client_ui.connection_screen.PlayerNameInput">
+<em class="property">class </em><code class="descclassname">PyCard.client.client_ui.connection_screen.</code><code class="descname">PlayerNameInput</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/connection_screen.html#PlayerNameInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.connection_screen.PlayerNameInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">kivy.uix.textinput.TextInput</span></code></p>
+<dl class="method">
+<dt id="PyCard.client.client_ui.connection_screen.PlayerNameInput.insert_text">
+<code class="descname">insert_text</code><span class="sig-paren">(</span><em>substring</em>, <em>from_undo=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/connection_screen.html#PlayerNameInput.insert_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.connection_screen.PlayerNameInput.insert_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.client.client_ui.connection_screen.PlayerNameInput.pattern">
+<code class="descname">pattern</code><em class="property"> = &lt;_sre.SRE_Pattern object&gt;</em><a class="headerlink" href="#PyCard.client.client_ui.connection_screen.PlayerNameInput.pattern" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.client.client_ui.lobby_screen">
+<span id="pycard-client-client-ui-lobby-screen-module"></span><h2>PyCard.client.client_ui.lobby_screen module<a class="headerlink" href="#module-PyCard.client.client_ui.lobby_screen" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyCard.client.client_ui.lobby_screen.LobbyScreen">
+<em class="property">class </em><code class="descclassname">PyCard.client.client_ui.lobby_screen.</code><code class="descname">LobbyScreen</code><span class="sig-paren">(</span><em>app</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/lobby_screen.html#LobbyScreen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.lobby_screen.LobbyScreen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">kivy.uix.screenmanager.Screen</span></code></p>
+<dl class="attribute">
+<dt id="PyCard.client.client_ui.lobby_screen.LobbyScreen.app">
+<code class="descname">app</code><a class="headerlink" href="#PyCard.client.client_ui.lobby_screen.LobbyScreen.app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property that represents a Python object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>defaultvalue</cite>: object type</dt>
+<dd><p class="first last">Specifies the default value of the property.</p>
+</dd>
+<dt><cite>rebind</cite>: bool, defaults to False</dt>
+<dd><p class="first">Whether kv rules using this object as an intermediate attribute
+in a kv rule, will update the bound property when this object
+changes.</p>
+<p>That is the standard behavior is that if there&#8217;s a kv rule
+<code class="docutils literal"><span class="pre">text:</span> <span class="pre">self.a.b.c.d</span></code>, where <code class="docutils literal"><span class="pre">a</span></code>, <code class="docutils literal"><span class="pre">b</span></code>, and <code class="docutils literal"><span class="pre">c</span></code> are
+properties with <code class="docutils literal"><span class="pre">rebind</span></code> <code class="docutils literal"><span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">d</span></code> is a
+<code class="xref py py-class docutils literal"><span class="pre">StringProperty</span></code>. Then when the rule is applied, <code class="docutils literal"><span class="pre">text</span></code>
+becomes bound only to <code class="docutils literal"><span class="pre">d</span></code>. If <code class="docutils literal"><span class="pre">a</span></code>, <code class="docutils literal"><span class="pre">b</span></code>, or <code class="docutils literal"><span class="pre">c</span></code> change,
+<code class="docutils literal"><span class="pre">text</span></code> still remains bound to <code class="docutils literal"><span class="pre">d</span></code>. Furthermore, if any of them
+were <code class="docutils literal"><span class="pre">None</span></code> when the rule was initially evaluated, e.g. <code class="docutils literal"><span class="pre">b</span></code> was
+<code class="docutils literal"><span class="pre">None</span></code>; then <code class="docutils literal"><span class="pre">text</span></code> is bound to <code class="docutils literal"><span class="pre">b</span></code> and will not become bound
+to <code class="docutils literal"><span class="pre">d</span></code> even when <code class="docutils literal"><span class="pre">b</span></code> is changed to not be <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<p class="last">By setting <code class="docutils literal"><span class="pre">rebind</span></code> to <code class="docutils literal"><span class="pre">True</span></code>, however, the rule will be
+re-evaluated and all the properties rebound when that intermediate
+property changes. E.g. in the example above, whenever <code class="docutils literal"><span class="pre">b</span></code> changes
+or becomes not <code class="docutils literal"><span class="pre">None</span></code> if it was <code class="docutils literal"><span class="pre">None</span></code> before, <code class="docutils literal"><span class="pre">text</span></code> is
+evaluated again and becomes rebound to <code class="docutils literal"><span class="pre">d</span></code>. The overall result is
+that <code class="docutils literal"><span class="pre">text</span></code> is now bound to all the properties among <code class="docutils literal"><span class="pre">a</span></code>,
+<code class="docutils literal"><span class="pre">b</span></code>, or <code class="docutils literal"><span class="pre">c</span></code> that have <code class="docutils literal"><span class="pre">rebind</span></code> set to <code class="docutils literal"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><cite>**kwargs</cite>: a list of keyword arguments</dt>
+<dd><dl class="first last docutils">
+<dt><cite>baseclass</cite></dt>
+<dd><p class="first last">If kwargs includes a <cite>baseclass</cite> argument, this value will be
+used for validation: <cite>isinstance(value, kwargs[&#8216;baseclass&#8217;])</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">To mark the property as changed, you must reassign a new python object.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.9.0: </span><cite>rebind</cite> has been introduced.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified">Changed in version 1.7.0: </span><cite>baseclass</cite> parameter added.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.lobby_screen.LobbyScreen.notify">
+<code class="descname">notify</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/lobby_screen.html#LobbyScreen.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.lobby_screen.LobbyScreen.notify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Показывает уведомление вверху экрана.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.lobby_screen.LobbyScreen.on_ready_clicked">
+<code class="descname">on_ready_clicked</code><span class="sig-paren">(</span><em>checkbox</em>, <em>state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/lobby_screen.html#LobbyScreen.on_ready_clicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.lobby_screen.LobbyScreen.on_ready_clicked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.client.client_ui.lobby_screen.LobbyScreen.update_users">
+<code class="descname">update_users</code><span class="sig-paren">(</span><em>users</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/client/client_ui/lobby_screen.html#LobbyScreen.update_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.client.client_ui.lobby_screen.LobbyScreen.update_users" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.client.client_ui">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyCard.client.client_ui" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyCard.client.client_ui package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-PyCard.client.client_ui.chat_widget">PyCard.client.client_ui.chat_widget module</a></li>
+<li><a class="reference internal" href="#module-PyCard.client.client_ui.connection_screen">PyCard.client.client_ui.connection_screen module</a></li>
+<li><a class="reference internal" href="#module-PyCard.client.client_ui.lobby_screen">PyCard.client.client_ui.lobby_screen module</a></li>
+<li><a class="reference internal" href="#module-PyCard.client.client_ui">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="PyCard.html">PyCard package</a><ul>
+  <li><a href="PyCard.client.html">PyCard.client package</a><ul>
+      <li>Previous: <a href="PyCard.client.html" title="previous chapter">PyCard.client package</a></li>
+      <li>Next: <a href="PyCard.client.game_ui.html" title="next chapter">PyCard.client.game_ui package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/PyCard.client.client_ui.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/PyCard.client.client_ui.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

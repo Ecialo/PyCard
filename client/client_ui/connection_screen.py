@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import io, sys
-import json
 import re
 
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
 import kivy.properties as prop
+from core.utility import kivy_doc_hack
 
-
-Builder.load_file('./client/client_ui/connection_screen.kv')
+kivy_doc_hack(Builder, 'connection_screen.kv', __file__)
 
 
 class ConnectionScreen(Screen):

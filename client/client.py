@@ -3,17 +3,19 @@
 PyCard client application
 """
 
-import io, sys
+import io, sys, os
 import json
 
 from kivy.support import install_twisted_reactor
-install_twisted_reactor()
+
+if 'KIVY_DOC' not in os.environ:
+    install_twisted_reactor()
 from twisted.internet import reactor, protocol
 from twisted.logger import Logger, jsonFileLogObserver
 
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.uix.screenmanager import FadeTransition
 from notifications.notifications import NotificationsManager
 from client_ui.connection_screen import ConnectionScreen
 from client_ui.lobby_screen import LobbyScreen

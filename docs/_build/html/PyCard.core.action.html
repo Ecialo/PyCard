@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.core.action package &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="index.html" />
+    <link rel="up" title="PyCard.core package" href="PyCard.core.html" />
+    <link rel="next" title="PyCard.core.action.common_action_tables package" href="PyCard.core.action.common_action_tables.html" />
+    <link rel="prev" title="PyCard.core package" href="PyCard.core.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pycard-core-action-package">
+<h1>PyCard.core.action package<a class="headerlink" href="#pycard-core-action-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PyCard.core.action.common_action_tables.html">PyCard.core.action.common_action_tables package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_action_tables.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_action_tables.html#module-PyCard.core.action.common_action_tables.game_action_table">PyCard.core.action.common_action_tables.game_action_table module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_action_tables.html#module-PyCard.core.action.common_action_tables.system_action_table">PyCard.core.action.common_action_tables.system_action_table module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_action_tables.html#module-PyCard.core.action.common_action_tables">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PyCard.core.action.common_actions.html">PyCard.core.action.common_actions package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_actions.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_actions.html#module-PyCard.core.action.common_actions.draw_cards">PyCard.core.action.common_actions.draw_cards module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_actions.html#module-PyCard.core.action.common_actions.play_card">PyCard.core.action.common_actions.play_card module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_actions.html#module-PyCard.core.action.common_actions">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PyCard.core.action.common_system_actions.html">PyCard.core.action.common_system_actions package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_system_actions.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_system_actions.html#module-PyCard.core.action.common_system_actions.append_cards">PyCard.core.action.common_system_actions.append_cards module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_system_actions.html#module-PyCard.core.action.common_system_actions.make_card">PyCard.core.action.common_system_actions.make_card module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_system_actions.html#module-PyCard.core.action.common_system_actions.next_stage">PyCard.core.action.common_system_actions.next_stage module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_system_actions.html#module-PyCard.core.action.common_system_actions.place_on_desk">PyCard.core.action.common_system_actions.place_on_desk module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_system_actions.html#module-PyCard.core.action.common_system_actions.remove_cards">PyCard.core.action.common_system_actions.remove_cards module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.action.common_system_actions.html#module-PyCard.core.action.common_system_actions">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-PyCard.core.action.action">
+<span id="pycard-core-action-action-module"></span><h2>PyCard.core.action.action module<a class="headerlink" href="#module-PyCard.core.action.action" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyCard.core.action.action.Action">
+<em class="property">class </em><code class="descclassname">PyCard.core.action.action.</code><code class="descname">Action</code><span class="sig-paren">(</span><em>author='system'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Отложенная мутация над игрой или её компонентами.</p>
+<p>Не стоит обновлять параметры чем-то кроме метода setup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="PyCard.core.action.common_system_actions.html#PyCard.core.action.common_system_actions.remove_cards.RemoveCards.name" title="PyCard.core.action.common_system_actions.remove_cards.RemoveCards.name"><strong>name</strong></a> &#8211; название Действия, по которому оно идентифицируется в Таблице действий</li>
+<li><a class="reference internal" href="#PyCard.core.action.action.Action.default_args" title="PyCard.core.action.action.Action.default_args"><strong>default_args</strong></a> &#8211; аргументы по умолчанию для этого действия</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="PyCard.core.action.action.Action.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Применить мутацию.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Параметры, которые возможно будут нужны другой мутации</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict[str, T] | None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.action.action.Action.author">
+<code class="descname">author</code><a class="headerlink" href="#PyCard.core.action.action.Action.author" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.Action.check">
+<code class="descname">check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Проверяет возможно ли выполнить данное действие. По умолчанию любое действие можно выполнить.
+:return: Возможно ли выполнить действие
+:rtype: bool</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.action.action.Action.default_args">
+<code class="descname">default_args</code><em class="property"> = {}</em><a class="headerlink" href="#PyCard.core.action.action.Action.default_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.Action.get_message_struct">
+<code class="descname">get_message_struct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action.get_message_struct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action.get_message_struct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.Action.make_invisible_response">
+<code class="descname">make_invisible_response</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action.make_invisible_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action.make_invisible_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.Action.make_message">
+<code class="descname">make_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action.make_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action.make_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Создает на основе действия json строку сообщения. Сообщение имеет следующий формат:
+{</p>
+<blockquote>
+<div>MESSAGE_TYPE_KEY: ACTION_JUST | ACTION_SEQUENCE | ACTION_PIPE
+MESSAGE_ACTION_KEY: {arg: val} | [{arg: val}]</div></blockquote>
+<p>}
+Если val - это компонент, то он представляется виде внутриигрового пути до него.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">json строка с сообщением</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.Action.make_visible_response">
+<code class="descname">make_visible_response</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action.make_visible_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action.make_visible_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.action.action.Action.name">
+<code class="descname">name</code><em class="property"> = None</em><a class="headerlink" href="#PyCard.core.action.action.Action.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.Action.setup">
+<code class="descname">setup</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Правильный способ обновить внутренние параметы.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Action</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.Action.substitute_enviroment">
+<code class="descname">substitute_enviroment</code><span class="sig-paren">(</span><em>environment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#Action.substitute_enviroment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.Action.substitute_enviroment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Заменить пути до компонентов (начинается с SUBSTITUTION_SYMBOL) компонентами из окружения.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>environment</strong> (<a class="reference internal" href="PyCard.core.html#PyCard.core.game.Game" title="PyCard.core.game.Game"><em>core.game.Game</em></a>) &#8211; Игра в которой происходит действие</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.action.action.Action.visibility">
+<code class="descname">visibility</code><em class="property"> = None</em><a class="headerlink" href="#PyCard.core.action.action.Action.visibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.action.action.ActionCollection">
+<em class="property">class </em><code class="descclassname">PyCard.core.action.action.</code><code class="descname">ActionCollection</code><span class="sig-paren">(</span><em>author</em>, <em>actions=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#ActionCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.ActionCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.action.action.Action" title="PyCard.core.action.action.Action"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.action.action.Action</span></code></a></p>
+<dl class="method">
+<dt id="PyCard.core.action.action.ActionCollection.substitute_enviroment">
+<code class="descname">substitute_enviroment</code><span class="sig-paren">(</span><em>environment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#ActionCollection.substitute_enviroment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.ActionCollection.substitute_enviroment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.action.action.ActionPipe">
+<em class="property">class </em><code class="descclassname">PyCard.core.action.action.</code><code class="descname">ActionPipe</code><span class="sig-paren">(</span><em>author</em>, <em>actions=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#ActionPipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.ActionPipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.action.action.ActionCollection" title="PyCard.core.action.action.ActionCollection"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.action.action.ActionCollection</span></code></a></p>
+<dl class="method">
+<dt id="PyCard.core.action.action.ActionPipe.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#ActionPipe.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.ActionPipe.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.ActionPipe.make_message">
+<code class="descname">make_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#ActionPipe.make_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.ActionPipe.make_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.action.action.ActionSequence">
+<em class="property">class </em><code class="descclassname">PyCard.core.action.action.</code><code class="descname">ActionSequence</code><span class="sig-paren">(</span><em>author</em>, <em>actions=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#ActionSequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.ActionSequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.action.action.ActionCollection" title="PyCard.core.action.action.ActionCollection"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.action.action.ActionCollection</span></code></a></p>
+<dl class="method">
+<dt id="PyCard.core.action.action.ActionSequence.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#ActionSequence.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.ActionSequence.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action.ActionSequence.make_message">
+<code class="descname">make_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action.html#ActionSequence.make_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action.ActionSequence.make_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.action.action.ArgPack">
+<em class="property">class </em><code class="descclassname">PyCard.core.action.action.</code><code class="descname">ArgPack</code><span class="sig-paren">(</span><em>category</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#PyCard.core.action.action.ArgPack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="PyCard.core.action.action.ArgPack.category">
+<code class="descname">category</code><a class="headerlink" href="#PyCard.core.action.action.ArgPack.category" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.action.action.ArgPack.name">
+<code class="descname">name</code><a class="headerlink" href="#PyCard.core.action.action.ArgPack.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.core.action.action_table">
+<span id="pycard-core-action-action-table-module"></span><h2>PyCard.core.action.action_table module<a class="headerlink" href="#module-PyCard.core.action.action_table" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyCard.core.action.action_table.ActionTable">
+<em class="property">class </em><code class="descclassname">PyCard.core.action.action_table.</code><code class="descname">ActionTable</code><a class="reference internal" href="_modules/PyCard/core/action/action_table.html#ActionTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action_table.ActionTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="PyCard.core.html#PyCard.core.utility.Table" title="PyCard.core.utility.Table"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.utility.Table</span></code></a></p>
+<p>Таблица допустимых действий.</p>
+<dl class="attribute">
+<dt id="PyCard.core.action.action_table.ActionTable.actions">
+<code class="descname">actions</code><em class="property"> = []</em><a class="headerlink" href="#PyCard.core.action.action_table.ActionTable.actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action_table.ActionTable.init">
+<code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action_table.html#ActionTable.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action_table.ActionTable.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.action.action_table.ActionTable.name">
+<code class="descname">name</code><em class="property"> = 'action'</em><a class="headerlink" href="#PyCard.core.action.action_table.ActionTable.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.action.action_table.ActionTable.receive_message">
+<code class="descname">receive_message</code><span class="sig-paren">(</span><em>message</em>, <em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/action/action_table.html#ActionTable.receive_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.action.action_table.ActionTable.receive_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Создать на основе полученного Сообщения Действие с контекстом.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> (<em>str</em>) &#8211; Сообщение</li>
+<li><strong>game</strong> (<a class="reference internal" href="PyCard.core.html#PyCard.core.game.Game" title="PyCard.core.game.Game"><em>core.game.Game</em></a>) &#8211; Игра для которой предназначено сообщение</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Действие полученное в результате разбора и подстановки.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">core.action.Action</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.core.action">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyCard.core.action" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyCard.core.action package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-PyCard.core.action.action">PyCard.core.action.action module</a></li>
+<li><a class="reference internal" href="#module-PyCard.core.action.action_table">PyCard.core.action.action_table module</a></li>
+<li><a class="reference internal" href="#module-PyCard.core.action">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="PyCard.html">PyCard package</a><ul>
+  <li><a href="PyCard.core.html">PyCard.core package</a><ul>
+      <li>Previous: <a href="PyCard.core.html" title="previous chapter">PyCard.core package</a></li>
+      <li>Next: <a href="PyCard.core.action.common_action_tables.html" title="next chapter">PyCard.core.action.common_action_tables package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/PyCard.core.action.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/PyCard.core.action.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.testing.tests.protocol_checker &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.testing.tests.protocol_checker</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">core.utility</span> <span class="k">import</span> <span class="n">check_pycard_protocol</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;ecialo&#39;</span>
+
+
+<div class="viewcode-block" id="TestProtocolChecker"><a class="viewcode-back" href="../../../../PyCard.testing.tests.html#PyCard.testing.tests.protocol_checker.TestProtocolChecker">[docs]</a><span class="k">class</span> <span class="nc">TestProtocolChecker</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestProtocolChecker.testActionJustValidMessage"><a class="viewcode-back" href="../../../../PyCard.testing.tests.html#PyCard.testing.tests.protocol_checker.TestProtocolChecker.testActionJustValidMessage">[docs]</a>    <span class="k">def</span> <span class="nf">testActionJustValidMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;{&quot;params&quot;: {&quot;action&quot;: {&quot;draw_cards&quot;: {&quot;source&quot;: &quot;!deck_retard_deck_0&quot;, &quot;number&quot;: 1, &quot;target&quot;: &quot;!resource_Eustace_hand_1&quot;}}, &quot;author&quot;: &quot;Eustace&quot;}, &quot;type&quot;: 0}&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">check_pycard_protocol</span><span class="p">(</span><span class="n">message</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestProtocolChecker.testActionJustValidStruct"><a class="viewcode-back" href="../../../../PyCard.testing.tests.html#PyCard.testing.tests.protocol_checker.TestProtocolChecker.testActionJustValidStruct">[docs]</a>    <span class="k">def</span> <span class="nf">testActionJustValidStruct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">struct</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;draw_cards&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;!deck_retard_deck_0&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;!resource_Eustace_hand_1&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;Eustace&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">check_pycard_protocol</span><span class="p">(</span><span class="n">struct</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestProtocolChecker.testActionJustInvalidMessage"><a class="viewcode-back" href="../../../../PyCard.testing.tests.html#PyCard.testing.tests.protocol_checker.TestProtocolChecker.testActionJustInvalidMessage">[docs]</a>    <span class="k">def</span> <span class="nf">testActionJustInvalidMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;{&quot;params&quot;: {&quot;action&quot;: {&quot;draw_cards&quot;: {&quot;source&quot;: &quot;!deck_retard_deck_0&quot;, &quot;number&quot;: 1, &quot;target&quot;: &quot;!resource_Eustace_hand_1&quot;}}, &quot;author&quot;: &quot;Eustace&quot;}, &quot;type&quot;: &quot;0&quot;}&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">check_pycard_protocol</span><span class="p">(</span><span class="n">message</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestProtocolChecker.testActionJustInvalidStruct"><a class="viewcode-back" href="../../../../PyCard.testing.tests.html#PyCard.testing.tests.protocol_checker.TestProtocolChecker.testActionJustInvalidStruct">[docs]</a>    <span class="k">def</span> <span class="nf">testActionJustInvalidStruct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">struct</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;draw_cards&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;!deck_retard_deck_0&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                        <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;!resource_Eustace_hand_1&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;Eustace&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">check_pycard_protocol</span><span class="p">(</span><span class="n">struct</span><span class="p">))</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.core.flow.flow &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.core.flow.flow</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rnd</span>
+<span class="kn">import</span> <span class="nn">operator</span> <span class="k">as</span> <span class="nn">op</span>
+
+<span class="kn">from</span> <span class="nn">core.action.common_system_actions</span> <span class="k">import</span> <span class="n">next_stage</span>
+<span class="kn">from</span> <span class="nn">..predef</span> <span class="k">import</span> <span class="n">FIRST_PLAYER_TOKEN</span>
+<span class="kn">from</span> <span class="nn">..predef</span> <span class="k">import</span> <span class="n">PLAYER</span>
+<span class="kn">from</span> <span class="nn">condition</span> <span class="k">import</span> <span class="n">CyclesExceedCondition</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">utility</span>
+
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Ecialo&#39;</span>
+
+
+<div class="viewcode-block" id="EndOfCurrentFlow"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.EndOfCurrentFlow">[docs]</a><span class="k">class</span> <span class="nc">EndOfCurrentFlow</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Описывает как именно идёт игра, чей сейчас ход и прочее.</span>
+<span class="sd">    Каждое выполненое действие возвращает сообщение(преобразуемой в дальнейшем в action) с содержанием того как именно обновлять клиеты в связи с событием.</span>
+<span class="sd">    Если действие не удалось - возврашает None и ждёт новой попытки</span>
+<span class="sd">    event - это flow, который просходит разово и вне очереди.</span>
+<span class="sd">    Если текущий flow закончен, то бросается исключение EndOfCurrentFlow</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flow</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">associated_components</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">game</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span> <span class="o">=</span> <span class="p">[</span><span class="n">flow</span><span class="p">(</span><span class="n">game</span><span class="p">)</span> <span class="k">for</span> <span class="n">flow</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_game</span> <span class="o">=</span> <span class="n">game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flow</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>         <span class="c1"># TODO Уточнить ошибку</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_l</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># def run(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Запускаем текущий flow. Если есть сообытие - запускаем его.</span>
+    <span class="c1">#     Если он закончился делаем текущим следующий и запускаем его.</span>
+    <span class="c1">#     Если текущего нет - мы закончились.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     if self._event:</span>
+    <span class="c1">#         try:</span>
+    <span class="c1">#             action = self._event.run()</span>
+    <span class="c1">#         except EndOfCurrentFlow:</span>
+    <span class="c1">#             self._event = None</span>
+    <span class="c1">#             action = self.run()</span>
+    <span class="c1">#     elif self._i &gt;= self._l:</span>
+    <span class="c1">#         raise EndOfCurrentFlow()</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         current_flow = self._flow[self._i]</span>
+    <span class="c1">#         try:</span>
+    <span class="c1">#             action = current_flow.run()</span>
+    <span class="c1">#         except EndOfCurrentFlow:</span>
+    <span class="c1">#             self._i += 1</span>
+    <span class="c1">#             action = self.run()</span>
+    <span class="c1">#     return action</span>
+
+<div class="viewcode-block" id="Flow.current_flow"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Flow.current_flow">[docs]</a>    <span class="k">def</span> <span class="nf">current_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stage</span><span class="p">]</span><span class="o">.</span><span class="n">current_flow</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Flow.next_stage"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Flow.next_stage">[docs]</a>    <span class="k">def</span> <span class="nf">next_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># try:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stage</span><span class="p">]</span><span class="o">.</span><span class="n">next_stage</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Flow.run"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Flow.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">EndOfCurrentFlow</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">next_stage</span><span class="o">.</span><span class="n">NextStage</span><span class="p">(</span><span class="n">game</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_game</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Flow.raise_event"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Flow.raise_event">[docs]</a>    <span class="k">def</span> <span class="nf">raise_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="o">.</span><span class="n">raise_event</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="n">flow</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span>
+
+<div class="viewcode-block" id="Flow.get_all_associated_components"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Flow.get_all_associated_components">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_associated_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">associated_components</span> <span class="o">+</span>
+            <span class="n">reduce</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow</span><span class="o">.</span><span class="n">get_all_associated_components</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Flow.receive_action"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Flow.receive_action">[docs]</a>    <span class="k">def</span> <span class="nf">receive_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span><span class="p">()</span><span class="o">.</span><span class="n">receive_action</span><span class="p">(</span><span class="n">action</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Line"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Line">[docs]</a><span class="k">class</span> <span class="nc">Line</span><span class="p">(</span><span class="n">Flow</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Line.next_stage"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Line.next_stage">[docs]</a>    <span class="k">def</span> <span class="nf">next_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span><span class="p">()</span><span class="o">.</span><span class="n">next_stage</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">EndOfCurrentFlow</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">EndOfCurrentFlow</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Cycle"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Cycle">[docs]</a><span class="k">class</span> <span class="nc">Cycle</span><span class="p">(</span><span class="n">Flow</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Повторяет последовательность flow, до выполнения условий</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">game</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Cycle</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cycles</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Cycle.next_stage"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.Cycle.next_stage">[docs]</a>    <span class="k">def</span> <span class="nf">next_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># print &quot;i:&quot;, self._i</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span><span class="p">()</span><span class="o">.</span><span class="n">next_stage</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">EndOfCurrentFlow</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">%=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cycles</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">condition</span><span class="p">((</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_game</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="n">EndOfCurrentFlow</span><span class="p">()</span></div>
+
+    <span class="c1"># def run(self):</span>
+    <span class="c1">#     if self._i &gt;= self._l:</span>
+    <span class="c1">#         self._i %= self._l</span>
+    <span class="c1">#         self._cycles += 1</span>
+    <span class="c1">#     if self.condition((self, self._game)):</span>
+    <span class="c1">#         raise EndOfCurrentFlow()</span>
+    <span class="c1">#     return super(Cycle, self).run()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycles</span></div>
+
+
+<div class="viewcode-block" id="SelectFirstPlayerAtRandom"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.SelectFirstPlayerAtRandom">[docs]</a><span class="k">class</span> <span class="nc">SelectFirstPlayerAtRandom</span><span class="p">(</span><span class="n">Cycle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Случайным образом выбирает первого игрока.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">CyclesExceedCondition</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SelectFirstPlayerAtRandom.run"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.SelectFirstPlayerAtRandom.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SelectFirstPlayerAtRandom</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="n">first_player</span> <span class="o">=</span> <span class="n">rnd</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_game</span><span class="p">)</span>
+        <span class="n">first_player_token</span> <span class="o">=</span> <span class="n">first_player</span><span class="o">.</span><span class="n">resources</span><span class="p">[</span><span class="n">FIRST_PLAYER_TOKEN</span><span class="p">]</span><span class="o">.</span><span class="n">fullname</span>
+        <span class="k">return</span> <span class="n">utility</span><span class="o">.</span><span class="n">make_message</span><span class="p">(</span><span class="s1">&#39;select_first_player&#39;</span><span class="p">,</span> <span class="n">token_path</span><span class="o">=</span><span class="n">first_player_token</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TurnCycle"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.TurnCycle">[docs]</a><span class="k">class</span> <span class="nc">TurnCycle</span><span class="p">(</span><span class="n">Cycle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Заставляет игроков ходить в цикле до выполнения условия</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">turn</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">game</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">turn</span><span class="p">(</span><span class="n">player</span><span class="p">)</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">get_category</span><span class="p">(</span><span class="n">PLAYER</span><span class="p">)]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TurnCycle</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TurnCycle.receive_action"><a class="viewcode-back" href="../../../../PyCard.core.flow.html#PyCard.core.flow.flow.TurnCycle.receive_action">[docs]</a>    <span class="k">def</span> <span class="nf">receive_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">stage</span><span class="p">]</span><span class="o">.</span><span class="n">receive_action</span><span class="p">(</span><span class="n">action</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.testing.test_reactor &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.testing.test_reactor</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Считывает сообщения из лога или ручного ввода, и пропускает их через экземпляр игры.</span>
+<span class="sd">Служит для упрощения и автоматизации функционального тестирования.</span>
+
+<span class="sd">Формат лога/тестового сценария</span>
+
+<span class="sd">Предустановки</span>
+<span class="sd">---</span>
+<span class="sd">Автор: сообщение | Проверка | Точка остановки</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">collections</span> <span class="k">as</span> <span class="nn">col</span>
+<span class="kn">from</span> <span class="nn">core.game</span> <span class="k">import</span> <span class="n">GameOver</span>
+<span class="kn">from</span> <span class="nn">core</span> <span class="k">import</span> <span class="n">predef</span>
+
+<span class="n">PREDEFS_SCENARIO_SEPARATOR</span> <span class="o">=</span> <span class="s2">&quot;---&quot;</span>
+<span class="n">NAME</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span>
+<span class="n">AT</span> <span class="o">=</span> <span class="s2">&quot;@&quot;</span>
+
+
+<div class="viewcode-block" id="make_assertion_info_message"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.make_assertion_info_message">[docs]</a><span class="k">def</span> <span class="nf">make_assertion_info_message</span><span class="p">(</span><span class="n">assertion_line</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+        <span class="n">assertion_line</span><span class="p">,</span>
+        <span class="s2">&quot;in context&quot;</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">context</span><span class="p">),</span>
+    <span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="extract_predefs"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.extract_predefs">[docs]</a><span class="k">def</span> <span class="nf">extract_predefs</span><span class="p">(</span><span class="n">log</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Извлекает предопределённые сценарием параметры.</span>
+<span class="sd">    :param log:</span>
+<span class="sd">    :type log:</span>
+<span class="sd">    :return: Параметры</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">log</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PREDEFS_SCENARIO_SEPARATOR</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">log</span><span class="p">,</span> <span class="n">params</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">param</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">param</span><span class="p">[</span><span class="n">NAME</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="TestReactor"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestReactor">[docs]</a><span class="k">class</span> <span class="nc">TestReactor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Прогоняет тестовый сценарий на серверной копии игры.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asserts</span> <span class="o">=</span> <span class="p">{</span>
+
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="TestReactor.configure"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestReactor.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Завершает предварительную конфигурацию</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestReactor.autotest"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestReactor.autotest">[docs]</a>    <span class="k">def</span> <span class="nf">autotest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Читает лог.</span>
+<span class="sd">        * Если видит Сообщение, то принимает и исполняет его.</span>
+<span class="sd">        * Если видит Проверку выполняет её. В случае неуспеха завершается с ошибкой,</span>
+<span class="sd">          а в случае успеха продолжает выполнение.  Не реализовано.</span>
+<span class="sd">        * Если видит точку остановки - переходит в интерактивный режим. Не реализовано.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autotest</span><span class="p">(</span><span class="n">log</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_autotest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">log</span><span class="p">:</span>
+            <span class="c1"># print line</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">):</span>   <span class="c1"># TODO remove hardcode</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_game</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">predef</span><span class="o">.</span><span class="n">SUBSTITUTION_SYMBOL</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_components</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;---&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">log</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">author</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_run_game</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">receive_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestReactor.interactive"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestReactor.interactive">[docs]</a>    <span class="k">def</span> <span class="nf">interactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Работа с реактором и игрой в интерактивном режиме.</span>
+<span class="sd">        В случае если указан лог можно исполнять записи построчно или перейти в автоматический режим.</span>
+<span class="sd">        :param log:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">_interactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_find_assertion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="c1"># print self.asserts.keys()</span>
+        <span class="k">for</span> <span class="n">assertion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">asserts</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">():</span>
+            <span class="c1"># print assertion, line</span>
+            <span class="k">if</span> <span class="n">assertion</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">assertion</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_test_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">assertion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_assertion</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">assertion</span><span class="p">:</span>
+            <span class="n">raw_component_1</span><span class="p">,</span> <span class="n">raw_component_2</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">assertion</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="n">component_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_component</span><span class="p">(</span><span class="n">raw_component_1</span><span class="p">)</span>
+            <span class="n">component_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_component</span><span class="p">(</span><span class="n">raw_component_2</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">asserts</span><span class="p">[</span><span class="n">assertion</span><span class="p">](</span>
+                <span class="n">component_1</span><span class="p">,</span>
+                <span class="n">component_2</span><span class="p">,</span>
+                <span class="n">make_assertion_info_message</span><span class="p">(</span>
+                    <span class="n">line</span><span class="p">,</span>
+                    <span class="n">component_1</span><span class="o">=</span><span class="n">component_1</span><span class="p">,</span>
+                    <span class="n">component_2</span><span class="o">=</span><span class="n">component_2</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_component</span><span class="p">):</span>
+        <span class="n">is_path</span> <span class="o">=</span> <span class="n">predef</span><span class="o">.</span><span class="n">SUBSTITUTION_SYMBOL</span> <span class="ow">in</span> <span class="n">raw_component</span>
+        <span class="n">with_address</span> <span class="o">=</span> <span class="n">AT</span> <span class="ow">in</span> <span class="n">raw_component</span>
+        <span class="k">if</span> <span class="n">is_path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">with_address</span><span class="p">:</span>
+                <span class="n">path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">raw_component</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">AT</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">raw_component</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">raw_component</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestReactor.post_check"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestReactor.post_check">[docs]</a>    <span class="k">def</span> <span class="nf">post_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">log</span><span class="p">:</span>
+            <span class="c1"># print line</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">predef</span><span class="o">.</span><span class="n">SUBSTITUTION_SYMBOL</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_components</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_result</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestReactor.skip_to_post_check"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestReactor.skip_to_post_check">[docs]</a>    <span class="k">def</span> <span class="nf">skip_to_post_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">log</span><span class="p">:</span>
+            <span class="c1"># print &quot;line:&quot;, line</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s1">&#39;---&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">log</span></div>
+
+    <span class="k">def</span> <span class="nf">_test_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="c1"># print &quot;OHOJO&quot;</span>
+        <span class="n">assertion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_assertion</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="c1"># print self.game</span>
+        <span class="k">if</span> <span class="n">assertion</span><span class="p">:</span>
+            <span class="n">result_expr</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">assertion</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="n">result_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_result_expression</span><span class="p">(</span><span class="n">result_expr</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">asserts</span><span class="p">[</span><span class="n">assertion</span><span class="p">](</span>
+                <span class="n">result_val</span><span class="p">,</span>
+                <span class="n">value</span><span class="p">,</span>
+                <span class="n">make_assertion_info_message</span><span class="p">(</span>
+                    <span class="n">line</span><span class="p">,</span>
+                    <span class="n">result</span><span class="o">=</span><span class="n">result_val</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_result_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_expression</span><span class="p">):</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">goal</span> <span class="o">=</span> <span class="n">result_expression</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">game_result</span>
+        <span class="k">if</span> <span class="n">goal</span> <span class="o">==</span> <span class="s2">&quot;pos&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">players_stats</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">goal</span> <span class="o">==</span> <span class="s2">&quot;additional_data&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">players_stats</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Incorrect goal </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="FullTestReactor"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.FullTestReactor">[docs]</a><span class="k">class</span> <span class="nc">FullTestReactor</span><span class="p">(</span><span class="n">TestReactor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Прогоняет тестовый сценарий на серверной копии игры, но так же отслеживает состояние клиентских частей.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FullTestReactor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clients</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="FullTestReactor.configure"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.FullTestReactor.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="c1"># print &quot;COMPLETED&quot;</span>
+        <span class="n">players</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;players&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">players</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">[</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">(</span>
+                <span class="n">mode</span><span class="o">=</span><span class="n">predef</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">params</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">[</span><span class="n">predef</span><span class="o">.</span><span class="n">SYSTEM</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_run_game</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">[</span><span class="n">predef</span><span class="o">.</span><span class="n">SYSTEM</span><span class="p">]</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span><span class="o">.</span><span class="n">receive_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">[</span><span class="n">predef</span><span class="o">.</span><span class="n">SYSTEM</span><span class="p">]</span><span class="o">.</span><span class="n">receive_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_component</span><span class="p">):</span>
+        <span class="n">is_path</span> <span class="o">=</span> <span class="n">predef</span><span class="o">.</span><span class="n">SUBSTITUTION_SYMBOL</span> <span class="ow">in</span> <span class="n">raw_component</span>
+        <span class="n">with_address</span> <span class="o">=</span> <span class="n">AT</span> <span class="ow">in</span> <span class="n">raw_component</span>
+        <span class="k">if</span> <span class="n">is_path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">with_address</span><span class="p">:</span>
+                <span class="n">path</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">raw_component</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">AT</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">raw_component</span><span class="p">,</span> <span class="n">predef</span><span class="o">.</span><span class="n">SYSTEM</span>
+            <span class="c1"># print &quot;\n\n\n&quot;, address</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">[</span><span class="n">address</span><span class="p">][</span><span class="n">path</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">raw_component</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_result_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_expression</span><span class="p">):</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">goal</span> <span class="o">=</span> <span class="n">result_expression</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">[</span><span class="n">predef</span><span class="o">.</span><span class="n">SYSTEM</span><span class="p">]</span><span class="o">.</span><span class="n">game_result</span>
+        <span class="k">if</span> <span class="n">goal</span> <span class="o">==</span> <span class="s2">&quot;pos&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">goal</span> <span class="o">==</span> <span class="s2">&quot;additional_data&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Incorrect goal </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="make_test_method"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.make_test_method">[docs]</a><span class="k">def</span> <span class="nf">make_test_method</span><span class="p">(</span><span class="n">path_to_test_scenario</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_test_scenario</span><span class="p">)</span> <span class="k">as</span> <span class="n">test_scenario</span><span class="p">:</span>
+            <span class="n">scenario</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">test_scenario</span><span class="p">)</span>
+            <span class="n">log</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">extract_predefs</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">autotest</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">GameOver</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">post_check</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># log = self.reactor.skip_to_post_check(log)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">post_check</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">test_method</span></div>
+
+
+<div class="viewcode-block" id="TestGameMeta"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestGameMeta">[docs]</a><span class="k">class</span> <span class="nc">TestGameMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+        <span class="c1"># print dct</span>
+        <span class="k">if</span> <span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;path_to_scenarios&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;path_to_scenarios&#39;</span><span class="p">]</span>
+            <span class="c1"># print &quot;\n\n\n&quot;, top, &quot;\n\n\n&quot;</span>
+
+            <span class="n">new_test_methods</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">top</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                    <span class="n">testname</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span> <span class="o">+</span> <span class="n">filename</span>
+                    <span class="n">new_test_methods</span><span class="p">[</span><span class="n">testname</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_test_method</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+            <span class="n">dct</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_test_methods</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestGameMeta</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestGame"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestGame">[docs]</a><span class="k">class</span> <span class="nc">TestGame</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">TestGameMeta</span>
+    <span class="n">game</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">path_to_scenarios</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TestGame.setUp"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestGame.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="n">FullTestReactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span><span class="o">.</span><span class="n">asserts</span><span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span></div>
+
+<div class="viewcode-block" id="TestGame.tearDown"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.TestGame.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reactor</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="assert_equal"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.assert_equal">[docs]</a><span class="k">def</span> <span class="nf">assert_equal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">,</span> <span class="n">msg</span></div>
+
+
+<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../../PyCard.testing.html#PyCard.testing.test_reactor.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">game</span><span class="p">):</span>         <span class="c1"># TODO переписать на argparse</span>
+    <span class="n">test_reactor</span> <span class="o">=</span> <span class="n">FullTestReactor</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+    <span class="n">test_reactor</span><span class="o">.</span><span class="n">asserts</span><span class="p">[</span><span class="s2">&quot;==&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">assert_equal</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># print filename</span>
+        <span class="c1"># print &quot;\n&quot;</span>
+        <span class="c1"># with open(filename) as f:</span>
+        <span class="c1">#     test_reactor.autotest(f)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">test_scenario</span><span class="p">:</span>
+            <span class="n">scenario</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">test_scenario</span><span class="p">)</span>
+            <span class="n">log</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">extract_predefs</span><span class="p">(</span><span class="n">scenario</span><span class="p">)</span>
+            <span class="n">test_reactor</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">log</span> <span class="o">=</span> <span class="n">test_reactor</span><span class="o">.</span><span class="n">autotest</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">GameOver</span><span class="p">:</span>
+                <span class="n">test_reactor</span><span class="o">.</span><span class="n">post_check</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># log = test_reactor.skip_to_post_check(log)</span>
+                <span class="n">test_reactor</span><span class="o">.</span><span class="n">post_check</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

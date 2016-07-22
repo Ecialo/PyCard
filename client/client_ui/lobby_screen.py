@@ -4,10 +4,10 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 import kivy.properties as prop
 import kivy.adapters.simplelistadapter as sla
-from kivy.uix.listview import CompositeListItem, ListItemButton, ListItemLabel
+from kivy.uix.listview import ListItemButton
+from core.utility import kivy_doc_hack
 
-
-Builder.load_file('./client/client_ui/lobby_screen.kv')
+kivy_doc_hack(Builder, 'lobby_screen.kv', __file__)
 
 
 class LobbyScreen(Screen):

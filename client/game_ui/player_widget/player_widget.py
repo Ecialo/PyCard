@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-import kivy
 from kivy.uix.boxlayout import BoxLayout
 import kivy.properties as prop
 
 from kivy.lang import Builder
 
+from core.utility import kivy_doc_hack
+
 __author__ = 'ecialo'
-Builder.load_file('./client/game_ui/player_widget/player_widget.kv')
+kivy_doc_hack(Builder, 'player_widget.kv', __file__)
 
 class PlayerWidget(BoxLayout):
 

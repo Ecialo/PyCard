@@ -1,0 +1,417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.server.pycard_server &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.server.pycard_server</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Попытка запилить асинхронный сервер, который общается с клиентами</span>
+<span class="sd">с помощью текстовых сообщений</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">zope.interface</span> <span class="k">import</span> <span class="n">implements</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">reactor</span><span class="p">,</span>
+    <span class="n">defer</span><span class="p">,</span>
+    <span class="n">interfaces</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">protocol</span><span class="p">,</span>
+    <span class="n">task</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">twisted.logger</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Logger</span><span class="p">,</span>
+    <span class="n">jsonFileLogObserver</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">core.predef</span> <span class="k">import</span> <span class="p">(</span><span class="n">pycard_protocol</span> <span class="k">as</span> <span class="n">pp</span><span class="p">,</span>
+    <span class="n">table_type</span> <span class="k">as</span> <span class="n">tt</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">player.player_class</span> <span class="k">import</span> <span class="n">LobbyPerson</span>
+<span class="kn">from</span> <span class="nn">sample_games.retard_game</span> <span class="k">import</span> <span class="n">retard_game</span>
+<span class="kn">from</span> <span class="nn">core.game</span> <span class="k">import</span> <span class="n">GameOver</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Anton Korobkov&#39;</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">(</span>
+    <span class="n">observer</span><span class="o">=</span><span class="n">jsonFileLogObserver</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;server.json&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)),</span>
+    <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;server&quot;</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="MultiEcho"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho">[docs]</a><span class="k">class</span> <span class="nc">MultiEcho</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">Protocol</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playernum</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anncounter</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="c1"># Twisted методы</span>
+
+<div class="viewcode-block" id="MultiEcho.connectionMade"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.connectionMade">[docs]</a>    <span class="k">def</span> <span class="nf">connectionMade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Incoming connection on </span><span class="si">{host}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiEcho.dataReceived"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.dataReceived">[docs]</a>    <span class="k">def</span> <span class="nf">dataReceived</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Data obtained </span><span class="si">{data}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_incoming_message</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiEcho.connectionLost"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Connection </span><span class="si">{conn}</span><span class="s1"> is lost because of </span><span class="si">{lost_reason}</span><span class="s1">&#39;</span><span class="p">,</span>
+                  <span class="n">conn</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">lost_reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle_chat_disconnection</span><span class="p">()</span></div>
+
+    <span class="c1"># Вспомогательные методы</span>
+
+<div class="viewcode-block" id="MultiEcho.send_global_message"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.send_global_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_global_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Юзать этот метод когда нужно что-то одинаковое написать всем клиентам</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">echoers</span><span class="p">:</span>
+            <span class="n">player</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiEcho.check_playnum"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.check_playnum">[docs]</a>    <span class="k">def</span> <span class="nf">check_playnum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Проверяем достаточно ли клиентов (вызываем каждый раз после того как</span>
+<span class="sd">        произошло нажатие ready); если достаточно - запускаем игровую сессию</span>
+<span class="sd">        Надо этот метод переписать, т.к. быдлокод</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: это можно наверное получше сделать</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">client</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="n">client</span><span class="p">]</span><span class="o">.</span><span class="n">ready</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">counter</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">playernum</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">instantiate_game</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prepare_session</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MultiEcho.warning"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.warning">[docs]</a>    <span class="k">def</span> <span class="nf">warning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Оповещает всех о скором запуске</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: перенести заранее сгенерированные сообщения куда-то</span>
+        <span class="c1"># и сделать так чтобы снятие флага &quot;ready&quot; отменяло запуск</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">TYPE_KEY</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">CHAT_MESSAGE</span><span class="p">,</span>
+            <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">NAME_KEY</span><span class="p">:</span> <span class="s1">&#39;Server message&#39;</span><span class="p">,</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">MESSAGE_TYPE_KEY</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">message_type</span><span class="o">.</span><span class="n">BROADCAST</span><span class="p">,</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">TEXT_KEY</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;game is going to start in&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="mi">5</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">anncounter</span><span class="p">),</span> <span class="s1">&#39;seconds&#39;</span><span class="p">])</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;starting the </span><span class="si">{game}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">game</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_global_message</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anncounter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># Через 5 секунд сообщаем о запуске игры</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">anncounter</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_warning</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MultiEcho.launch_game"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.launch_game">[docs]</a>    <span class="k">def</span> <span class="nf">launch_game</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Запустить игру</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">TYPE_KEY</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">LOBBY_START_GAME</span><span class="p">,</span>
+            <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">:</span> <span class="p">{}</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_global_message</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;this is our game: </span><span class="si">{game}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">game</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">game</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiEcho.prepare_session"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.prepare_session">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Подготовить сессию игровую к запуску. Если кто-то</span>
+<span class="sd">         из клиентов в течении n секунд отожмет чекбокс &quot;готов&quot; -</span>
+<span class="sd">         сессию не запускать</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_game_launcher</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">launch_game</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_warning</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">warning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_warning</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="c1"># Обработка сообщений клиента</span>
+
+<div class="viewcode-block" id="MultiEcho.parse_incoming_message"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.parse_incoming_message">[docs]</a>    <span class="k">def</span> <span class="nf">parse_incoming_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Родной брат метода client.parse_message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">event_type</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">TYPE_KEY</span><span class="p">],</span> <span class="n">event</span><span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">]</span>
+
+        <span class="c1"># Не будем лепить костылей по отсылке приватных сообщений до тех пор пока это не будет</span>
+        <span class="c1"># запилено на стороне клиента</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{signal}</span><span class="s1"> caught&#39;</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">CHAT_REGISTER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_chat_register</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">CHAT_MESSAGE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_chat_message</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">LOBBY_READY</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_lobby_ready</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">LOBBY_NOT_READY</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_lobby_not_ready</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">ACTION_JUST</span><span class="p">,</span> \
+                            <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">ACTION_PIPE</span><span class="p">,</span> \
+                            <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">ACTION_SEQUENCE</span><span class="p">]:</span>
+            <span class="c1"># print self.game</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">receive_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_game_flow</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Отправка сообщений клиентам</span>
+
+<div class="viewcode-block" id="MultiEcho.handle_chat_register"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.handle_chat_register">[docs]</a>    <span class="k">def</span> <span class="nf">handle_chat_register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Посылаем всем клиентам сообщения о том, кто подключился, и сохраняем адрес и ник</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: this is hacky</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">echoers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">new_user_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">][</span><span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">NAME_KEY</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">new_user_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="o">.</span><span class="n">values</span><span class="p">()]:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">TYPE_KEY</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">LOBBY_NAME_ALREADY_EXISTS</span><span class="p">,</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">:</span> <span class="p">{}</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">echoers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">echoers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span> <span class="o">=</span> <span class="n">LobbyPerson</span><span class="p">(</span><span class="n">new_user_name</span><span class="p">)</span>
+
+            <span class="c1"># first, tell about users online to a newly joined person (they&#39;re already on the list)</span>
+            <span class="n">online_msg</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">TYPE_KEY</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">CHAT_USERS_ONLINE</span><span class="p">,</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">NAMES_KEY</span><span class="p">:</span> <span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">send_individual_message</span><span class="p">(</span><span class="n">new_user_name</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">online_msg</span><span class="p">))</span>
+
+            <span class="c1"># after that, tell everyone else someone&#39;s just joined</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">TYPE_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">CHAT_JOIN</span>
+            <span class="c1"># TODO: fix later</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">][</span><span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">NAME_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_user_name</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;some </span><span class="si">{data}</span><span class="s1"> sent&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">new_user_name</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">send_individual_message</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">params</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MultiEcho.handle_chat_disconnection"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.handle_chat_disconnection">[docs]</a>    <span class="k">def</span> <span class="nf">handle_chat_disconnection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Говорим всем о том кто ушел</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: понять почему это работает, сделать нормально</span>
+        <span class="n">parted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;not found&#39;</span><span class="p">)</span>
+
+        <span class="n">part_message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">TYPE_KEY</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">CHAT_PART</span><span class="p">,</span>
+            <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">NAME_KEY</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">parted</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;some </span><span class="si">{data}</span><span class="s1"> sent&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">part_message</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_global_message</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">part_message</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MultiEcho.handle_lobby_ready"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.handle_lobby_ready">[docs]</a>    <span class="k">def</span> <span class="nf">handle_lobby_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Вызывать если клиент жмет чекбокс &quot;ready&quot; &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span><span class="o">.</span><span class="n">get_ready</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;This </span><span class="si">{player}</span><span class="s1"> now is ready: &#39;</span><span class="p">,</span> <span class="n">player</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">][</span><span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">NAME_KEY</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_playnum</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MultiEcho.handle_lobby_not_ready"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.handle_lobby_not_ready">[docs]</a>    <span class="k">def</span> <span class="nf">handle_lobby_not_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Вызывать если клиент отжимает чекбокс &quot;ready&quot; &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span><span class="o">.</span><span class="n">get_unready</span><span class="p">()</span>
+
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_game_launcher</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_warning</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_game_launcher</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_warning</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anncounter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># TODO: make smth with this hack</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="s1">&#39;game&#39;</span><span class="p">):</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">game</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;This </span><span class="si">{player}</span><span class="s1"> now is not ready: &#39;</span><span class="p">,</span> <span class="n">player</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">][</span><span class="n">pp</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">NAME_KEY</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="MultiEcho.handle_chat_message"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.handle_chat_message">[docs]</a>    <span class="k">def</span> <span class="nf">handle_chat_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Просто отсылаем всем то, что нам пришло</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_global_message</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">params</span><span class="p">))</span></div>
+
+    <span class="c1"># Здесь будет все что имеет отношение уже к сессии</span>
+
+<div class="viewcode-block" id="MultiEcho.send_game_flow"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.send_game_flow">[docs]</a>    <span class="k">def</span> <span class="nf">send_game_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Передаем продюсеру инфу о порождающем классе</span>
+        <span class="n">message_producer</span> <span class="o">=</span> <span class="n">Producer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">message_producer</span><span class="o">.</span><span class="n">resumeProducing</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">GameOver</span> <span class="k">as</span> <span class="n">game_over</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">TYPE_KEY</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">event_types</span><span class="o">.</span><span class="n">LOBBY_GAME_OVER</span><span class="p">,</span>
+                <span class="n">pp</span><span class="o">.</span><span class="n">message_struct</span><span class="o">.</span><span class="n">PARAMS_KEY</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">pp</span><span class="o">.</span><span class="n">lobby</span><span class="o">.</span><span class="n">GAME_RESULT_KEY</span><span class="p">:</span> <span class="n">game_over</span><span class="o">.</span><span class="n">players_stats</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_global_message</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">finish_game</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MultiEcho.finish_game"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEcho.finish_game">[docs]</a>    <span class="k">def</span> <span class="nf">finish_game</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anncounter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_game_launcher</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_warning</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+
+<div class="viewcode-block" id="MultiEchoFactory"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEchoFactory">[docs]</a><span class="k">class</span> <span class="nc">MultiEchoFactory</span><span class="p">(</span><span class="n">protocol</span><span class="o">.</span><span class="n">Factory</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">playnum</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echoers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_num</span> <span class="o">=</span> <span class="n">playnum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">players</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">announcment_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Instantiated server for </span><span class="si">{playernum}</span><span class="s1"> players&#39;</span><span class="p">,</span> <span class="n">playernum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">player_num</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MultiEchoFactory.buildProtocol"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEchoFactory.buildProtocol">[docs]</a>    <span class="k">def</span> <span class="nf">buildProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">MultiEcho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">announcment_counter</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MultiEchoFactory.instantiate_game"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEchoFactory.instantiate_game">[docs]</a>    <span class="k">def</span> <span class="nf">instantiate_game</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">retard_game</span><span class="o">.</span><span class="n">RetardGame</span><span class="p">([{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)}</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">players</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
+
+    <span class="c1"># Рассылка индивидуальных сообщений перенесена в класс-фабрику, т.к.</span>
+    <span class="c1"># 1. её реализация в MultiEcho использовала только фабричные аттрибуты</span>
+    <span class="c1"># 2. этот метод скорее всего пригодится для класса Producer</span>
+<div class="viewcode-block" id="MultiEchoFactory.send_individual_message"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.MultiEchoFactory.send_individual_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_individual_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">person</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">players</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">player</span><span class="p">:</span>
+                <span class="n">endpoint</span> <span class="o">=</span> <span class="n">identifier</span>
+
+        <span class="c1"># TODO: доработать если попытка отправит несуществующему клиенту</span>
+        <span class="n">endpoint_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echoers</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echoers</span><span class="p">[</span><span class="n">endpoint_index</span><span class="p">]</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="Producer"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.Producer">[docs]</a><span class="k">class</span> <span class="nc">Producer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Apply .run() until the responce is None &quot;&quot;&quot;</span>
+    <span class="n">implements</span><span class="p">(</span><span class="n">interfaces</span><span class="o">.</span><span class="n">IPushProducer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
+
+<div class="viewcode-block" id="Producer.pauseProducing"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.Producer.pauseProducing">[docs]</a>    <span class="k">def</span> <span class="nf">pauseProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Producer.resumeProducing"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.Producer.resumeProducing">[docs]</a>    <span class="k">def</span> <span class="nf">resumeProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">client_name</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">send_individual_message</span><span class="p">(</span>
+                        <span class="n">client_name</span><span class="p">,</span>
+                        <span class="n">response</span><span class="p">[</span><span class="n">client_name</span><span class="p">]</span> <span class="o">+</span> <span class="n">pp</span><span class="o">.</span><span class="n">message_delimiter</span>
+                    <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pauseProducing</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Producer.stopProducing"><a class="viewcode-back" href="../../../PyCard.server.html#PyCard.server.pycard_server.Producer.stopProducing">[docs]</a>    <span class="k">def</span> <span class="nf">stopProducing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">reactor</span><span class="o">.</span><span class="n">listenTCP</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="n">MultiEchoFactory</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">reactor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

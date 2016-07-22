@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import os
 from . import predef
 __author__ = 'Ecialo'
 
@@ -106,3 +107,15 @@ def check_pycard_protocol(message_or_action_struct):
     params = action_struct.get('params')
     params_valid_type = isinstance(params, dict)
     return valid_type and params_valid_type
+
+
+def kivy_doc_hack(builder, path, fileconst):
+    """
+    Call this instead of 'Builder.load_file'
+    :param path: name of .kv file to open
+    :type path: str
+    :param file: should be __file__ always
+    :return:
+    """
+    if 'KIVY_DOC' not in os.environ:
+        builder.load_file(os.path.join(os.path.dirname(fileconst), path))

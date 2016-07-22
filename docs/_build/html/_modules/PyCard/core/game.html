@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.core.game &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.core.game</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">predef</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utility</span> <span class="k">as</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">flow.flow</span> <span class="k">import</span> <span class="n">EndOfCurrentFlow</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Ecialo&#39;</span>
+
+
+<div class="viewcode-block" id="WTFError"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.WTFError">[docs]</a><span class="k">class</span> <span class="nc">WTFError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="GameOver"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.GameOver">[docs]</a><span class="k">class</span> <span class="nc">GameOver</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Обозначает конец игры.</span>
+<span class="sd">    На вход {имя_игрока: (позиция_в_зачете, статы)}</span>
+<span class="sd">    Шаблон сообщения.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">players_stats</span><span class="p">,</span> <span class="n">message_template</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">players_stats</span> <span class="o">=</span> <span class="n">players_stats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_template</span> <span class="o">=</span> <span class="n">message_template</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">players_stats</span><span class="p">)</span>      <span class="c1"># TODO сделать номальное сообщение</span></div>
+
+
+<div class="viewcode-block" id="EndOfGame"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.EndOfGame">[docs]</a><span class="k">class</span> <span class="nc">EndOfGame</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game">[docs]</a><span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Агрегирует все компоненты необходимые для игры. Так же через этот класс</span>
+<span class="sd">    реализуется игровое взаимодействие, тут регистрируются эффекты и прочее.</span>
+<span class="sd">    Компоненты: Доски, Колоды, Таблица карт, таблица допустимых действий.</span>
+<span class="sd">    Многие прочие компоненты вместе с именами генерируются на основе flow игры.</span>
+<span class="sd">    Генерируемые компоненты лежат в общих таблицах под своими полными именами.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="n">GAME</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">components</span><span class="p">,</span>
+            <span class="n">flow</span><span class="p">,</span>
+            <span class="n">win_condition</span><span class="p">,</span>
+            <span class="n">mode</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Game</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="n">CLIENT</span><span class="p">:</span>      <span class="c1"># TODO сделать более умное разделение режимов</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">GAME</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">PLAYER</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">DESK</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">DECK</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">RESOURCE</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">HAND</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">TABLE</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components_by_id</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># self._components_factories = {}</span>
+        <span class="c1">#</span>
+        <span class="c1"># for component in components:</span>
+        <span class="c1">#     if inspect.isclass(component):</span>
+        <span class="c1">#         self._components_factories[component.__name__] = component</span>
+
+        <span class="n">components</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">components</span><span class="p">)</span>
+        <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># components = chain(</span>
+        <span class="c1">#     components,</span>
+        <span class="c1">#     *(map(</span>
+        <span class="c1">#         lambda component: component.associated_components,</span>
+        <span class="c1">#         components</span>
+        <span class="c1">#     ) + flow.associated_components)</span>
+        <span class="c1"># )</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_component</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span> <span class="o">=</span> <span class="n">flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">win_condition</span> <span class="o">=</span> <span class="n">win_condition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_result</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">category</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">category</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="n">SUBSTITUTION_SYMBOL</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># category = category</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[(</span><span class="n">category</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="Game.get_category"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.get_category">[docs]</a>    <span class="k">def</span> <span class="nf">get_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">category</span><span class="p">]</span></div>
+
+    <span class="c1"># def run(self):</span>
+    <span class="c1">#     try:</span>
+    <span class="c1">#         action = self._flow.run()</span>
+    <span class="c1">#         # print action</span>
+    <span class="c1">#     except EndOfCurrentFlow:</span>
+    <span class="c1">#         raise GameOver()</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         if action:</span>
+    <span class="c1">#             action.apply()</span>
+    <span class="c1">#             visibility = self.expand_visibility(action)</span>
+    <span class="c1">#             return self.response(action, visibility)</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             return None</span>
+
+<div class="viewcode-block" id="Game.run"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_win_condition</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">current_flow</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">action</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">action</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
+                <span class="k">except</span> <span class="n">EndOfCurrentFlow</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">EndOfGame</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">visibility</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_visibility</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+                    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">visibility</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="p">{</span>
+                        <span class="n">receiver</span><span class="p">:</span> <span class="n">response_action</span><span class="o">.</span><span class="n">make_message</span><span class="p">()</span>
+                        <span class="k">for</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">response_action</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span>
+                    <span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="n">EndOfGame</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_win_condition</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span></div>
+            <span class="c1"># raise GameOver()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span><span class="o">.</span><span class="n">current_flow</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Game.next_stage"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.next_stage">[docs]</a>    <span class="k">def</span> <span class="nf">next_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span><span class="o">.</span><span class="n">next_stage</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Game.expand_visibility"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.expand_visibility">[docs]</a>    <span class="k">def</span> <span class="nf">expand_visibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">players</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_category</span><span class="p">(</span><span class="n">PLAYER</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">visibility</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">visibility</span>
+        <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="n">ALL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">player</span><span class="p">:</span> <span class="kc">True</span>
+                <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">players</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">visibility</span> <span class="o">==</span> <span class="n">AUTHOR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">player</span><span class="p">:</span> <span class="p">(</span><span class="n">player</span> <span class="o">==</span> <span class="n">action</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">players</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">player</span><span class="p">:</span> <span class="kc">False</span>
+                <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">players</span>
+            <span class="p">}</span></div>
+
+<div class="viewcode-block" id="Game.response"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.response">[docs]</a>    <span class="k">def</span> <span class="nf">response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">visibility</span><span class="p">):</span>
+        <span class="n">players</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_category</span><span class="p">(</span><span class="n">PLAYER</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">player</span><span class="p">:</span> <span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">make_visible_response</span><span class="p">()</span> <span class="k">if</span> <span class="n">visibility</span><span class="p">[</span><span class="n">player</span><span class="p">]</span> <span class="k">else</span> <span class="n">action</span><span class="o">.</span><span class="n">make_invisible_response</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">players</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="Game.get_component_by_id"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.get_component_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_component_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components_by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_new_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+<div class="viewcode-block" id="Game.make_card"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.make_card">[docs]</a>    <span class="k">def</span> <span class="nf">make_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card_name</span><span class="p">,</span> <span class="n">id_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ввести карту в игру. Если id карты известен, то он и будет выдан, иначе - сгенерирован</span>
+<span class="sd">        :param card_name: Название нужной карты</span>
+<span class="sd">        :type card_name: str</span>
+<span class="sd">        :param id_: известный id карты</span>
+<span class="sd">        :type id_: int | None</span>
+<span class="sd">        :return: Зарегистрированная полная версия карты</span>
+<span class="sd">        :rtype: core.card.card.Card</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_card</span><span class="p">(</span><span class="n">card_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_component</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">id_</span><span class="o">=</span><span class="n">id_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">card</span></div>
+
+    <span class="c1"># def make_component(self, component_name, **kwargs):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Создает, но не регистрирует асоциированый с игрой компонент.</span>
+    <span class="c1">#     :param component_name:</span>
+    <span class="c1">#     :type component_name:</span>
+    <span class="c1">#     :param kwargs:</span>
+    <span class="c1">#     :type kwargs:</span>
+    <span class="c1">#     :return:</span>
+    <span class="c1">#     :rtype:</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return self._components_factories[component_name](**kwargs)</span>
+
+<div class="viewcode-block" id="Game.view_card"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.view_card">[docs]</a>    <span class="k">def</span> <span class="nf">view_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Взглянуть на полную версию карты.</span>
+<span class="sd">        :param card_name: Название интересующей карты</span>
+<span class="sd">        :type card_name: str</span>
+<span class="sd">        :return: Полная версия карты</span>
+<span class="sd">        :rtype: core.card.card.Card</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[(</span><span class="n">TABLE</span><span class="p">,</span> <span class="n">CARD</span><span class="p">)][</span><span class="n">card_name</span><span class="p">]()</span></div>
+
+<div class="viewcode-block" id="Game.register_component"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.register_component">[docs]</a>    <span class="k">def</span> <span class="nf">register_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">id_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># print set(component.categories) &amp; UNINDEXABLE, component.categories, UNINDEXABLE</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">UNINDEXABLE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">id_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">component</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_new_id</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">component</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">id_</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_components_by_id</span><span class="p">[</span><span class="n">component</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+        <span class="c1"># print component, component.id</span>
+        <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">categories</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">fullname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">category</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="n">WTFError</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">category</span><span class="p">][</span><span class="n">component</span><span class="o">.</span><span class="n">fullname</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+        <span class="k">for</span> <span class="n">associated_component</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">associated_components</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_component</span><span class="p">(</span><span class="n">associated_component</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.receive_message"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.receive_message">[docs]</a>    <span class="k">def</span> <span class="nf">receive_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Принимает сообщение, передаёт его в парсер, а затем передаёт полученное действие в игровой поток</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="ow">is</span> <span class="n">SERVER</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">TABLE</span><span class="p">][</span><span class="n">GAME_ACTION_TABLE</span><span class="p">]</span><span class="o">.</span><span class="n">receive_message</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_flow</span><span class="o">.</span><span class="n">receive_action</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="ow">is</span> <span class="n">CLIENT</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">TABLE</span><span class="p">][</span><span class="n">SYSTEM_ACTION_TABLE</span><span class="p">]</span><span class="o">.</span><span class="n">receive_message</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">WTFError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Game.check_win_condition"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.game.Game.check_win_condition">[docs]</a>    <span class="k">def</span> <span class="nf">check_win_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="c1"># print state</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">win_condition</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">GameOver</span> <span class="k">as</span> <span class="n">game_over</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_result</span> <span class="o">=</span> <span class="n">game_over</span><span class="o">.</span><span class="n">players_stats</span>
+            <span class="k">raise</span> <span class="n">game_over</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

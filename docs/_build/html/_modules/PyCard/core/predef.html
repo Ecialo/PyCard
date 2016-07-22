@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.core.predef &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.core.predef</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Ecialo&#39;</span>
+
+
+<div class="viewcode-block" id="Namespace"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.predef.Namespace">[docs]</a><span class="k">class</span> <span class="nc">Namespace</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">consts</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">const_name</span><span class="p">,</span> <span class="n">const_val</span> <span class="ow">in</span> <span class="n">consts</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">const_name</span><span class="p">,</span> <span class="n">const_val</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">name_val</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> = </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_val</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name_val</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+<div class="viewcode-block" id="Namespace.values"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.predef.Namespace.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">itervalues</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Namespace.names"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.predef.Namespace.names">[docs]</a>    <span class="k">def</span> <span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Namespace.items"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.predef.Namespace.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Enum"><a class="viewcode-back" href="../../../PyCard.core.html#PyCard.core.predef.Enum">[docs]</a><span class="k">class</span> <span class="nc">Enum</span><span class="p">(</span><span class="n">Namespace</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">consts</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">const_name</span><span class="p">,</span> <span class="n">const_val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">consts</span><span class="p">,</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">consts</span><span class="p">))):</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">const_name</span><span class="p">,</span> <span class="n">const_val</span><span class="p">)</span></div>
+
+
+<span class="n">FIRST_PLAYER_TOKEN</span> <span class="o">=</span> <span class="s1">&#39;first player&#39;</span>
+<span class="n">PLAYER</span><span class="p">,</span> <span class="n">DECK</span><span class="p">,</span> <span class="n">DESK</span><span class="p">,</span> <span class="n">RESOURCE</span><span class="p">,</span> <span class="n">HAND</span><span class="p">,</span> <span class="n">CARD</span><span class="p">,</span> <span class="n">TABLE</span><span class="p">,</span> <span class="n">ACTION</span><span class="p">,</span> <span class="n">GAME</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;player&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;deck&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;desk&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;resource&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hand&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;card&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;table&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;action&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;game&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">UNINDEXABLE</span> <span class="o">=</span> <span class="p">{</span><span class="n">PLAYER</span><span class="p">,</span> <span class="n">TABLE</span><span class="p">}</span>
+
+<span class="n">game_component_types</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
+    <span class="n">PLAYER</span><span class="o">=</span><span class="s1">&#39;player&#39;</span><span class="p">,</span>
+    <span class="n">DECK</span><span class="o">=</span><span class="s1">&#39;deck&#39;</span><span class="p">,</span>
+    <span class="n">DESK</span><span class="o">=</span><span class="s1">&#39;desk&#39;</span><span class="p">,</span>
+    <span class="n">RESOURCE</span><span class="o">=</span><span class="s1">&#39;resource&#39;</span><span class="p">,</span>
+    <span class="n">HAND</span><span class="o">=</span><span class="s1">&#39;hand&#39;</span><span class="p">,</span>
+    <span class="n">CARD</span><span class="o">=</span><span class="s1">&#39;card&#39;</span><span class="p">,</span>
+    <span class="n">TABLE</span><span class="o">=</span><span class="s1">&#39;table&#39;</span><span class="p">,</span>
+    <span class="n">ACTION</span><span class="o">=</span><span class="s1">&#39;action&#39;</span><span class="p">,</span>
+    <span class="n">GAME</span><span class="o">=</span><span class="s1">&#39;game&#39;</span>
+<span class="p">)</span>
+<span class="n">game_component_types</span><span class="o">.</span><span class="n">UNINDEXABLE</span> <span class="o">=</span> <span class="p">{</span><span class="n">game_component_types</span><span class="o">.</span><span class="n">PLAYER</span><span class="p">,</span> <span class="n">game_component_types</span><span class="o">.</span><span class="n">TABLE</span><span class="p">}</span>
+
+
+<span class="n">GAME_ACTION_TABLE</span><span class="p">,</span> <span class="n">SYSTEM_ACTION_TABLE</span> <span class="o">=</span> <span class="s2">&quot;game_action_table&quot;</span><span class="p">,</span> <span class="s2">&quot;system_action_table&quot;</span>
+
+<span class="n">table_type</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
+    <span class="n">GAME_ACTION_TABLE</span><span class="o">=</span><span class="s2">&quot;game_action_table&quot;</span><span class="p">,</span>
+    <span class="n">SYSTEM_ACTION_TABLE</span><span class="o">=</span><span class="s2">&quot;system_action_table&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="p">(</span>
+    <span class="n">ACTION_JUST</span><span class="p">,</span>
+    <span class="n">ACTION_SEQUENCE</span><span class="p">,</span>
+    <span class="n">ACTION_PIPE</span><span class="p">,</span>
+    <span class="n">CHAT_REGISTER</span><span class="p">,</span>
+    <span class="n">CHAT_JOIN</span><span class="p">,</span>
+    <span class="n">CHAT_PART</span><span class="p">,</span>
+    <span class="n">CHAT_MESSAGE</span><span class="p">,</span>
+    <span class="n">LOBBY_READY</span><span class="p">,</span>
+    <span class="n">LOBBY_NOT_READY</span><span class="p">,</span>
+    <span class="n">LOBBY_ALL_READY</span><span class="p">,</span>
+    <span class="n">LOBBY_START_GAME</span><span class="p">,</span>
+    <span class="n">LOBBY_NAME_ALREADY_EXISTS</span>
+<span class="p">)</span> <span class="o">=</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">MESSAGE_TYPE_KEY</span> <span class="o">=</span> <span class="s2">&quot;type&quot;</span>
+<span class="n">MESSAGE_PARAMS_KEY</span> <span class="o">=</span> <span class="s2">&quot;params&quot;</span>
+<span class="n">MESSAGE_ACTION_KEY</span> <span class="o">=</span> <span class="s2">&quot;action&quot;</span>
+<span class="n">MESSAGE_AUTHOR_KEY</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>
+
+<span class="n">pycard_protocol</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
+    <span class="n">message_delimiter</span><span class="o">=</span><span class="s1">&#39;|||&#39;</span><span class="p">,</span>
+    <span class="n">event_types</span><span class="o">=</span><span class="n">Enum</span><span class="p">(</span>
+        <span class="s2">&quot;ACTION_JUST&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ACTION_SEQUENCE&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ACTION_PIPE&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CHAT_REGISTER&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CHAT_USERS_ONLINE&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CHAT_JOIN&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CHAT_PART&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CHAT_MESSAGE&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LOBBY_READY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LOBBY_NOT_READY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LOBBY_ALL_READY&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LOBBY_START_GAME&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LOBBY_NAME_ALREADY_EXISTS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LOBBY_GAME_OVER&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+
+    <span class="n">message_struct</span><span class="o">=</span><span class="n">Namespace</span><span class="p">(</span>
+        <span class="n">TYPE_KEY</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+        <span class="n">PARAMS_KEY</span><span class="o">=</span><span class="s2">&quot;params&quot;</span><span class="p">,</span>
+        <span class="n">ACTION_KEY</span><span class="o">=</span><span class="s2">&quot;action&quot;</span><span class="p">,</span>
+        <span class="n">AUTHOR_KEY</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+
+    <span class="n">chat</span><span class="o">=</span><span class="n">Namespace</span><span class="p">(</span>
+        <span class="n">NAME_KEY</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span>
+        <span class="n">NAMES_KEY</span><span class="o">=</span><span class="s1">&#39;names&#39;</span><span class="p">,</span>
+        <span class="n">MESSAGE_TYPE_KEY</span><span class="o">=</span><span class="s1">&#39;message_type&#39;</span><span class="p">,</span>
+        <span class="n">message_type</span><span class="o">=</span><span class="n">Enum</span><span class="p">(</span>
+            <span class="s2">&quot;PRIVATE&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;BROADCAST&quot;</span>
+        <span class="p">),</span>
+        <span class="n">TEXT_KEY</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">,</span>
+        <span class="n">RECEIVER_KEY</span><span class="o">=</span><span class="s1">&#39;receiver&#39;</span><span class="p">,</span>
+        <span class="n">PLAYER_ID_KEY</span><span class="o">=</span><span class="s1">&#39;player_id&#39;</span><span class="p">,</span>
+    <span class="p">),</span>
+
+    <span class="n">lobby</span><span class="o">=</span><span class="n">Namespace</span><span class="p">(</span>
+        <span class="n">GAME_RESULT_KEY</span><span class="o">=</span><span class="s1">&#39;game_result&#39;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+
+<span class="n">CARD_BACK</span> <span class="o">=</span> <span class="s2">&quot;back&quot;</span>
+
+<span class="n">ALL</span><span class="p">,</span> <span class="n">AUTHOR</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;author&quot;</span>
+
+<span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span> <span class="o">=</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">SUBSTITUTION_SYMBOL</span> <span class="o">=</span> <span class="s2">&quot;!&quot;</span>
+
+<span class="n">HAND_CONTEXT</span> <span class="o">=</span> <span class="n">HAND</span>
+
+<span class="n">SYSTEM</span> <span class="o">=</span> <span class="s2">&quot;system&quot;</span>
+
+<span class="c1"># keys and predefined values related to chat</span>
+
+<span class="n">CHAT_MESSAGE_PRIVATE</span><span class="p">,</span> <span class="n">CHAT_MESSAGE_BROADCAST</span> <span class="o">=</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">CHAT_NAME_KEY</span><span class="p">,</span> <span class="n">CHAT_NAMES_KEY</span><span class="p">,</span> <span class="n">CHAT_MESSAGE_TYPE_KEY</span><span class="p">,</span> <span class="n">CHAT_TEXT_KEY</span><span class="p">,</span> <span class="n">CHAT_RECEIVER_KEY</span><span class="p">,</span> \
+<span class="n">CHAT_PLAYER_ID_KEY</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;names&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;message_type&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;text&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;receiver&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;player_id&#39;</span>
+<span class="p">)</span>
+
+
+<span class="c1"># UI</span>
+<span class="n">CARD_FROM_OUR_HAND</span><span class="p">,</span> <span class="n">CARD_FROM_ANOTHER_HAND</span><span class="p">,</span> <span class="n">CARD_FROM_DECK</span><span class="p">,</span> <span class="n">CARD_FROM_DESK</span> <span class="o">=</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">ui_namespace</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
+    <span class="n">card_types</span><span class="o">=</span><span class="n">Enum</span><span class="p">(</span>
+        <span class="s2">&quot;FROM_OUR_HAND&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;FROM_ANOTHER_HAND&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;FROM_DECK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;FROM_DESK&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">ololo</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">kokoko</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;ololo&#39;</span><span class="p">,</span> <span class="s1">&#39;kokoko&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="n">Namespace</span><span class="p">(</span><span class="n">ololo</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">kokoko</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">ololo</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">qqqq</span> <span class="o">=</span> <span class="s2">&quot;11311&quot;</span>
+    <span class="nb">print</span> <span class="n">a</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

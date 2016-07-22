@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
-__author__ = 'ecialo'
 
-import kivy
-import kivy.uix.floatlayout as flayout
-import kivy.uix.anchorlayout as alayout
-import kivy.uix.relativelayout as rlayout
-import kivy.uix.stacklayout as slayout
 import kivy.uix.boxlayout as blayout
-import kivy.uix.widget as widget
-import kivy.uix.label as label
-import kivy.uix.button as button
 import kivy.properties as prop
+from core.utility import kivy_doc_hack
 
 from kivy.lang import Builder
 
 from core.predef import game_component_types, ui_namespace
 
-Builder.load_file('./client/game_ui/hand_widget/hand_widget.kv')
+__author__ = 'ecialo'
+
+kivy_doc_hack(Builder, 'hand_widget.kv', __file__)
 
 class HandWidget(blayout.BoxLayout):
 

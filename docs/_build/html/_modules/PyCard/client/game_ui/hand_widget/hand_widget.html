@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.client.game_ui.hand_widget.hand_widget &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.client.game_ui.hand_widget.hand_widget</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">kivy.uix.boxlayout</span> <span class="k">as</span> <span class="nn">blayout</span>
+<span class="kn">import</span> <span class="nn">kivy.properties</span> <span class="k">as</span> <span class="nn">prop</span>
+<span class="kn">from</span> <span class="nn">core.utility</span> <span class="k">import</span> <span class="n">kivy_doc_hack</span>
+
+<span class="kn">from</span> <span class="nn">kivy.lang</span> <span class="k">import</span> <span class="n">Builder</span>
+
+<span class="kn">from</span> <span class="nn">core.predef</span> <span class="k">import</span> <span class="n">game_component_types</span><span class="p">,</span> <span class="n">ui_namespace</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;ecialo&#39;</span>
+
+<span class="n">kivy_doc_hack</span><span class="p">(</span><span class="n">Builder</span><span class="p">,</span> <span class="s1">&#39;hand_widget.kv&#39;</span><span class="p">,</span> <span class="n">__file__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HandWidget"><a class="viewcode-back" href="../../../../../PyCard.client.game_ui.hand_widget.html#PyCard.client.game_ui.hand_widget.hand_widget.HandWidget">[docs]</a><span class="k">class</span> <span class="nc">HandWidget</span><span class="p">(</span><span class="n">blayout</span><span class="o">.</span><span class="n">BoxLayout</span><span class="p">):</span>
+
+    <span class="n">hand</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+
+    <span class="n">game_widget</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+    <span class="n">player_widget</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hand</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HandWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hand</span> <span class="o">=</span> <span class="n">hand</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_event_type</span><span class="p">(</span><span class="s1">&#39;on_get_cards&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HandWidget.on_get_cards"><a class="viewcode-back" href="../../../../../PyCard.client.game_ui.hand_widget.html#PyCard.client.game_ui.hand_widget.hand_widget.HandWidget.on_get_cards">[docs]</a>    <span class="k">def</span> <span class="nf">on_get_cards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">cards</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">card</span> <span class="ow">in</span> <span class="n">cards</span><span class="p">:</span>
+            <span class="n">card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">view_card</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
+
+            <span class="n">card_widget</span> <span class="o">=</span> <span class="n">card</span><span class="o">.</span><span class="n">make_widget</span><span class="p">(</span><span class="n">game_widget</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="p">)</span>
+            <span class="n">is_our_hand</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">player_name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_widget</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">card_widget</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="n">ui_namespace</span><span class="o">.</span><span class="n">card_types</span><span class="o">.</span><span class="n">FROM_OUR_HAND</span> <span class="k">if</span> <span class="n">is_our_hand</span> <span class="k">else</span> <span class="n">ui_namespace</span><span class="o">.</span><span class="n">card_types</span><span class="o">.</span><span class="n">FROM_ANOTHER_HAND</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui_add_card_widget</span><span class="p">(</span><span class="n">card_widget</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HandWidget.try_to_get_card"><a class="viewcode-back" href="../../../../../PyCard.client.game_ui.hand_widget.html#PyCard.client.game_ui.hand_widget.hand_widget.HandWidget.try_to_get_card">[docs]</a>    <span class="k">def</span> <span class="nf">try_to_get_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card_widget</span><span class="p">,</span> <span class="n">touch_pos</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">card_widget</span><span class="o">.</span><span class="n">origin</span> <span class="o">==</span> <span class="n">ui_namespace</span><span class="o">.</span><span class="n">card_types</span><span class="o">.</span><span class="n">FROM_OUR_HAND</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui_add_card_widget</span><span class="p">(</span><span class="n">card_widget</span><span class="p">,</span> <span class="n">touch_pos</span><span class="p">)</span>
+
+        <span class="c1"># пытаемся взять карту из колоды, если можно</span>
+        <span class="k">elif</span> <span class="n">card_widget</span><span class="o">.</span><span class="n">origin</span> <span class="o">==</span> <span class="n">ui_namespace</span><span class="o">.</span><span class="n">card_types</span><span class="o">.</span><span class="n">FROM_DECK</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">is_our_turn</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">is_our_tab_active</span><span class="p">():</span>
+                <span class="c1">#TODO: это выглядит неправильно.</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">game</span>
+                <span class="n">atable</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_category</span><span class="p">(</span><span class="n">game_component_types</span><span class="o">.</span><span class="n">TABLE</span><span class="p">)[</span><span class="s1">&#39;game_action_table&#39;</span><span class="p">]</span>
+                <span class="n">dca_class</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;draw_cards&#39;</span><span class="p">,</span> <span class="n">atable</span><span class="o">.</span><span class="n">actions</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">draw_card</span> <span class="o">=</span> <span class="n">dca_class</span><span class="p">(</span>
+                        <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">deck_widget</span><span class="o">.</span><span class="n">deck</span><span class="p">,</span>
+                        <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hand</span><span class="p">,</span>
+                        <span class="n">number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">author</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">player_name</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">draw_card</span><span class="o">.</span><span class="n">check</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">send_actions</span><span class="p">(</span><span class="n">draw_card</span><span class="p">)</span>
+
+                <span class="n">card_widget</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="n">ui_namespace</span><span class="o">.</span><span class="n">card_types</span><span class="o">.</span><span class="n">FROM_OUR_HAND</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">is_our_turn</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s2">&quot;It&#39;s not your turn now&quot;</span><span class="p">)</span>
+
+        <span class="n">card_widget</span><span class="o">.</span><span class="n">size_hint_y</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="HandWidget.ui_add_card_widget"><a class="viewcode-back" href="../../../../../PyCard.client.game_ui.hand_widget.html#PyCard.client.game_ui.hand_widget.hand_widget.HandWidget.ui_add_card_widget">[docs]</a>    <span class="k">def</span> <span class="nf">ui_add_card_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">,</span> <span class="n">touch_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">touch_pos</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">card_stack</span><span class="o">.</span><span class="n">children</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">collide_point</span><span class="p">(</span><span class="o">*</span><span class="n">touch_pos</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">card_stack</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">card_stack</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">card</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

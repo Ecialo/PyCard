@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.core.action.action &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.core.action.action</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">utility</span> <span class="k">as</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">predef</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Ecialo&#39;</span>
+
+<span class="n">ArgPack</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;ArgPack&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="Action"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action">[docs]</a><span class="k">class</span> <span class="nc">Action</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Отложенная мутация над игрой или её компонентами.</span>
+
+<span class="sd">    Не стоит обновлять параметры чем-то кроме метода setup.</span>
+
+<span class="sd">    :ivar name: название Действия, по которому оно идентифицируется в Таблице действий</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :ivar default_args: аргументы по умолчанию для этого действия</span>
+<span class="sd">    :type default_args: dict[str, T]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">default_args</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">visibility</span> <span class="o">=</span> <span class="kc">None</span>       <span class="c1"># all | author</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">predef</span><span class="o">.</span><span class="n">SYSTEM</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_author</span> <span class="o">=</span> <span class="n">author</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_args</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Action.setup"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Правильный способ обновить внутренние параметы.</span>
+
+<span class="sd">        :param kwargs:</span>
+<span class="sd">        :return: Action</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">arg</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Action.substitute_enviroment"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action.substitute_enviroment">[docs]</a>    <span class="k">def</span> <span class="nf">substitute_enviroment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Заменить пути до компонентов (начинается с SUBSTITUTION_SYMBOL) компонентами из окружения.</span>
+
+<span class="sd">        :param environment: Игра в которой происходит действие</span>
+<span class="sd">        :type environment: core.game.Game</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">substituted_args</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_author</span> <span class="o">=</span> <span class="n">environment</span><span class="p">[(</span><span class="n">predef</span><span class="o">.</span><span class="n">PLAYER</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_author</span><span class="p">)]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_author</span> <span class="o">!=</span> <span class="n">predef</span><span class="o">.</span><span class="n">SYSTEM</span> <span class="k">else</span> <span class="n">environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">environment</span>
+        <span class="k">for</span> <span class="n">argname</span><span class="p">,</span> <span class="n">argval</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argval</span><span class="p">,</span> <span class="n">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="n">argval</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">predef</span><span class="o">.</span><span class="n">SUBSTITUTION_SYMBOL</span><span class="p">):</span>
+                <span class="c1"># category, name = argval.lstrip(predef.SUBSTITUTION_SYMBOL).split(&quot;_&quot;, 1)</span>
+                <span class="c1"># category = category</span>
+                <span class="n">substituted_args</span><span class="p">[</span><span class="n">argname</span><span class="p">]</span> <span class="o">=</span> <span class="n">environment</span><span class="p">[</span><span class="n">argval</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="o">**</span><span class="n">substituted_args</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">author</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_author</span>
+
+<div class="viewcode-block" id="Action.apply"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Применить мутацию.</span>
+
+<span class="sd">        :return: Параметры, которые возможно будут нужны другой мутации</span>
+<span class="sd">        :rtype: dict[str, T] | None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Action.check"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Проверяет возможно ли выполнить данное действие. По умолчанию любое действие можно выполнить.</span>
+<span class="sd">        :return: Возможно ли выполнить действие</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">__ror__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ActionPipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_author</span><span class="p">,</span> <span class="p">[</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__rand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ActionSequence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_author</span><span class="p">,</span> <span class="p">[</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Action.get_message_struct"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action.get_message_struct">[docs]</a>    <span class="k">def</span> <span class="nf">get_message_struct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">messageable_args</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">argname</span><span class="p">:</span> <span class="p">((</span><span class="n">predef</span><span class="o">.</span><span class="n">SUBSTITUTION_SYMBOL</span> <span class="o">+</span> <span class="n">argval</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argval</span><span class="p">,</span> <span class="n">util</span><span class="o">.</span><span class="n">Component</span><span class="p">)</span> <span class="k">else</span> <span class="n">argval</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">argname</span><span class="p">,</span> <span class="n">argval</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">messageable_args</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Action.make_message"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action.make_message">[docs]</a>    <span class="k">def</span> <span class="nf">make_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Создает на основе действия json строку сообщения. Сообщение имеет следующий формат:</span>
+<span class="sd">        {</span>
+<span class="sd">            MESSAGE_TYPE_KEY: ACTION_JUST | ACTION_SEQUENCE | ACTION_PIPE</span>
+<span class="sd">            MESSAGE_ACTION_KEY: {arg: val} | [{arg: val}]</span>
+<span class="sd">        }</span>
+<span class="sd">        Если val - это компонент, то он представляется виде внутриигрового пути до него.</span>
+
+<span class="sd">        :return: json строка с сообщением</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">messageable_struct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_message_struct</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">make_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_author</span><span class="p">,</span> <span class="n">messageable_struct</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Action.make_visible_response"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action.make_visible_response">[docs]</a>    <span class="k">def</span> <span class="nf">make_visible_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Action.make_invisible_response"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.Action.make_invisible_response">[docs]</a>    <span class="k">def</span> <span class="nf">make_invisible_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="ActionCollection"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.ActionCollection">[docs]</a><span class="k">class</span> <span class="nc">ActionCollection</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">actions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_author</span> <span class="o">=</span> <span class="n">author</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span> <span class="ow">or</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">action</span>
+
+<div class="viewcode-block" id="ActionCollection.substitute_enviroment"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.ActionCollection.substitute_enviroment">[docs]</a>    <span class="k">def</span> <span class="nf">substitute_enviroment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="p">:</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">substitute_enviroment</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ActionPipe"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.ActionPipe">[docs]</a><span class="k">class</span> <span class="nc">ActionPipe</span><span class="p">(</span><span class="n">ActionCollection</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ActionPipe</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__ror__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="ActionPipe.apply"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.ActionPipe.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">prev</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">action</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="o">**</span><span class="n">prev</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="p">{}</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ActionPipe.make_message"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.ActionPipe.make_message">[docs]</a>    <span class="k">def</span> <span class="nf">make_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">make_pipe_message</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_author</span><span class="p">,</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">action</span><span class="o">.</span><span class="n">get_message_struct</span><span class="p">()</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="p">]</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ActionSequence"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.ActionSequence">[docs]</a><span class="k">class</span> <span class="nc">ActionSequence</span><span class="p">(</span><span class="n">ActionCollection</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ActionPipe</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__rand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="ActionSequence.apply"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.ActionSequence.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">action</span><span class="o">.</span><span class="n">apply</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ActionSequence.make_message"><a class="viewcode-back" href="../../../../PyCard.core.action.html#PyCard.core.action.action.ActionSequence.make_message">[docs]</a>    <span class="k">def</span> <span class="nf">make_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">make_sequence_message</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_author</span><span class="p">,</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">action</span><span class="o">.</span><span class="n">get_message_struct</span><span class="p">()</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actions</span><span class="p">]</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

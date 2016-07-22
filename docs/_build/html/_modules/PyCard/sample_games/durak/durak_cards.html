@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.sample_games.durak.durak_cards &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.sample_games.durak.durak_cards</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">product</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">core.card</span> <span class="k">import</span> <span class="n">card_table</span>
+<span class="kn">from</span> <span class="nn">core.card</span> <span class="k">import</span> <span class="n">card</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">durak_resources</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;ecialo&#39;</span>
+
+<span class="n">CARD_SET</span> <span class="o">=</span> <span class="s1">&#39;./sample_games/durak/assets/cards.json&#39;</span>
+
+
+<div class="viewcode-block" id="DurakCard"><a class="viewcode-back" href="../../../../PyCard.sample_games.durak.html#PyCard.sample_games.durak.durak_cards.DurakCard">[docs]</a><span class="k">class</span> <span class="nc">DurakCard</span><span class="p">(</span><span class="n">card</span><span class="o">.</span><span class="n">Card</span><span class="p">):</span>
+
+    <span class="n">available_resources</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">durak_resources</span><span class="o">.</span><span class="n">Suit</span><span class="p">,</span>
+        <span class="n">durak_resources</span><span class="o">.</span><span class="n">Value</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suit</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DurakCard</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resources</span><span class="p">[</span><span class="n">durak_resources</span><span class="o">.</span><span class="n">Suit</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">suit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resources</span><span class="p">[</span><span class="n">durak_resources</span><span class="o">.</span><span class="n">Value</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DurakCardTable"><a class="viewcode-back" href="../../../../PyCard.sample_games.durak.html#PyCard.sample_games.durak.durak_cards.DurakCardTable">[docs]</a><span class="k">class</span> <span class="nc">DurakCardTable</span><span class="p">(</span><span class="n">card_table</span><span class="o">.</span><span class="n">CardTable</span><span class="p">):</span>
+
+    <span class="n">card_set_file</span> <span class="o">=</span> <span class="n">CARD_SET</span>
+
+<div class="viewcode-block" id="DurakCardTable.make_card"><a class="viewcode-back" href="../../../../PyCard.sample_games.durak.html#PyCard.sample_games.durak.durak_cards.DurakCardTable.make_card">[docs]</a>    <span class="k">def</span> <span class="nf">make_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card_struct</span><span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">FabricatedDurakCard</span><span class="p">(</span><span class="n">DurakCard</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">card_struct</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="nb">super</span><span class="p">(</span><span class="n">FabricatedDurakCard</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+                    <span class="n">card_struct</span><span class="p">[</span><span class="s1">&#39;suit&#39;</span><span class="p">],</span>
+                    <span class="n">card_struct</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FabricatedDurakCard</span></div></div>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">table_of_names</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="s2">&quot;Ace&quot;</span><span class="p">,</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="s2">&quot;King&quot;</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="s2">&quot;Queen&quot;</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="s2">&quot;Jack&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">make_card_struct</span><span class="p">(</span><span class="n">suit_value</span><span class="p">):</span>
+        <span class="n">suit</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">suit_value</span>
+        <span class="n">card_struct</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;suit&#39;</span><span class="p">:</span> <span class="n">suit</span><span class="p">,</span>
+            <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">table_of_names</span> <span class="k">else</span> <span class="n">table_of_names</span><span class="p">[</span><span class="n">value</span><span class="p">])</span> <span class="o">+</span>
+                <span class="s2">&quot; of &quot;</span> <span class="o">+</span>
+                <span class="n">suit</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">card_struct</span>
+
+    <span class="n">suits</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;Hearts&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Diamonds&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Clubs&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Spades&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+    <span class="n">all_cards</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="n">suits</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CARD_SET</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">card_file</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">make_card_struct</span><span class="p">,</span> <span class="n">all_cards</span><span class="p">),</span> <span class="n">card_file</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

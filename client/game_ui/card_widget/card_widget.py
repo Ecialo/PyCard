@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
-import kivy
+
 import kivy.uix.floatlayout as flayout
-import kivy.uix.anchorlayout as alayout
-import kivy.uix.relativelayout as rlayout
-import kivy.uix.scatterlayout as slayout
-import kivy.uix.widget as widget
-import kivy.uix.label as label
-import kivy.uix.button as button
 import kivy.properties as prop
 import kivy.uix.behaviors as beh
+from core.utility import kivy_doc_hack
 
 from kivy.lang import Builder
 
 from core.predef import ui_namespace
 
 __author__ = 'ecialo'
-Builder.load_file('./client/game_ui/card_widget/card_widget.kv')
+
+kivy_doc_hack(Builder, 'card_widget.kv', __file__)
 
 class CardWidget(beh.DragBehavior, flayout.FloatLayout):
 

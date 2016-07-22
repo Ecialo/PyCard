@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-__author__ = 'ecialo'
 
-import kivy
 from kivy.uix.gridlayout import GridLayout
 import kivy.properties as prop
-from kivy.lang import Builder
+__author__ = 'ecialo'
 
 class UnorderedDeskWidget(GridLayout):
 

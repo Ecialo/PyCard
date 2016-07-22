@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.client.game_ui.card_widget.card_widget &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="../../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../../index.html" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for PyCard.client.game_ui.card_widget.card_widget</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">kivy.uix.floatlayout</span> <span class="k">as</span> <span class="nn">flayout</span>
+<span class="kn">import</span> <span class="nn">kivy.properties</span> <span class="k">as</span> <span class="nn">prop</span>
+<span class="kn">import</span> <span class="nn">kivy.uix.behaviors</span> <span class="k">as</span> <span class="nn">beh</span>
+<span class="kn">from</span> <span class="nn">core.utility</span> <span class="k">import</span> <span class="n">kivy_doc_hack</span>
+
+<span class="kn">from</span> <span class="nn">kivy.lang</span> <span class="k">import</span> <span class="n">Builder</span>
+
+<span class="kn">from</span> <span class="nn">core.predef</span> <span class="k">import</span> <span class="n">ui_namespace</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;ecialo&#39;</span>
+
+<span class="n">kivy_doc_hack</span><span class="p">(</span><span class="n">Builder</span><span class="p">,</span> <span class="s1">&#39;card_widget.kv&#39;</span><span class="p">,</span> <span class="n">__file__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CardWidget"><a class="viewcode-back" href="../../../../../PyCard.client.game_ui.card_widget.html#PyCard.client.game_ui.card_widget.card_widget.CardWidget">[docs]</a><span class="k">class</span> <span class="nc">CardWidget</span><span class="p">(</span><span class="n">beh</span><span class="o">.</span><span class="n">DragBehavior</span><span class="p">,</span> <span class="n">flayout</span><span class="o">.</span><span class="n">FloatLayout</span><span class="p">):</span>
+
+    <span class="n">card</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+    <span class="n">hand</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+
+    <span class="n">touch_pos</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">game_widget</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+    <span class="n">player_widget</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+
+
+    <span class="n">touch_pos</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">game_widget</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">ObjectProperty</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CardWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">card</span> <span class="o">=</span> <span class="n">card</span>
+
+<div class="viewcode-block" id="CardWidget.on_touch_down"><a class="viewcode-back" href="../../../../../PyCard.client.game_ui.card_widget.html#PyCard.client.game_ui.card_widget.card_widget.CardWidget.on_touch_down">[docs]</a>    <span class="k">def</span> <span class="nf">on_touch_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">touch</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span> <span class="o">==</span> <span class="n">ui_namespace</span><span class="o">.</span><span class="n">card_types</span><span class="o">.</span><span class="n">FROM_ANOTHER_HAND</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collide_point</span><span class="p">(</span><span class="o">*</span><span class="n">touch</span><span class="o">.</span><span class="n">pos</span><span class="p">):</span>
+            <span class="n">touch</span><span class="o">.</span><span class="n">grab</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size_hint_y</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">touch_pos</span> <span class="o">=</span> <span class="n">touch</span><span class="o">.</span><span class="n">pos</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">remove_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">CardWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">on_touch_down</span><span class="p">(</span><span class="n">touch</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CardWidget.on_touch_move"><a class="viewcode-back" href="../../../../../PyCard.client.game_ui.card_widget.html#PyCard.client.game_ui.card_widget.card_widget.CardWidget.on_touch_move">[docs]</a>    <span class="k">def</span> <span class="nf">on_touch_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">touch</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">touch</span><span class="o">.</span><span class="n">grab_current</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">touch_pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">touch_pos</span> <span class="o">=</span> <span class="n">touch</span><span class="o">.</span><span class="n">pos</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">touch</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">touch_pos</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">touch_pos</span> <span class="o">=</span> <span class="n">touch</span><span class="o">.</span><span class="n">pos</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">CardWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">on_touch_move</span><span class="p">(</span><span class="n">touch</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CardWidget.on_touch_up"><a class="viewcode-back" href="../../../../../PyCard.client.game_ui.card_widget.html#PyCard.client.game_ui.card_widget.card_widget.CardWidget.on_touch_up">[docs]</a>    <span class="k">def</span> <span class="nf">on_touch_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">touch</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">touch</span><span class="o">.</span><span class="n">grab_current</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
+
+            <span class="n">player_widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">player_widgets</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game_widget</span><span class="o">.</span><span class="n">player_name</span><span class="p">]</span>
+            <span class="n">hand_widget</span> <span class="o">=</span> <span class="n">player_widget</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="s1">&#39;hand&#39;</span><span class="p">]</span>
+
+            <span class="c1"># карта вкладывается, если она либо лежит над рукой, либо её куда-то несли из руки, но не донесли</span>
+            <span class="k">if</span> <span class="n">hand_widget</span><span class="o">.</span><span class="n">collide_point</span><span class="p">(</span><span class="o">*</span><span class="n">touch</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span> <span class="o">==</span> <span class="n">ui_namespace</span><span class="o">.</span><span class="n">card_types</span><span class="o">.</span><span class="n">FROM_OUR_HAND</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">remove_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">hand_widget</span><span class="o">.</span><span class="n">try_to_get_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">touch</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+
+                <span class="n">touch</span><span class="o">.</span><span class="n">ungrab</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+
+            <span class="c1"># представим, что тут написана логика для выкладывания карты на стол</span>
+            <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+
+            <span class="c1"># во всех остальных случаях карту надо удалить из игры</span>
+            <span class="c1"># на самом деле, удаляется только виджет, а карта лежит где лежала</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">remove_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">CardWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">on_touch_up</span><span class="p">(</span><span class="n">touch</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

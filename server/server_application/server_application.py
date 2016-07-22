@@ -20,7 +20,7 @@ def return_root_directory(dirname):
 sys.path.append(return_root_directory('PyCard'))
 from server.pycard_server import MultiEchoFactory
 
-params = json.load(open('server_configs'))
+params = json.load(open(os.path.join(os.path.dirname(__file__), 'server_configs')))
 
 port = params['configs']['port']
 players_per_game = params['configs']['playnum']

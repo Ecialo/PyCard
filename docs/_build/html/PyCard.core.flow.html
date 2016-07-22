@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyCard.core.flow package &mdash; PyCard 0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PyCard 0 documentation" href="index.html" />
+    <link rel="up" title="PyCard.core package" href="PyCard.core.html" />
+    <link rel="next" title="PyCard.core.flow.common_flows package" href="PyCard.core.flow.common_flows.html" />
+    <link rel="prev" title="PyCard.core.desk.common_desks package" href="PyCard.core.desk.common_desks.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pycard-core-flow-package">
+<h1>PyCard.core.flow package<a class="headerlink" href="#pycard-core-flow-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PyCard.core.flow.common_flows.html">PyCard.core.flow.common_flows package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.flow.common_flows.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.flow.common_flows.html#module-PyCard.core.flow.common_flows.score_calculation_flow">PyCard.core.flow.common_flows.score_calculation_flow module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.flow.common_flows.html#module-PyCard.core.flow.common_flows">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PyCard.core.flow.common_turns.html">PyCard.core.flow.common_turns package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.flow.common_turns.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.flow.common_turns.html#module-PyCard.core.flow.common_turns.personal_turn">PyCard.core.flow.common_turns.personal_turn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCard.core.flow.common_turns.html#module-PyCard.core.flow.common_turns">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-PyCard.core.flow.condition">
+<span id="pycard-core-flow-condition-module"></span><h2>PyCard.core.flow.condition module<a class="headerlink" href="#module-PyCard.core.flow.condition" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyCard.core.flow.condition.Condition">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.condition.</code><code class="descname">Condition</code><a class="reference internal" href="_modules/PyCard/core/flow/condition.html#Condition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.condition.Condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.flow.condition.CyclesExceedCondition">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.condition.</code><code class="descname">CyclesExceedCondition</code><span class="sig-paren">(</span><em>max_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/condition.html#CyclesExceedCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.condition.CyclesExceedCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.flow.condition.Condition" title="PyCard.core.flow.condition.Condition"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.flow.condition.Condition</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.flow.condition.WinCondition">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.condition.</code><code class="descname">WinCondition</code><a class="reference internal" href="_modules/PyCard/core/flow/condition.html#WinCondition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.condition.WinCondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.flow.condition.Condition" title="PyCard.core.flow.condition.Condition"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.flow.condition.Condition</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.core.flow.flow">
+<span id="pycard-core-flow-flow-module"></span><h2>PyCard.core.flow.flow module<a class="headerlink" href="#module-PyCard.core.flow.flow" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyCard.core.flow.flow.Cycle">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.flow.</code><code class="descname">Cycle</code><span class="sig-paren">(</span><em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Cycle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Cycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.flow.flow.Flow" title="PyCard.core.flow.flow.Flow"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.flow.flow.Flow</span></code></a></p>
+<p>Повторяет последовательность flow, до выполнения условий</p>
+<dl class="attribute">
+<dt id="PyCard.core.flow.flow.Cycle.condition">
+<code class="descname">condition</code><em class="property"> = None</em><a class="headerlink" href="#PyCard.core.flow.flow.Cycle.condition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.flow.flow.Cycle.cycles">
+<code class="descname">cycles</code><a class="headerlink" href="#PyCard.core.flow.flow.Cycle.cycles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.flow.Cycle.next_stage">
+<code class="descname">next_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Cycle.next_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Cycle.next_stage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="PyCard.core.flow.flow.EndOfCurrentFlow">
+<em class="property">exception </em><code class="descclassname">PyCard.core.flow.flow.</code><code class="descname">EndOfCurrentFlow</code><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#EndOfCurrentFlow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.EndOfCurrentFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.flow.flow.Flow">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.flow.</code><code class="descname">Flow</code><span class="sig-paren">(</span><em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Описывает как именно идёт игра, чей сейчас ход и прочее.
+Каждое выполненое действие возвращает сообщение(преобразуемой в дальнейшем в action) с содержанием того как именно обновлять клиеты в связи с событием.
+Если действие не удалось - возврашает None и ждёт новой попытки
+event - это flow, который просходит разово и вне очереди.
+Если текущий flow закончен, то бросается исключение EndOfCurrentFlow</p>
+<dl class="attribute">
+<dt id="PyCard.core.flow.flow.Flow.associated_components">
+<code class="descname">associated_components</code><em class="property"> = []</em><a class="headerlink" href="#PyCard.core.flow.flow.Flow.associated_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.flow.Flow.current_flow">
+<code class="descname">current_flow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Flow.current_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Flow.current_flow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.flow.flow.Flow.flow">
+<code class="descname">flow</code><em class="property"> = None</em><a class="headerlink" href="#PyCard.core.flow.flow.Flow.flow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.flow.Flow.get_all_associated_components">
+<code class="descname">get_all_associated_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Flow.get_all_associated_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Flow.get_all_associated_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.flow.Flow.next_stage">
+<code class="descname">next_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Flow.next_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Flow.next_stage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.flow.Flow.raise_event">
+<code class="descname">raise_event</code><span class="sig-paren">(</span><em>flow</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Flow.raise_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Flow.raise_event" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.flow.Flow.receive_action">
+<code class="descname">receive_action</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Flow.receive_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Flow.receive_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.flow.Flow.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Flow.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Flow.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.flow.flow.Flow.stage">
+<code class="descname">stage</code><a class="headerlink" href="#PyCard.core.flow.flow.Flow.stage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.flow.flow.Line">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.flow.</code><code class="descname">Line</code><span class="sig-paren">(</span><em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.flow.flow.Flow" title="PyCard.core.flow.flow.Flow"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.flow.flow.Flow</span></code></a></p>
+<dl class="method">
+<dt id="PyCard.core.flow.flow.Line.next_stage">
+<code class="descname">next_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#Line.next_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.Line.next_stage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.flow.flow.SelectFirstPlayerAtRandom">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.flow.</code><code class="descname">SelectFirstPlayerAtRandom</code><span class="sig-paren">(</span><em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#SelectFirstPlayerAtRandom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.SelectFirstPlayerAtRandom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.flow.flow.Cycle" title="PyCard.core.flow.flow.Cycle"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.flow.flow.Cycle</span></code></a></p>
+<p>Случайным образом выбирает первого игрока.</p>
+<dl class="attribute">
+<dt id="PyCard.core.flow.flow.SelectFirstPlayerAtRandom.condition">
+<code class="descname">condition</code><em class="property"> = &lt;PyCard.core.flow.condition.CyclesExceedCondition object&gt;</em><a class="headerlink" href="#PyCard.core.flow.flow.SelectFirstPlayerAtRandom.condition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.flow.SelectFirstPlayerAtRandom.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#SelectFirstPlayerAtRandom.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.SelectFirstPlayerAtRandom.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PyCard.core.flow.flow.TurnCycle">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.flow.</code><code class="descname">TurnCycle</code><span class="sig-paren">(</span><em>game</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#TurnCycle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.TurnCycle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PyCard.core.flow.flow.Cycle" title="PyCard.core.flow.flow.Cycle"><code class="xref py py-class docutils literal"><span class="pre">PyCard.core.flow.flow.Cycle</span></code></a></p>
+<p>Заставляет игроков ходить в цикле до выполнения условия</p>
+<dl class="method">
+<dt id="PyCard.core.flow.flow.TurnCycle.receive_action">
+<code class="descname">receive_action</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/flow.html#TurnCycle.receive_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.flow.TurnCycle.receive_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="PyCard.core.flow.flow.TurnCycle.turn">
+<code class="descname">turn</code><em class="property"> = None</em><a class="headerlink" href="#PyCard.core.flow.flow.TurnCycle.turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.core.flow.turn">
+<span id="pycard-core-flow-turn-module"></span><h2>PyCard.core.flow.turn module<a class="headerlink" href="#module-PyCard.core.flow.turn" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PyCard.core.flow.turn.Turn">
+<em class="property">class </em><code class="descclassname">PyCard.core.flow.turn.</code><code class="descname">Turn</code><span class="sig-paren">(</span><em>author</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/turn.html#Turn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.turn.Turn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Ожидает определённое действие конкретного игрока</p>
+<dl class="method">
+<dt id="PyCard.core.flow.turn.Turn.current_flow">
+<code class="descname">current_flow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/turn.html#Turn.current_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.turn.Turn.current_flow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="PyCard.core.flow.turn.Turn.next_stage">
+<em class="property">static </em><code class="descname">next_stage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/turn.html#Turn.next_stage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.turn.Turn.next_stage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.turn.Turn.receive_action">
+<code class="descname">receive_action</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/turn.html#Turn.receive_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.turn.Turn.receive_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PyCard.core.flow.turn.Turn.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCard/core/flow/turn.html#Turn.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PyCard.core.flow.turn.Turn.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PyCard.core.flow">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyCard.core.flow" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyCard.core.flow package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-PyCard.core.flow.condition">PyCard.core.flow.condition module</a></li>
+<li><a class="reference internal" href="#module-PyCard.core.flow.flow">PyCard.core.flow.flow module</a></li>
+<li><a class="reference internal" href="#module-PyCard.core.flow.turn">PyCard.core.flow.turn module</a></li>
+<li><a class="reference internal" href="#module-PyCard.core.flow">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="PyCard.html">PyCard package</a><ul>
+  <li><a href="PyCard.core.html">PyCard.core package</a><ul>
+      <li>Previous: <a href="PyCard.core.desk.common_desks.html" title="previous chapter">PyCard.core.desk.common_desks package</a></li>
+      <li>Next: <a href="PyCard.core.flow.common_flows.html" title="next chapter">PyCard.core.flow.common_flows package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/PyCard.core.flow.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PyCard team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/PyCard.core.flow.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
