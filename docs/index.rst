@@ -1,5 +1,5 @@
 .. PyCard documentation master file, created by
-   sphinx-quickstart on Sun Jul 24 14:37:34 2016.
+   sphinx-quickstart on Sun Jul 24 14:56:02 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 

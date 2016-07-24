@@ -38,7 +38,7 @@ def get_args():
     )
 
     parser.add_argument(
-        '-o', '--oupputdir', type=str,
+        '-o', '--outputdir', type=str,
         help='Directory to place the output files. If it does not exist, it is created (sphinx arg)',
         required=False, default=docpath
     )
@@ -51,7 +51,7 @@ def get_args():
     args = parser.parse_args()
 
     version, releasenum, outdir, sourse = args.version, args.releasenum, \
-                                                            args.oupputdir, args.sourcedir
+                                                            args.outputdir, args.sourcedir
 
     return version, releasenum, outdir, sourse
 
