@@ -30,7 +30,7 @@ def get_args():
     )
 
     parser.add_argument(
-        '-V', '--version', type=str, help='Project version (sphinx arg)', required=False, default='0.1'
+        '-V', '--version', type=str, help='Project version (sphinx arg)', required=False, default='0.01'
     )
 
     parser.add_argument(
