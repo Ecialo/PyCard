@@ -11,6 +11,7 @@ Subpackages
     PyCard.sample_games
     PyCard.server
     PyCard.testing
+    PyCard.tools
 
 Submodules
 ----------
