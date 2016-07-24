@@ -13,7 +13,8 @@ import os
 __author__ = 'Anton Korobkov'
 
 # Дефолтный путь к докам
-docpath = os.path.join(os.path.abspath('..'), 'docs')
+new_doc_dirname = 'docs'
+docpath = os.path.join(os.path.abspath('..'), new_doc_dirname)
 
 
 def get_args():
@@ -34,7 +35,7 @@ def get_args():
     )
 
     parser.add_argument(
-        '-R', '--releasenum', type=str, help='Project release (sphinx arg)', required=False, default='0'
+        '-R', '--release', type=str, help='Project release (sphinx arg)', required=False, default='0'
     )
 
     parser.add_argument(
@@ -45,12 +46,12 @@ def get_args():
 
     parser.add_argument(
         '-s', '--sourcedir', type=str, help='Project source directory', required=False,
-        default=docpath.replace('/docs', '')
+        default=docpath.replace('/' + new_doc_dirname, '')
     )
 
     args = parser.parse_args()
 
-    version, releasenum, outdir, sourse = args.version, args.releasenum, \
+    version, releasenum, outdir, sourse = args.version, args.release, \
                                                             args.outputdir, args.sourcedir
 
     return version, releasenum, outdir, sourse
