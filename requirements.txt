@@ -1,0 +1,4 @@
+Kivy==1.9.1
+pipreqs==0.4.4
+tornado==4.4.1
+Twisted==16.3.0
