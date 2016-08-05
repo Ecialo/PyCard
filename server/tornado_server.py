@@ -17,8 +17,11 @@ from core.predef import (
 )
 from sample_games.retard_game import retard_game
 from core.game import GameOver
+from pycard_logger.logger import PyCardLogger
 
 __author__ = 'ecialo', 'Anton Korobkov'
+
+lg = PyCardLogger()
 
 
 class User(object):
@@ -159,6 +162,7 @@ class GameNode(object):
     def apply_action_and_response(self):
         while self.is_alive:
             message = yield self.action_queue.get()
+            lg(message)
             self.game.receive_message(message)
             while True:
                 try:

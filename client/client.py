@@ -9,7 +9,6 @@ import json
 from kivy.support import install_twisted_reactor
 install_twisted_reactor()
 from twisted.internet import reactor, protocol
-from twisted.logger import Logger, jsonFileLogObserver
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -23,11 +22,6 @@ import core.predef as predef
 from core.predef import pycard_protocol as pp
 from sample_games.retard_game import retard_game
 
-
-log = Logger(
-    observer=jsonFileLogObserver(io.open("client.json", "a")),
-    namespace="client"
-)
 
 __author__ = 'Anton Korobkov'
 
@@ -51,13 +45,9 @@ class EchoFactory(protocol.ClientFactory):
         self.app = app
 
     def clientConnectionLost(self, conn, reason):
-        log.error('Connection {connection} lost because of {fail_reason}',
-                  connection=conn, fail_reason=reason)
         self.app.chat.print_message("Connection lost!")
 
     def clientConnectionFailed(self, conn, reason):
-        log.error('Failed to connect to {connection} because of {fail_reason}',
-                  connection=conn, fail_reason=reason)
         self.app.notify("Connection failed!")
         self.app.screen_mgr.current = 'connection'
 
@@ -116,8 +106,6 @@ class TwistedClientApp(App):
     def connect_to_server(self, host, port):
         self.screen_mgr.current = 'lobby'
         reactor.connectTCP(host, port, EchoFactory(self))
-        log.info('Connecting to server {server} on port {port}',
-            server=host, port=port, player_name=self.player_name)
 
     def on_connection(self, connection):
         """
@@ -125,7 +113,6 @@ class TwistedClientApp(App):
         """
 
         self.chat.print_message("Connected succesfully!")
-        log.info("Connected!", player_name=self.player_name)
         self.connection = connection
         self.send_chat_register()
 
@@ -137,22 +124,17 @@ class TwistedClientApp(App):
         В зависимости от типа сообщения, пришедшего от сервера, вызывает один из обработчиков.
         """
 
-        log.debug('Message from server: {message}', message=msg)
         ev = json.loads(msg)
         ev_type, params = ev[pp.message_struct.TYPE_KEY], ev[pp.message_struct.PARAMS_KEY]
 
         if ev_type in self.msg_handlers:
-            log.debug("Calling handler for message of type {h}", h=ev_type, player_name=self.player_name)
             self.msg_handlers[ev_type](params)
 
-        elif ev_type in [pp.event_types.ACTION_JUST, \
-                         pp.event_types.ACTION_SEQUENCE, \
+        elif ev_type in [pp.event_types.ACTION_JUST,
+                         pp.event_types.ACTION_SEQUENCE,
                          pp.event_types.ACTION_PIPE]:
-            log.debug("Trying to move game forward", player_name=self.player_name)
             self.handle_game_action(msg)
 
-        else:
-            log.warn("Unknown event type: {evt}", evt=ev_type, player_name=self.player_name)
 
     def handle_chat_join(self, params):
         """
@@ -160,7 +142,6 @@ class TwistedClientApp(App):
         """
 
         user = params[pp.chat.NAME_KEY]
-        log.debug("{user} has joined", user=user, player_name=self.player_name)
         self.users.append(user)
         self.screen_mgr.get_screen('lobby').update_users(self.users)
 
@@ -170,7 +151,6 @@ class TwistedClientApp(App):
         """
 
         users = params[pp.chat.NAMES_KEY]
-        log.debug("Current online: {users}", users=users, player_name=self.player_name)
         self.users = users
         self.screen_mgr.get_screen('lobby').update_users(self.users)
 
@@ -180,7 +160,6 @@ class TwistedClientApp(App):
         """
 
         name = params[pp.chat.NAME_KEY]
-        log.debug("Someone has left: {user}", user=name, player_name=self.player_name)
         self.chat.print_message("{user} has left".format(user=name))
 
         for i, u in enumerate(self.users):
@@ -196,7 +175,6 @@ class TwistedClientApp(App):
 
         name = params[pp.chat.NAME_KEY]
         msg_type, text = params[pp.chat.MESSAGE_TYPE_KEY], params[pp.chat.TEXT_KEY].encode('utf-8')
-        log.debug("Received message {m} from user {u}, type {t}", m=msg_type, u=name, t=msg_type, player_name=self.player_name)
         self.chat.print_message("<{name}> {msg}".format(name=name, msg=text))
 
     def handle_lobby_start_game(self, params):
@@ -208,7 +186,6 @@ class TwistedClientApp(App):
                 [{'name': user} for user in self.users],
                 mode=predef.CLIENT)
 
-        log.info("The game has started, players are: {pl}", pl=self.users, player_name=self.player_name)
         rgw = rg.make_widget(name='game', app=self)
         self.screen_mgr.add_widget(rgw)
         self.game_scr = self.screen_mgr.get_screen('game')
@@ -222,7 +199,6 @@ class TwistedClientApp(App):
         Когда игрок с таким именем уже есть на сервере.
         """
 
-        log.error("Name {n} already exists on server", n=self.player_name, player_name=self.player_name)
         self.connection.loseConnection()
         self.notify('Name {n} is already taken, please pick another one.'.format(n=self.player_name))
         self.screen_mgr.current = 'connection'
@@ -258,7 +234,6 @@ class TwistedClientApp(App):
     # Генерация сообщений для сервера
 
     def send_raw_message(self, raw_msg):
-        log.debug("Sending message: {m}", m=raw_msg, player_name=self.player_name)
         if raw_msg and self.connection:
             self.connection.write(raw_msg)
 
@@ -365,5 +340,4 @@ class StdoutHook():
 
 
 if __name__ == '__main__':
-    log.info('Start client')
     TwistedClientApp().run()
