@@ -170,7 +170,9 @@ class GameNode(object):
             while True:
                 try:
                     response = self.game.run()
+                    logger.info('>>>')
                 except GameOver as game_over:
+                    logger.info('---')
                     msg = {
                         pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_GAME_OVER,
                         pp.message_struct.PARAMS_KEY: {
@@ -180,6 +182,9 @@ class GameNode(object):
                     msg = {
                         ALL: json.dumps(msg)
                     }
+                    # save info on player positions
+                    for player in game_over.players_stats.iterkeys():
+                        logger.info('result.%s.pos == %s', player, game_over.players_stats[player][0] + 1)
                     yield self.server.enqueue_messages(msg)
 
                     self.is_alive = False
@@ -322,6 +327,10 @@ class PyCardServer(tcpserver.TCPServer):
             self,
         )
         print self.game.game._components
+        # TODO: looks hacky
+        for user in self.users:
+            logger.info(str({"name": "players", "value": {"name": user}}))
+        logger.info('---')
         msg = {
             pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_START_GAME,
             pp.message_struct.PARAMS_KEY: {}
