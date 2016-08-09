@@ -158,6 +158,8 @@ CHAT_PLAYER_ID_KEY = (
 # UI
 CARD_FROM_OUR_HAND, CARD_FROM_ANOTHER_HAND, CARD_FROM_DECK, CARD_FROM_DESK = xrange(4)
 
+LOGGER_FORMAT = '%(message)s'
+
 ui_namespace = Namespace(
     card_types=Enum(
         "FROM_OUR_HAND",

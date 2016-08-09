@@ -4,6 +4,7 @@
 """
 import sys
 import json
+import time
 from tornado import (
     ioloop,
     tcpserver,
@@ -14,17 +15,14 @@ from tornado import (
 from core.predef import (
     pycard_protocol as pp,
     ALL,
+    LOGGER_FORMAT,
 )
+from core.utility import logger_factory
 from sample_games.retard_game import retard_game
 from core.game import GameOver
 import logging
 
 __author__ = 'ecialo', 'Anton Korobkov'
-
-# TODO: get constants outta here
-FORMAT = '%(message)s'
-logging.basicConfig(filename='log.txt', level=logging.INFO, format=FORMAT)
-logger = logging.getLogger(__name__)
 
 
 class User(object):
@@ -153,10 +151,11 @@ class User(object):
 
 class GameNode(object):
 
-    def __init__(self, game, server):
+    def __init__(self, game, server, log):
         self.is_alive = True
         self.server = server
         self.game = game
+        self.log = log
         self.action_queue = queues.Queue()
 
         ioloop.IOLoop.current().spawn_callback(self.apply_action_and_response)
@@ -165,14 +164,14 @@ class GameNode(object):
     def apply_action_and_response(self):
         while self.is_alive:
             message = yield self.action_queue.get()
-            logger.info('%s: %s', json.loads(message)["params"]["author"], message)
+            self.log.info('%s: %s', json.loads(message)["params"]["author"], message)
             self.game.receive_message(message)
             while True:
                 try:
                     response = self.game.run()
-                    logger.info('>>>')
+                    self.log.info('>>>')
                 except GameOver as game_over:
-                    logger.info('---')
+                    self.log.info('---')
                     msg = {
                         pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_GAME_OVER,
                         pp.message_struct.PARAMS_KEY: {
@@ -184,7 +183,7 @@ class GameNode(object):
                     }
                     # save info on player positions
                     for player in game_over.players_stats.iterkeys():
-                        logger.info('result.%s.pos == %s', player, game_over.players_stats[player][0] + 1)
+                        self.log.info('result.%s.pos == %s', player, game_over.players_stats[player][0] + 1)
                     yield self.server.enqueue_messages(msg)
 
                     self.is_alive = False
@@ -322,15 +321,20 @@ class PyCardServer(tcpserver.TCPServer):
 
     @gen.coroutine
     def launch_game(self):
+        # TODO: fix hardcoded log name
+        handler_name = ''.join([''.join([user for user in self.users]), str(time.time()), 'retard_game'])
+        log_name = handler_name + '.txt'
+        logger_factory(handler_name, log_name, LOGGER_FORMAT)
+        self.log = logging.getLogger(handler_name)
         self.game = GameNode(
             retard_game.RetardGame([{'name': user} for user in self.users]),
-            self,
+            self, self.log
         )
         print self.game.game._components
         # TODO: looks hacky
         for user in self.users:
-            logger.info(str({"name": "players", "value": {"name": user}}))
-        logger.info('---')
+            self.log.info(str({"name": "players", "value": {"name": user}}))
+        self.log.info('---')
         msg = {
             pp.message_struct.TYPE_KEY: pp.event_types.LOBBY_START_GAME,
             pp.message_struct.PARAMS_KEY: {}

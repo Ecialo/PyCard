@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 from . import predef
 __author__ = 'Ecialo'
 
@@ -106,3 +107,19 @@ def check_pycard_protocol(message_or_action_struct):
     params = action_struct.get('params')
     params_valid_type = isinstance(params, dict)
     return valid_type and params_valid_type
+
+def logger_factory(logger_name, log_file, format, level=logging.INFO):
+    # taken from http://stackoverflow.com/questions/17035077/python-logging-to-multiple-log-files-from-different-classes
+    # need to figure out how this works and why
+
+    log = logging.getLogger(logger_name)
+    formatter = logging.Formatter(format)
+    fileHandler = logging.FileHandler(log_file, mode='w')
+    fileHandler.setFormatter(formatter)
+    streamHandler = logging.StreamHandler()
+    streamHandler.setFormatter(formatter)
+
+    log.setLevel(level)
+    log.addHandler(fileHandler)
+    log.addHandler(streamHandler)
+
