@@ -317,18 +317,17 @@ class PyCardServer(tcpserver.TCPServer):
             }
             yield [self.enqueue_messages(msg), gen.sleep(1)]
         else:
-            yield self.launch_game()
+            yield self.launch_game(retard_game.RetardGame)
 
     @gen.coroutine
-    def launch_game(self):
-        # TODO: fix hardcoded log name
+    def launch_game(self, game):
         handler_name = ''.join([str(time.time()).replace('.', ''),
-                                ''.join([user for user in self.users]), 'retard_game'])
+                                ''.join([user for user in self.users]), game.name])
         log_name = handler_name + '.txt'
         logger_factory(handler_name, log_name, LOGGER_FORMAT)
         self.log = logging.getLogger(handler_name)
         self.game = GameNode(
-            retard_game.RetardGame([{'name': user} for user in self.users]),
+            game([{'name': user} for user in self.users]),
             self, self.log
         )
         print self.game.game._components
