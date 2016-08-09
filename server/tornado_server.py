@@ -322,7 +322,8 @@ class PyCardServer(tcpserver.TCPServer):
     @gen.coroutine
     def launch_game(self):
         # TODO: fix hardcoded log name
-        handler_name = ''.join([''.join([user for user in self.users]), str(time.time()), 'retard_game'])
+        handler_name = ''.join([str(time.time()).replace('.', ''),
+                                ''.join([user for user in self.users]), 'retard_game'])
         log_name = handler_name + '.txt'
         logger_factory(handler_name, log_name, LOGGER_FORMAT)
         self.log = logging.getLogger(handler_name)
